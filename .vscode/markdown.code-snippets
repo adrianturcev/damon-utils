@@ -1,0 +1,73 @@
+{
+    // Place your snippets for markdown here. Each snippet is defined under a snippet name and has a prefix, body and 
+    // description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+    // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+    // same ids are connected.
+    // Example:
+    "COMPUTATIONAL INSTRUMENTALISM": {
+        "prefix": "CPUI",
+        "body": [
+            "[COMPUTATIONAL INSTRUMENTALISM](./)"
+        ],
+        "description": "Dispatch heading link"
+    },
+    "PSYCHOLOGY": {
+        "prefix": "PSY",
+        "body": [
+            "[PSYCHOLOGY](./)"
+        ],
+        "description": "Dispatch heading link"
+    },
+    "SCIENCE/PROBLEM SOLVING": {
+        "prefix": "SCIP",
+        "body": [
+            "[SCIENCE/PROBLEM SOLVING](./)"
+        ],
+        "description": "Dispatch heading link"
+    },
+    "BELIEF SYSTEMS": {
+        "prefix": "BELIEFS",
+        "body": [
+            "[BELIEF SYSTEMS](./)"
+        ],
+        "description": "Dispatch heading link"
+    },
+    "CRISIS OF BELIEF": {
+        "prefix": "CRIBE",
+        "body": [
+            "[CRISIS OF BELIEF](./)"
+        ],
+        "description": "Dispatch heading link"
+    },
+    "FORMALIZATION": {
+        "prefix": "FORMA",
+        "body": [
+            "[FORMALIZATION](./)"
+        ],
+        "description": "Dispatch heading link"
+    },
+    "DEVELOPMENT": {
+        "prefix": "DEV",
+        "body": [
+            "[DEVELOPMENT](./)"
+        ],
+        "description": "Dispatch heading link"
+    },
+    "DECISION ENGINE": {
+        "prefix": "DNGI",
+        "body": [
+            "[DECISION ENGINE](./)"
+        ],
+        "description": "Dispatch heading link"
+    },
+    "kanban.md": {
+        "prefix": "kanban",
+        "body": [
+            "# FEATURED",
+            "# PLANNED",
+            "# EXPLORED",
+            "# INBOX"
+        ],
+        "description": "Template for kanban.md"
+    }
+}

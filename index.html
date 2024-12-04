@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" data-state="js-off">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./vendor/normalize.css-main/normalize.css">
+    <script>
+        // Javascript-on
+        document.documentElement.dataset.state = '';
+    </script>
+    <style></style>
+    <style>
+        body {
+            --fonts-core: Segoe UI, Roboto, sans-serif, Arial, Liberation Sans;
+            --fonts-code: Consolas, Menlo, JuliaMono, Liberation Mono, monospace;
+            --fonts-variable: Segoe UI Variable, Roboto Flex, SF Pro Text, sans-serif, Inter;
+            --color: #FEFEFE;
+            --colors-white: rgb(255, 255, 255);
+            --colors-red: rgb(255, 0, 0);
+            --colors-cyan: rgb(0, 255, 255);
+            --colors-orange: rgb(255, 128, 0);
+            --colors-yellow: rgb(255, 255, 0);
+            --colors-purple: rgb(128, 0, 128);
+            --colors-green: rgb(0, 255, 0);
+            --colors-magenta: rgb(255, 0, 255);
+            --lights-0: #171717;
+            --tempo: 8px;
+            --tab-size: 4;
+            line-height: 1.5;
+            margin: 0;
+            tab-size: var(--tab-size);
+            -moz-tab-size: var(--tab-size);
+            background-color: #2B2B2B;
+            font-size: 14px;
+            color: var(--color);
+            color-scheme: dark;
+            /* scrollbar-width: thin; */
+            scrollbar-color: #AAAAAA #2B2B2B;
+            scroll-behavior: smooth;
+            accent-color: var(--colors-cyan);
+        }
+
+        /* Fix: https://bugs.chromium.org/p/chromium/issues/detail?id=1150352 */
+        object {
+            color-scheme: normal;
+        }
+
+        ::-webkit-scrollbar {
+            background: #2B2B2B;
+            /* height: 10px; */
+            /* width: 10px; */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2B2B2B;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border: 2px solid #2B2B2B;
+            background: #AAAAAA;
+            border-radius: 10px;
+        }
+
+        #contents::-webkit-scrollbar-corner {
+            background: #2B2B2B;
+        }
+
+        .inlineSVG {
+            width: inherit;
+            height: inherit;
+        }
+
+        #contents a {
+            color: var(--colors-azure);
+            text-decoration: none;
+            text-underline-offset: 0.2rem;
+        }
+
+        #contents a:hover,
+        #contents a:focus {
+            text-decoration: underline;
+        }
+
+        #contents a:active {
+            color: var(--colors-orange);
+        }
+    </style>
+</head>
+<body>
+    <script>
+        window.addEventListener('load', function (e) {
+            (
+                function () {
+                    
+                }
+            )();
+        });
+    </script>
+    <script src="./app.js"></script>
+    <!-- Or inline app.js below here during build -->
+    <script></script>
+</body>
+</html>

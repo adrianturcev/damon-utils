@@ -1,0 +1,62 @@
+{
+    // Place your snippets for css here. Each snippet is defined under a snippet name and has a prefix, body and 
+    // description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+    // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+    // same ids are connected.
+    // Example:
+    "code fonts": {
+        "prefix": "font-family:code",
+        "body": [
+            "font-family: Consolas, Menlo, JuliaMono, Liberation Mono, monospace;"
+        ],
+        "description": "Code fonts"
+    },
+    "core fonts": {
+        "prefix": "font-family:core",
+        "body": [
+            "font-family: Segoe UI, Roboto, sans-serif, Arial, Liberation Sans;"
+        ],
+        "description": "Core fonts"
+    },
+    "variable fonts": {
+        "prefix": "font-family:variable",
+        "body": [
+            "font-family: Segoe UI Variable, Roboto Flex, SF Pro Text, sans-serif, Inter;"
+        ],
+        "description": "Variable fonts"
+    },
+    "boilerplate": {
+        "prefix": "boil",
+        "body": [
+            "body {",
+            "    --fonts-core: Segoe UI, Roboto, sans-serif, Arial, Liberation Sans;",
+            "    --fonts-code: Consolas, Menlo, JuliaMono, Liberation Mono, monospace;",
+            "    --fonts-variable: Segoe UI Variable, Roboto Flex, SF Pro Text, sans-serif, Inter;",
+            "    --color: #FEFEFE;",
+            "    --colors-white: rgb(255, 255, 255);",
+            "    --colors-red: rgb(255, 0, 0);",
+            "    --colors-cyan: rgb(0, 255, 255);",
+            "    --colors-orange: rgb(255, 128, 0);",
+            "    --colors-yellow: rgb(255, 255, 0);",
+            "    --colors-purple: rgb(128, 0, 128);",
+            "    --colors-green: rgb(0, 255, 0);",
+            "    --colors-magenta: rgb(255, 0, 255);",
+            "    --lights-0: #171717;",
+            "    --tempo: 8px;",
+            "    --tab-size: 4;",
+            "    line-height: 1.5;",
+            "    margin: 0;",
+            "    tab-size: var(--tab-size);",
+            "    -moz-tab-size: var(--tab-size);",
+            "    background-color: #2B2B2B;",
+            "    font-size: 14px;",
+            "    color: var(--color);",
+            "    color-scheme: dark;",
+            "    /* scrollbar-width: thin; */",
+            "    scrollbar-color: #AAAAAA #2B2B2B;",
+            "    scroll-behavior: smooth;",
+            "    accent-color: var(--colors-cyan);",
+            "}"
+        ]
+    }
+}

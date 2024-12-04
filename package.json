@@ -1,0 +1,41 @@
+{
+    "name": "damon-utils",
+    "description": "A post-processing library for DAMON",
+    "authors": "Adrian Turcev",
+    "version": "1.0.0",
+    "main": "DamonUtils.js",
+    "license": "MPL-2.0",
+    "homepage": "https://github.com/adrianturcev/damon-utils",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/adrianturcev/DAMON-UTILS.git"
+    },
+    "bugs": {
+        "url": "https://github.com/adrianturcev/damon-utils/issues"
+    },
+    "keywords": ["post-processing", "damon", "rendering"],
+    "engines": {
+        "node": "20.11.1",
+        "npm": "10.2.4"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.14.0",
+        "esbuild": "^0.24.0",
+        "eslint": "^9.12.0",
+        "eslint-plugin-jsdoc": "^50.4.3",
+        "globals": "^15.11.0",
+        "grunt": "^1.6.1",
+        "grunt-concurrent": "^3.0.0",
+        "grunt-contrib-watch": "^1.1.0",
+        "grunt-esbuild": "^1.0.1",
+        "grunt-exec": "^3.0.0",
+        "husky": "^9.1.6",
+        "stylelint": "^16.10.0",
+        "stylelint-config-recommended": "^14.0.1",
+        "damon2": "2.1.27"
+    },
+    "dependencies": {
+        "@types/dompurify": "^3.0.5",
+        "dompurify": "^3.0.11"
+    }
+}

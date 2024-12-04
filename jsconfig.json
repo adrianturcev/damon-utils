@@ -1,0 +1,16 @@
+{
+    "include": ["app.js"],
+    "compilerOptions": {
+        "target": "ES2022",
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "checkJs": true,
+        "allowJs": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "outDir": "dist",
+        "declarationMap": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "exactOptionalPropertyTypes": true
+    },
+}
