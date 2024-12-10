@@ -1,4 +1,4 @@
-# DAMON-UTILS
+# Damon-utils
 
 A post-processing library for [DAMON](https://github.com/adrianturcev/DAMON)
 
@@ -45,8 +45,6 @@ console.log(damonUtils.damonToSExpression(damonString));
 //     ]
 // ],
 ```
-
-## Dependencies
 
 ## License
 
