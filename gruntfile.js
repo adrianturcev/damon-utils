@@ -34,7 +34,7 @@ module.exports = function(grunt) {
             },
             prod: {
                 entryPoints: ['main.js'],
-                outfile: './dist/client.min.js',
+                outfile: './dist/damon-utils.min.js',
                 bundle: true,
                 minify: true
             },
