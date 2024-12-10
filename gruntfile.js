@@ -15,9 +15,9 @@ module.exports = function(grunt) {
                     livereload: true
                 },
             },
-            cssConcatenation: {
-                files: ['css/*.css', '!css/main.css'],
-                tasks: ['concat:css'],
+            tests: {
+                files: ['tests/*.js'],
+                tasks: ['exec:mocha'],
                 options: {
                     livereload: true
                 },
@@ -54,5 +54,5 @@ module.exports = function(grunt) {
 
     // Default task(s).
     grunt.registerTask('test', ['exec:mocha']);
-    grunt.registerTask('dist', ['esbuild', 'cssmin']);
+    grunt.registerTask('dist', ['esbuild:prod']);
 };
