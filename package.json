@@ -3,7 +3,6 @@
     "description": "A post-processing library for DAMON",
     "authors": "Adrian Turcev",
     "version": "1.0.0",
-    "main": "DamonUtils.js",
     "license": "MPL-2.0",
     "homepage": "https://github.com/adrianturcev/damon-utils",
     "repository": {
@@ -17,6 +16,12 @@
     "engines": {
         "node": "20.11.1",
         "npm": "10.2.4"
+    },
+    "main": "DamonUtils.js",
+    "scripts": {
+        "watch": "npx grunt watch",
+        "test": "npx grunt test",
+        "build": "npx grunt dist"
     },
     "devDependencies": {
         "@eslint/js": "^9.14.0",

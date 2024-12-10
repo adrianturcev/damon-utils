@@ -28,7 +28,7 @@ module.exports = [
             "block-scoped-var": "warn",
             "camelcase": "warn",
             "consistent-this": "warn",
-            "curly": "warn",
+            "curly": "off",
             "default-param-last": "warn",
             "dot-notation": "warn",
             "eqeqeq": [
