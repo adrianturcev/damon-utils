@@ -1,4 +1,4 @@
-# Damon-utils
+# DAMON-utils
 
 A post-processing library for [DAMON](https://github.com/adrianturcev/DAMON)
 
