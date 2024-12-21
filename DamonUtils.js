@@ -4,20 +4,20 @@ const DOMPurify = require('dompurify');
 module.exports =
 class DamonUtils {
     //# MODEL
-    constructor(parentContext) {
+    constructor(damon) {
         let $ = this;
-        $.parentContext = parentContext;
+        $.damon = damon;
         $.websiteRegex = /^(https?:\/\/)?[-a-zA-Z0-9]*[a-zA-Z0-9]+(\.[-a-zA-Z0-9]*[a-zA-Z0-9]+)+/;
         $.httpRegex = /^https?:\/\//;
     }
 
     /**
-     * @param {string} damon
+     * @param {string} damonString
      * @returns {string}
      */
-    damonToSExpression(damon) {
+    damonToSExpression(damonString) {
         const $ = this;
-        return $.implicitMapToSExpression($.parentContext.damonToMap(damon));
+        return $.implicitMapToSExpression($.damon.damonToMap(damonString));
     }
 
     /**
@@ -46,7 +46,7 @@ class DamonUtils {
         let $ = this;
         // Parsing check
         try {
-            $.parentContext.mapToJSON(jsonMap);
+            $.damon.mapToJSON(jsonMap);
         } catch (error) {
             console.log(error)
             throw new Error("Provided map value doesn't passes JSON.parse()");
@@ -383,7 +383,7 @@ class DamonUtils {
         let $ = this;
         // Parsing check
         try {
-            $.parentContext.mapToJSON(jsonMap);
+            $.damon.mapToJSON(jsonMap);
         } catch (error) {
             throw new Error("Provided map value doesn't passes JSON.parse()");
         }
@@ -509,7 +509,7 @@ class DamonUtils {
         let $ = this;
         // Parsing check
         try {
-            $.parentContext.mapToJSON(jsonMap);
+            $.damon.mapToJSON(jsonMap);
         } catch (error) {
             throw new Error("Provided map value doesn't passes JSON.parse()")
         }
@@ -1034,12 +1034,12 @@ class DamonUtils {
     }
 
     /**
-     * @param {string} damon
+     * @param {string} damonString
      * @returns {Array<Array<string|number>>} pathsList
      */
-    getPathsList(damon) {
+    getPathsList(damonString) {
         const $ = this;
-        let damonMap = $.parentContext.damonToMap(damon),
+        let damonMap = $.damon.damonToMap(damonString),
             pathsList = [];
         _walkAndPushPaths(damonMap);
         return pathsList;
@@ -1112,13 +1112,13 @@ class DamonUtils {
 
     /**
      * Arrays of inline-arrays produce array-parameters
-     * @param {string} damon
+     * @param {string} damonString
      * @return {string} mathJs
      */
-    damonToMathJs(damon) {
+    damonToMathJs(damonString) {
         const $ = this;
         let mathJs = '',
-            damonMap = $.parentContext.damonToMap(damon);
+            damonMap = $.damon.damonToMap(damonString);
         if (Array.isArray(damonMap)) {
             mathJs += "(\r\n";
             _recurse(damonMap);
@@ -1269,8 +1269,8 @@ class DamonUtils {
         let $ = this;
         // Parsing check
         try {
-            $.parentContext.mapToJSON(firstMap);
-            $.parentContext.mapToJSON(secondMap);
+            $.damon.mapToJSON(firstMap);
+            $.damon.mapToJSON(secondMap);
         } catch (error) {
             throw new Error("Provided map value doesn't passes JSON.parse()");
         }
