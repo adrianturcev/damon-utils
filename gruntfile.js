@@ -9,7 +9,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         watch: {
             devBuild: {
-                files: ['app.js', 'js/*.js'],
+                files: ['main.js', 'DamonUtils.js'],
                 tasks: ['esbuild:dev', 'exec:mocha'],
                 options: {
                     livereload: true
