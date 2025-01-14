@@ -27,4 +27,21 @@ describe('# DAMON UTILS', function () {
             );
         });
     });
+    describe('## DIFF', function () {
+        it('Returns a diffMap', function () {
+            let firstMap =
+                `- Divide: {}
+                    - n
+                    - Add: {}
+                        - 1
+                        - n`;
+            let secondMap =
+                `- Divide: {}
+                    - n
+                    - b: {}
+                        - 1
+                        - n`;
+            console.log(damonUtils.mapsDiff(damon.damonToMap(firstMap), damon.damonToMap(secondMap)));
+        });
+    });
 });
