@@ -61,7 +61,7 @@ module.exports = [
                 }
             ],
             "no-inline-comments": "warn",
-            "no-lonely-if": "warn",
+            "no-lonely-if": "off",
             "no-multi-str": "warn",
             "no-return-assign": [
                 "warn",
