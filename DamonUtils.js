@@ -1266,7 +1266,7 @@ class DamonUtils {
      * @param {damonValue} firstMap
      * @param {damonValue} secondMap
     */
-    mapsDiff(firstMap, secondMap) {
+    _mapsDiff(firstMap, secondMap) {
         let $ = this;
         // Parsing check
         try {
@@ -1340,63 +1340,50 @@ class DamonUtils {
                 && map instanceof Map
                 && map.constructor === Map
             ) {
+                let secondMapKey = "",
+                    secondMapValue = null,
+                    secondMapCurrentFractal = secondMap;
+                for (let i = 0, c = currentPath.length; i < c; i++) {
+                    if (
+                        typeof secondMapCurrentFractal === 'object'
+                        && secondMapCurrentFractal !== null
+                        && !Array.isArray(secondMapCurrentFractal)
+                        && secondMapCurrentFractal instanceof Map
+                        && secondMapCurrentFractal.constructor === Map
+                    ) {
+                        secondMapCurrentFractal =
+                            secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath[i]]);
+                    } else {
+                        secondMapCurrentFractal = secondMapCurrentFractal[currentPath[i]];
+                    }
+                }
+                let diffMapCurrentFractal = diffMap;
+                for (let i = 0, c = currentPath.length; i < c; i++) {
+                    if (
+                        typeof diffMapCurrentFractal === 'object'
+                        && diffMapCurrentFractal !== null
+                        && !Array.isArray(diffMapCurrentFractal)
+                        && diffMapCurrentFractal instanceof Map
+                        && diffMapCurrentFractal.constructor === Map
+                        && Array.from(diffMapCurrentFractal.keys()).length
+                    ) {
+                        diffMapCurrentFractal =
+                            diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath[i]]);
+                    } else {
+                        diffMapCurrentFractal = diffMapCurrentFractal[currentPath[i]];
+                    }
+                }
                 let index = 0;
                 for (const [key, value] of map) {
-                    let secondMapKey = "",
-                        secondMapValue = null,
-                        secondMapCurrentFractal = secondMap;
-                    for (let i = 0, c = currentPath.length; i < c; i++) {
+                    if (index > Array.from(secondMapCurrentFractal.keys()).length - 1) {
                         if (
-                            typeof secondMapCurrentFractal === 'object'
-                            && secondMapCurrentFractal !== null
-                            && !Array.isArray(secondMapCurrentFractal)
-                            && secondMapCurrentFractal instanceof Map
-                            && secondMapCurrentFractal.constructor === Map
+                            typeof value === 'object'
+                            && value !== null
+                            && !Array.isArray(value)
+                            && value instanceof Map
+                            && value.constructor === Map
                         ) {
-                            secondMapCurrentFractal =
-                                secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath[i]]);
-                        } else {
-                            secondMapCurrentFractal = secondMapCurrentFractal[currentPath[i]];
-                        }
-                    }
-                    secondMapKey = Array.from(secondMapCurrentFractal.keys())[index];
-                    secondMapValue = secondMapCurrentFractal.get(secondMapKey);
-                    let diffMapCurrentFractal = diffMap;
-                    for (let i = 0, c = currentPath.length; i < c; i++) {
-                        if (
-                            typeof diffMapCurrentFractal === 'object'
-                            && diffMapCurrentFractal !== null
-                            && !Array.isArray(diffMapCurrentFractal)
-                            && diffMapCurrentFractal instanceof Map
-                            && diffMapCurrentFractal.constructor === Map
-                            && Array.from(diffMapCurrentFractal.keys()).length
-                        ) {
-                            diffMapCurrentFractal =
-                                diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath[i]]);
-                        } else {
-                            diffMapCurrentFractal = diffMapCurrentFractal[currentPath[i]];
-                        }
-                    }
-                    if (
-                        typeof value === 'object'
-                        && value !== null
-                        && !Array.isArray(value)
-                        && value instanceof Map
-                        && value.constructor === Map
-                    ) {
-                        if (
-                            typeof secondMapValue === 'object'
-                            && secondMapValue !== null
-                            && !Array.isArray(secondMapValue)
-                            && secondMapValue instanceof Map
-                            && secondMapValue.constructor === Map
-                        ) {
-                            if (key === secondMapKey) {
-                                diffMapCurrentFractal.set(index + '-green', new Map());
-                                if (Array.from(value.keys()).length > 0) {
-                                    _walkAndDiff(value, currentPath.concat([index]));
-                                }
-                            } else if (
+                            if (
                                 Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1
                                 && (
                                     typeof secondMapCurrentFractal.get(key) === 'object'
@@ -1410,17 +1397,8 @@ class DamonUtils {
                             } else {
                                 diffMapCurrentFractal.set(index + '-red', null);
                             }
-                        } else {
-                            diffMapCurrentFractal.set(index + '-red', null);
-                        }
-                    } else if (Array.isArray(value)) {
-                        if (Array.isArray(secondMapValue)) {
-                            if (key === secondMapKey) {
-                                diffMapCurrentFractal.set(index + '-green', []);
-                                if (value.length > 0) {
-                                    _walkAndDiff(value, currentPath.concat([index]));
-                                }
-                            } else if (
+                        } else if (Array.isArray(value)) {
+                            if (
                                 Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1
                                 && Array.isArray(secondMapCurrentFractal.get(key))
                             ) {
@@ -1429,13 +1407,7 @@ class DamonUtils {
                                 diffMapCurrentFractal.set(index + '-red', null);
                             }
                         } else {
-                            diffMapCurrentFractal.set(index + '-red', null);
-                        }
-                    } else {
-                        if (value === secondMapValue) {
-                            if (key === secondMapKey) {
-                                diffMapCurrentFractal.set(index + '-green', 'green');
-                            } else if (
+                            if (
                                 Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1
                                 && value === secondMapCurrentFractal.get(key)
                             ) {
@@ -1443,14 +1415,527 @@ class DamonUtils {
                             } else {
                                 diffMapCurrentFractal.set(index + '-red', null);
                             }
+                        }
+                    } else {
+                        secondMapKey = Array.from(secondMapCurrentFractal.keys())[index];
+                        secondMapValue = secondMapCurrentFractal.get(secondMapKey);
+                        if (
+                            typeof value === 'object'
+                            && value !== null
+                            && !Array.isArray(value)
+                            && value instanceof Map
+                            && value.constructor === Map
+                        ) {
+                            if (
+                                typeof secondMapValue === 'object'
+                                && secondMapValue !== null
+                                && !Array.isArray(secondMapValue)
+                                && secondMapValue instanceof Map
+                                && secondMapValue.constructor === Map
+                            ) {
+                                if (key === secondMapKey) {
+                                    diffMapCurrentFractal.set(index + '-green', new Map());
+                                    if (Array.from(value.keys()).length > 0) {
+                                        _walkAndDiff(value, currentPath.concat([index]));
+                                    }
+                                } else if (
+                                    Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1
+                                    && (
+                                        typeof secondMapCurrentFractal.get(key) === 'object'
+                                        && secondMapCurrentFractal.get(key) !== null
+                                        && !Array.isArray(secondMapCurrentFractal.get(key))
+                                        && secondMapCurrentFractal.get(key) instanceof Map
+                                        && secondMapCurrentFractal.get(key).constructor === Map
+                                    )
+                                ) {
+                                    diffMapCurrentFractal.set(index + '-yellow', null);
+                                } else {
+                                    diffMapCurrentFractal.set(index + '-red', null);
+                                }
+                            } else {
+                                diffMapCurrentFractal.set(index + '-red', null);
+                            }
+                        } else if (Array.isArray(value)) {
+                            if (Array.isArray(secondMapValue)) {
+                                if (key === secondMapKey) {
+                                    diffMapCurrentFractal.set(index + '-green', []);
+                                    if (value.length > 0) {
+                                        _walkAndDiff(value, currentPath.concat([index]));
+                                    }
+                                } else if (
+                                    Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1
+                                    && Array.isArray(secondMapCurrentFractal.get(key))
+                                ) {
+                                    diffMapCurrentFractal.set(index + '-yellow', null);
+                                } else {
+                                    diffMapCurrentFractal.set(index + '-red', null);
+                                }
+                            } else {
+                                diffMapCurrentFractal.set(index + '-red', null);
+                            }
                         } else {
-                            diffMapCurrentFractal.set(index + '-red', null);
+                            if (value === secondMapValue) {
+                                if (key === secondMapKey) {
+                                    diffMapCurrentFractal.set(index + '-green', 'green');
+                                } else if (
+                                    Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1
+                                    && value === secondMapCurrentFractal.get(key)
+                                ) {
+                                    diffMapCurrentFractal.set(index + '-yellow', null);
+                                } else {
+                                    diffMapCurrentFractal.set(index + '-red', null);
+                                }
+                            } else {
+                                diffMapCurrentFractal.set(index + '-red', null);
+                            }
                         }
                     }
                     index++;
                 }
+                if (Array.from(map.keys()).length < Array.from(secondMapCurrentFractal.keys()).length) {
+                    let secondMapIndex = 0;
+                    for (let [key, value] of secondMapCurrentFractal) {
+                        if (secondMapIndex <= index) {
+                            continue;
+                        }
+                        if (
+                            typeof value === 'object'
+                            && value !== null
+                            && !Array.isArray(value)
+                            && value instanceof Map
+                            && value.constructor === Map
+                        ) {
+                            if (
+                                Array.from(map.keys()).indexOf(key) !== -1
+                                && (
+                                    typeof map.get(key) === 'object'
+                                    && map.get(key) !== null
+                                    && !Array.isArray(map.get(key))
+                                    && map.get(key) instanceof Map
+                                    && map.get(key).constructor === Map
+                                )
+                            ) {
+                                diffMapCurrentFractal.set(index + '-yellow', null);
+                            } else {
+                                diffMapCurrentFractal.set(index + '-red', null);
+                            }
+                        } else if (Array.isArray(value)) {
+                            if (
+                                Array.from(map.keys()).indexOf(key) !== -1
+                                && Array.isArray(map.get(key))
+                            ) {
+                                diffMapCurrentFractal.set(index + '-yellow', null);
+                            } else {
+                                diffMapCurrentFractal.set(index + '-red', null);
+                            }
+                        } else {
+                            if (
+                                Array.from(map.keys()).indexOf(key) !== -1
+                                && value === map.get(key)
+                            ) {
+                                diffMapCurrentFractal.set(index + '-yellow', null);
+                            } else {
+                                diffMapCurrentFractal.set(index + '-red', null);
+                            }
+                        }
+                        secondMapIndex++;
+                    }
+                }
             } else {
+                let secondMapValue = null,
+                    secondMapCurrentFractal = secondMap;
+                for (let z = 0, x = currentPath.length; z < x; z++) {
+                    if (
+                        typeof secondMapCurrentFractal === 'object'
+                        && secondMapCurrentFractal !== null
+                        && !Array.isArray(secondMapCurrentFractal)
+                        && secondMapCurrentFractal instanceof Map
+                        && secondMapCurrentFractal.constructor === Map
+                        && Array.from(secondMapCurrentFractal.keys()).length
+                    ) {
+                        secondMapCurrentFractal =
+                            secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath[z]]);
+                    } else {
+                        secondMapCurrentFractal = secondMapCurrentFractal[currentPath[z]];
+                    }
+                }
+                let diffMapCurrentFractal = diffMap;
+                for (let i = 0, c = currentPath.length; i < c; i++) {
+                    if (
+                        typeof diffMapCurrentFractal === 'object'
+                        && diffMapCurrentFractal !== null
+                        && !Array.isArray(diffMapCurrentFractal)
+                        && diffMapCurrentFractal instanceof Map
+                        && diffMapCurrentFractal.constructor === Map
+                        && Array.from(diffMapCurrentFractal.keys()).length
+                    ) {
+                        diffMapCurrentFractal =
+                            diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath[i]]);
+                    } else {
+                        diffMapCurrentFractal = diffMapCurrentFractal[currentPath[i]];
+                    }
+                }
                 for (let i = 0, c = map.length; i < c; i++) {
+                    if (i > secondMapCurrentFractal.length - 1) {
+                        diffMapCurrentFractal[i] = 'red';
+                    } else {
+                        secondMapValue = secondMapCurrentFractal[i];
+                        if (
+                            typeof map[i] === 'object'
+                            && map[i] !== null
+                            && !Array.isArray(map[i])
+                            && map[i] instanceof Map
+                            && map[i].constructor === Map
+                        ) {
+                            if (
+                                typeof secondMapValue === 'object'
+                                && secondMapValue !== null
+                                && !Array.isArray(secondMapValue)
+                                && secondMapValue instanceof Map
+                                && secondMapValue.constructor === Map
+                            ) {
+                                diffMapCurrentFractal[i] = new Map();
+                                if (Array.from(map[i].keys()).length > 0) {
+                                    _walkAndDiff(map[i], currentPath.concat([i]));
+                                }
+                            } else {
+                                diffMapCurrentFractal[i] = 'red';
+                            }
+                        } else if (Array.isArray(map[i])) {
+                            if (Array.isArray(secondMapValue)) {
+                                diffMapCurrentFractal[i] = [];
+                                if (map[i].length > 0) {
+                                    _walkAndDiff(map[i], currentPath.concat([i]));
+                                }
+                            } else {
+                                diffMapCurrentFractal[i] = 'red';
+                            }
+                        } else {
+                            if (map[i] === secondMapValue) {
+                                diffMapCurrentFractal[i] = 'green';
+                            } else {
+                                diffMapCurrentFractal[i] = 'red';
+                            }
+                        }
+                    }
+                }
+                if (map.length < secondMapCurrentFractal.length) {
+                    for (let i = 0, c = secondMapCurrentFractal.length; i < c; i++) {
+                        if (i <= map.length - 1) {
+                            continue;
+                        }
+                        diffMapCurrentFractal[i] = 'red';
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param {*} firstMap
+     * @param {*} secondMap
+     * @returns {Map} outputMap
+     */
+    sortMap(firstMap, secondMap) {
+        let $ = this,
+            firstMapKeys = Array.from(firstMap.keys()),
+            secondMapKeys = Array.from(secondMap.keys()),
+            outputMap = new Map();
+        for (let i = 0, c = firstMapKeys.length; i < c; i++) {
+            if (secondMap.get(firstMapKeys[i]) !== undefined) {
+                outputMap.set(firstMapKeys[i], secondMap.get(firstMapKeys[i]));
+            }
+        }
+        for (let i = 0, c = secondMapKeys.length; i < c; i++) {
+            if (firstMapKeys.indexOf(secondMapKeys[i]) == -1) {
+                outputMap.set(secondMapKeys[i], secondMap.get(secondMapKeys[i]));
+            }
+        }
+        return outputMap;
+    }
+
+    /**
+     * Produces a blocks diff
+     * @param {*} firstMap
+     * @param {*} secondMap
+     * @returns {string} list
+     */
+    renderDiff(firstMap, secondMap) {
+        let $ = this,
+            list = document.createElement('ul'),
+            diffMap = $._mapsDiff(firstMap, secondMap);
+        list.className = 'DAMON-List';
+        recurseDiffMap(diffMap, list);
+        return list;
+        /**
+         * @param {*} diffMap
+         * @param {*} listItem
+         * @param {*} [path=[]]
+         * @param {*} [color=undefined]
+         */
+        function recurseDiffMap(diffMap, list, path = [], color = 'green') {
+            if (color === 'green') {
+                if (
+                    typeof list !== 'object'
+                    || list == null
+                    || Array.isArray(list)
+                ) {
+                    throw new Error("Error List Item " + path.concat('-') + ": @param { {} } list");
+                }
+                if (
+                    typeof diffMap === 'object'
+                    && diffMap !== null
+                    && !Array.isArray(diffMap)
+                    && diffMap instanceof Map
+                    && diffMap.constructor === Map
+                ) {
+                    if (list.tagName == "UL") {
+                        let firstMapKey = "",
+                            firstMapValue = null,
+                            firstMapCurrentFractal = firstMap;
+                        for (let i = 0, c = path.length; i < c; i++) {
+                            if (
+                                typeof firstMapCurrentFractal === 'object'
+                                && firstMapCurrentFractal !== null
+                                && !Array.isArray(firstMapCurrentFractal)
+                                && firstMapCurrentFractal instanceof Map
+                                && firstMapCurrentFractal.constructor === Map
+                            ) {
+                                firstMapCurrentFractal =
+                                    firstMapCurrentFractal.get(Array.from(firstMapCurrentFractal.keys())[path[i]]);
+                            } else {
+                                firstMapCurrentFractal = firstMapCurrentFractal[path[i]];
+                            }
+                        }
+                        let secondMapKey = "",
+                            secondMapValue = null,
+                            secondMapCurrentFractal = secondMap;
+                        for (let i = 0, c = path.length; i < c; i++) {
+                            if (
+                                typeof secondMapCurrentFractal === 'object'
+                                && secondMapCurrentFractal !== null
+                                && !Array.isArray(secondMapCurrentFractal)
+                                && secondMapCurrentFractal instanceof Map
+                                && secondMapCurrentFractal.constructor === Map
+                            ) {
+                                secondMapCurrentFractal =
+                                    secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[path[i]]);
+                            } else {
+                                secondMapCurrentFractal = secondMapCurrentFractal[path[i]];
+                            }
+                        }
+                        let index = 0;
+                        for (let [key, value] of diffMap) {
+                            let diffMapKeyColor = Array.from(diffMap.keys())[index].split('-')[1],
+                                diffMapValue = diffMap.get(Array.from(diffMap.keys())[index]);
+                            let newList = document.createElement('ul'),
+                                newDiv = document.createElement('code'),
+                                keySpan = document.createElement('span'),
+                                newListItem = document.createElement('li');
+                            keySpan.className = "type-key";
+                            // Setting color
+                            newListItem.className = diffMapKeyColor + '-diff';
+                            if (
+                                newListItem.className !== 'green-diff'
+                                && index <= Array.from(firstMapCurrentFractal.keys()).length - 1
+                            ) {
+                                if (index > Array.from(secondMapCurrentFractal.keys()).length -  1) {
+                                    key = '';
+                                    value = '';
+                                } else {
+                                    if (index > Array.from(firstMapCurrentFractal.keys()).length -  1) {
+                                        if (newListItem.className == 'red-diff') {
+                                            newListItem.className = 'blue-diff';
+                                        } else {
+                                            newListItem.className = 'green-diff';
+                                        }
+                                    }
+                                    secondMapKey = Array.from(secondMapCurrentFractal.keys())[index];
+                                    secondMapValue = secondMapCurrentFractal.get(secondMapKey);
+                                    key = secondMapKey;
+                                    value = secondMapValue;
+                                }
+                            } else {
+                                newListItem.className = '';
+                                firstMapKey = Array.from(secondMapCurrentFractal.keys())[index];
+                                firstMapValue = secondMapCurrentFractal.get(firstMapKey);
+                                key = firstMapKey;
+                                value = firstMapValue;
+                            }
+                            if ($.websiteRegex.test(key)) {
+                                let fullUrl = key;
+                                if (!$.httpRegex.test(key))
+                                    fullUrl = ('https://' + key);
+                                let keyLink = DOMPurify.sanitize(`<a href="${ fullUrl }">${ fullUrl }</a>`);
+                                keySpan.innerHTML = keyLink;
+                            } else {
+                                keySpan.textContent = key;
+                            }
+                            if (
+                                typeof value === 'object'
+                                && value !== null
+                            ) {
+                                if (Array.isArray(value)) {
+                                    if (
+                                        firstMap.damonInlineArrays !== undefined
+                                        && firstMap.damonInlineArrays.indexOf(key) > -1
+                                    ) {
+                                        newDiv.innerHTML = keySpan.outerHTML + ': [';
+                                        for (let j = 0, k = value.length; j < k; j++) {
+                                            let childValueSpan = document.createElement('span'),
+                                                childValue = value[j];
+                                            if (childValue === true) {
+                                                childValueSpan.textContent = "true";
+                                                childValueSpan.className = "type-boolean";
+                                            } else if (childValue === false) {
+                                                childValueSpan.textContent = "false";
+                                                childValueSpan.className = "type-boolean";
+                                            } else if (childValue === null) {
+                                                childValueSpan.textContent = "null";
+                                                childValueSpan.className = "type-null";
+                                            } else if (
+                                                Number.isFinite(childValue)
+                                                && !Number.isNaN(childValue)
+                                            ) {
+                                                childValueSpan.textContent = childValue + "";
+                                                childValueSpan.className = "type-number";
+                                            } else {
+                                                if (safeHTML) {
+                                                    if ($.websiteRegex.test(childValue)) {
+                                                        let fullUrl = childValue;
+                                                        if (!$.httpRegex.test(childValue))
+                                                            fullUrl = 'https://' + childValue;
+                                                        childValueSpan.innerHTML =
+                                                            DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                                    } else {
+                                                        childValueSpan.innerHTML = `"${childValue}"`;
+                                                    }
+                                                } else {
+                                                    if ($.websiteRegex.test(childValue)) {
+                                                        let fullUrl = childValue;
+                                                        if (!$.httpRegex.test(childValue))
+                                                            fullUrl = 'https://' + childValue;
+                                                        childValueSpan.innerHTML =
+                                                            DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                                    } else {
+                                                        childValueSpan.textContent = `"${childValue}"`;
+                                                    }
+                                                }
+                                                childValueSpan.className = "type-string";
+                                            }
+                                            if (j !== 0) {
+                                                newDiv.innerHTML += ', ';
+                                            }
+                                            newDiv.appendChild(childValueSpan);
+                                        }
+                                        newDiv.innerHTML += ']';
+                                        newListItem.appendChild(newDiv);
+                                        newListItem.appendChild(newList);
+                                        list.appendChild(newListItem);
+                                    } else {
+                                        newDiv.innerHTML = keySpan.outerHTML + ': []';
+                                        newListItem.appendChild(newDiv);
+                                        newListItem.appendChild(newList);
+                                        list.appendChild(newListItem);
+                                        if (diffMapKeyColor == 'green') {
+                                            recurseDiffMap(diffMapValue, newList, path.concat([index]), diffMapKeyColor);
+                                        } else {
+                                            recurseDiffMap(diffMapValue, newList, path.concat([index]), diffMapKeyColor);
+                                        }
+                                    }
+                                } else {
+                                    if (
+                                        firstMap.implicitMaps !== undefined
+                                        && firstMap.implicitMaps.indexOf(key) > -1
+                                    ) {
+                                        newDiv.innerHTML = keySpan.outerHTML;
+                                    } else {
+                                        newDiv.innerHTML = keySpan.outerHTML + ': {}';
+                                    }
+                                    newListItem.appendChild(newDiv);
+                                    newListItem.appendChild(newList);
+                                    list.appendChild(newListItem);
+                                    if (diffMapKeyColor == 'green') {
+                                        recurseDiffMap(diffMapValue, newList, path.concat([index]), diffMapKeyColor);
+                                    } else {
+                                        recurseDiffMap(diffMapValue, newList, path.concat([index]), diffMapKeyColor);
+                                    }
+                                }
+                            } else {
+                                newDiv.innerHTML = keySpan.outerHTML + ': ';
+                                let valueSpan = document.createElement('span');
+                                let childText = value;
+                                if (childText === true) {
+                                    valueSpan.textContent = "true";
+                                    valueSpan.className = "type-boolean";
+                                } else if (childText === false) {
+                                    valueSpan.textContent = "false";
+                                    valueSpan.className = "type-boolean";
+                                } else if (childText === null) {
+                                    valueSpan.textContent = "null";
+                                    valueSpan.className = "type-null";
+                                } else if (
+                                    Number.isFinite(childText)
+                                    && !Number.isNaN(childText)
+                                ) {
+                                    valueSpan.textContent = childText + "";
+                                    valueSpan.className = "type-number";
+                                } else {
+                                    if (safeHTML) {
+                                        if ($.websiteRegex.test(childText)) {
+                                            let fullUrl = childText;
+                                            if (!$.httpRegex.test(childText))
+                                                fullUrl = 'https://' + childText;
+                                            valueSpan.innerHTML =
+                                                DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                        } else {
+                                            valueSpan.innerHTML = `"${childText}"`;
+                                        }
+                                    } else {
+                                        if ($.websiteRegex.test(childText)) {
+                                            let fullUrl = childText;
+                                            if (!$.httpRegex.test(childText))
+                                                fullUrl = 'https://' + childText;
+                                            valueSpan.innerHTML =
+                                                DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                        } else {
+                                            valueSpan.textContent = `"${childText}"`;
+                                        }
+                                    }
+                                    valueSpan.className = "type-string";
+                                }
+                                if (
+                                    firstMap.implicitNulls === undefined
+                                    || firstMap.implicitNulls.indexOf(key) == -1
+                                ) {
+                                    newDiv.appendChild(valueSpan);
+                                } else {
+                                    newDiv.innerHTML = newDiv.innerHTML.slice(0, -2);
+                                }
+                                newListItem.appendChild(newDiv);
+                                list.appendChild(newListItem);
+                            }
+                            index++;
+                        }
+                    }
+                } else if (Array.isArray(diffMap)) {
+                    let firstMapValue = null,
+                        firstMapCurrentFractal = firstMap;
+                    for (let z = 0, x = currentPath.length; z < x; z++) {
+                        if (
+                            typeof firstMapCurrentFractal === 'object'
+                            && firstMapCurrentFractal !== null
+                            && !Array.isArray(firstMapCurrentFractal)
+                            && firstMapCurrentFractal instanceof Map
+                            && firstMapCurrentFractal.constructor === Map
+                            && Array.from(firstMapCurrentFractal.keys()).length
+                        ) {
+                            firstMapCurrentFractal =
+                                firstMapCurrentFractal.get(Array.from(firstMapCurrentFractal.keys())[currentPath[z]]);
+                        } else {
+                            firstMapCurrentFractal = firstMapCurrentFractal[currentPath[z]];
+                        }
+                    }
                     let secondMapValue = null,
                         secondMapCurrentFractal = secondMap;
                     for (let z = 0, x = currentPath.length; z < x; z++) {
@@ -1468,62 +1953,501 @@ class DamonUtils {
                             secondMapCurrentFractal = secondMapCurrentFractal[currentPath[z]];
                         }
                     }
-                    secondMapValue = secondMapCurrentFractal[i];
-                    let diffMapCurrentFractal = diffMap;
-                    for (let i = 0, c = currentPath.length; i < c; i++) {
+                    for (var i = 0, c = diffMap.length; i < c; i++) {
+                        let itemColor = diffMap[i].split('-')[1];
+                        let newList = document.createElement('ul'),
+                            newDiv = document.createElement('code'),
+                            newListItem = document.createElement('li'),
+                            value;
+                        // Setting color
+                        newListItem.className = diffMap[i].split('-')[1] + '-diff';
                         if (
-                            typeof diffMapCurrentFractal === 'object'
-                            && diffMapCurrentFractal !== null
-                            && !Array.isArray(diffMapCurrentFractal)
-                            && diffMapCurrentFractal instanceof Map
-                            && diffMapCurrentFractal.constructor === Map
-                            && Array.from(diffMapCurrentFractal.keys()).length
+                            newListItem.className !== 'green-diff'
+                            && i <= firstMapCurrentFractal.length - 1
                         ) {
-                            diffMapCurrentFractal =
-                                diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath[i]]);
-                        } else {
-                            diffMapCurrentFractal = diffMapCurrentFractal[currentPath[i]];
-                        }
-                    }
-                    if (
-                        typeof map[i] === 'object'
-                        && map[i] !== null
-                        && !Array.isArray(map[i])
-                        && map[i] instanceof Map
-                        && map[i].constructor === Map
-                    ) {
-                        if (
-                            typeof secondMapValue === 'object'
-                            && secondMapValue !== null
-                            && !Array.isArray(secondMapValue)
-                            && secondMapValue instanceof Map
-                            && secondMapValue.constructor === Map
-                        ) {
-                            diffMapCurrentFractal[i] = new Map();
-                            if (Array.from(map[i].keys()).length > 0) {
-                                _walkAndDiff(map[i], currentPath.concat([i]));
+                            if (i > secondMapCurrentFractal.length - 1) {
+                                value = '';
+                            } else {
+                                if (i > firstMapCurrentFractal.length -  1) {
+                                    if (newListItem.className == 'red-diff') {
+                                        newListItem.className = 'blue-diff';
+                                    } else {
+                                        newListItem.className = 'green-diff';
+                                    }
+                                }
+                                value = secondMapCurrentFractal[i];
                             }
                         } else {
-                            diffMapCurrentFractal[i] = 'red';
+                            newListItem.className = '';
+                            value = firstMapCurrentFractal[i];
                         }
-                    } else if (Array.isArray(map[i])) {
-                        if (Array.isArray(secondMapValue)) {
-                            diffMapCurrentFractal[i] = [];
-                            if (map[i].length > 0) {
-                                _walkAndDiff(map[i], currentPath.concat([i]));
+                        if (
+                            typeof value === 'object'
+                            && value !== null
+                        ) {
+                            if (Array.isArray(value)) {
+                                if (
+                                    firstMap.damonInlineArrays !== undefined
+                                    && firstMap.damonInlineArrays.indexOf(i) > -1
+                                ) {
+                                    newDiv.innerHTML += '[';
+                                    for (let j = 0, k = value.length; j < k; j++) {
+                                        let arrayValueSpan = document.createElement('span'),
+                                            arrayValue = value[j];
+                                        if (arrayValue === true) {
+                                            arrayValueSpan.textContent = "true";
+                                            arrayValueSpan.className = "type-boolean";
+                                        } else if (arrayValue === false) {
+                                            arrayValueSpan.textContent = "false";
+                                            arrayValueSpan.className = "type-boolean";
+                                        } else if (arrayValue === null) {
+                                            arrayValueSpan.textContent = "null";
+                                            arrayValueSpan.className = "type-null";
+                                        } else if (
+                                            Number.isFinite(arrayValue)
+                                            && !Number.isNaN(arrayValue)
+                                        ) {
+                                            arrayValueSpan.textContent = arrayValue + "";
+                                            arrayValueSpan.className = "type-number";
+                                        } else {
+                                            if (safeHTML) {
+                                                if ($.websiteRegex.test(arrayValue)) {
+                                                    let fullUrl = arrayValue;
+                                                    if (!$.httpRegex.test(arrayValue))
+                                                        fullUrl = ('https://' + arrayValue);
+                                                    arrayValueSpan.innerHTML =
+                                                        DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                                } else {
+                                                    arrayValueSpan.innerHTML = `"${arrayValue}"`;
+                                                }
+                                            } else {
+                                                if ($.websiteRegex.test(arrayValue)) {
+                                                    let fullUrl = arrayValue;
+                                                    if (!$.httpRegex.test(arrayValue))
+                                                        fullUrl = ('https://' + arrayValue);
+                                                    arrayValueSpan.innerHTML =
+                                                        DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                                } else {
+                                                    arrayValueSpan.textContent = `"${arrayValue}"`;
+                                                }
+                                            }
+                                            arrayValueSpan.className = "type-string";
+                                        }
+                                        if (j !== 0) {
+                                            newDiv.innerHTML += ', ';
+                                        }
+                                        newDiv.appendChild(valueSpan);
+                                    }
+                                    newDiv.innerHTML += ']';
+                                    newListItem.appendChild(newDiv);
+                                    newListItem.appendChild(newList);
+                                    list.appendChild(newListItem);
+                                } else {
+                                    newDiv.textContent = "[]";
+                                    newListItem.appendChild(newDiv);
+                                    newListItem.appendChild(newList);
+                                    list.appendChild(newListItem);
+                                    recurseDiffMap(value, newList, path.concat([i]), itemColor);
+                                }
+                            } else {
+                                newDiv.textContent = "{}";
+                                newListItem.appendChild(newDiv);
+                                newListItem.appendChild(newList);
+                                list.appendChild(newListItem);
+                                recurseDiffMap(value, newList, path.concat([i]), itemColor);
                             }
                         } else {
-                            diffMapCurrentFractal[i] = 'red';
-                        }
-                    } else {
-                        if (map[i] === secondMapValue) {
-                            diffMapCurrentFractal[i] = 'green';
-                        } else {
-                            diffMapCurrentFractal[i] = 'red';
+                            let childText = value;
+                            if (childText === true) {
+                                newDiv.textContent = "true";
+                                newDiv.className = "type-boolean";
+                            } else if (childText === false) {
+                                newDiv.textContent = "false";
+                                newDiv.className = "type-boolean";
+                            } else if (childText === null) {
+                                newDiv.textContent = "null";
+                                newDiv.className = "type-null";
+                            } else if (
+                                Number.isFinite(childText)
+                                && !Number.isNaN(childText)
+                            ) {
+                                newDiv.textContent = childText + "";
+                                newDiv.className = "type-number";
+                            } else {
+                                if (safeHTML) {
+                                    if ($.websiteRegex.test(childText)) {
+                                        let fullUrl = childText;
+                                        if (!$.httpRegex.test(childText))
+                                            fullUrl = 'https://' + childText;
+                                        newDiv.innerHTML =
+                                            DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                    } else {
+                                        newDiv.innerHTML = `"${childText}"`;
+                                    }
+                                } else {
+                                    if ($.websiteRegex.test(childText)) {
+                                        let fullUrl = childText;
+                                        if (!$.httpRegex.test(childText))
+                                            fullUrl = 'https://' + childText;
+                                        newDiv.innerHTML =
+                                            DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                    } else {
+                                        newDiv.textContent = `"${childText}"`;
+                                    }
+                                }
+                                newDiv.className = "type-string";
+                            }
+                            newListItem.appendChild(newDiv);
+                            newListItem.appendChild(newList);
+                            list.appendChild(newListItem);
                         }
                     }
                 }
+            } else if (['red', 'yellow'].indexOf(color) > -1) {
+                let secondMapKey = "",
+                    secondMapValue = null,
+                    secondMapCurrentFractal = secondMap;
+                for (let i = 0, c = path.length; i < c; i++) {
+                    if (
+                        typeof secondMapCurrentFractal === 'object'
+                        && secondMapCurrentFractal !== null
+                        && !Array.isArray(secondMapCurrentFractal)
+                        && secondMapCurrentFractal instanceof Map
+                        && secondMapCurrentFractal.constructor === Map
+                    ) {
+                        secondMapCurrentFractal =
+                            secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[path[i]]);
+                    } else {
+                        secondMapCurrentFractal = secondMapCurrentFractal[path[i]];
+                    }
+                }
+                recurseSecondMap(secondMapCurrentFractal, list, path, color);
             }
+        }
+        function recurseSecondMap(secondMap, list, path, color) {
+            if (
+                typeof list !== 'object'
+                || list == null
+                || Array.isArray(list)
+            ) {
+                throw new Error("Error List Item " + path.concat('-') + ": @param { {} } list");
+            }
+            if (
+                typeof secondMap === 'object'
+                && secondMap !== null
+                && !Array.isArray(secondMap)
+                && secondMap instanceof Map
+                && secondMap.constructor === Map
+            ) {
+                if (list.tagName == "UL") {
+                    let index = 0;
+                    for (const [key, value] of secondMap) {
+                        let newList = document.createElement('ul'),
+                            newDiv = document.createElement('code'),
+                            keySpan = document.createElement('span'),
+                            newListItem = document.createElement('li');
+                        keySpan.className = "type-key";
+                        // Setting color
+                        newListItem.className = 'red-diff';
+                        if ($.websiteRegex.test(key)) {
+                            let fullUrl = key;
+                            if (!$.httpRegex.test(key))
+                                fullUrl = ('https://' + key);
+                            let keyLink = DOMPurify.sanitize(`<a href="${ fullUrl }">${ fullUrl }</a>`);
+                            keySpan.innerHTML = keyLink;
+                        } else {
+                            keySpan.textContent = key;
+                        }
+                        if (
+                            typeof value === 'object'
+                            && value !== null
+                        ) {
+                            if (Array.isArray(value)) {
+                                if (
+                                    secondMap.damonInlineArrays !== undefined
+                                    && secondMap.damonInlineArrays.indexOf(key) > -1
+                                ) {
+                                    newDiv.innerHTML = keySpan.outerHTML + ': [';
+                                    for (let j = 0, k = value.length; j < k; j++) {
+                                        let childValueSpan = document.createElement('span'),
+                                            childValue = value[j];
+                                        if (childValue === true) {
+                                            childValueSpan.textContent = "true";
+                                            childValueSpan.className = "type-boolean";
+                                        } else if (childValue === false) {
+                                            childValueSpan.textContent = "false";
+                                            childValueSpan.className = "type-boolean";
+                                        } else if (childValue === null) {
+                                            childValueSpan.textContent = "null";
+                                            childValueSpan.className = "type-null";
+                                        } else if (
+                                            Number.isFinite(childValue)
+                                            && !Number.isNaN(childValue)
+                                        ) {
+                                            childValueSpan.textContent = childValue + "";
+                                            childValueSpan.className = "type-number";
+                                        } else {
+                                            if (safeHTML) {
+                                                if ($.websiteRegex.test(childValue)) {
+                                                    let fullUrl = childValue;
+                                                    if (!$.httpRegex.test(childValue))
+                                                        fullUrl = 'https://' + childValue;
+                                                    childValueSpan.innerHTML =
+                                                        DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                                } else {
+                                                    childValueSpan.innerHTML = `"${childValue}"`;
+                                                }
+                                            } else {
+                                                if ($.websiteRegex.test(childValue)) {
+                                                    let fullUrl = childValue;
+                                                    if (!$.httpRegex.test(childValue))
+                                                        fullUrl = 'https://' + childValue;
+                                                    childValueSpan.innerHTML =
+                                                        DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                                } else {
+                                                    childValueSpan.textContent = `"${childValue}"`;
+                                                }
+                                            }
+                                            childValueSpan.className = "type-string";
+                                        }
+                                        if (j !== 0) {
+                                            newDiv.innerHTML += ', ';
+                                        }
+                                        newDiv.appendChild(childValueSpan);
+                                    }
+                                    newDiv.innerHTML += ']';
+                                    newListItem.appendChild(newDiv);
+                                    newListItem.appendChild(newList);
+                                    list.appendChild(newListItem);
+                                } else {
+                                    newDiv.innerHTML = keySpan.outerHTML + ': []';
+                                    newListItem.appendChild(newDiv);
+                                    newListItem.appendChild(newList);
+                                    list.appendChild(newListItem);
+                                    recurse(value, newList, path.concat([index]), color);
+                                }
+                            } else {
+                                if (
+                                    secondMap.implicitMaps !== undefined
+                                    && secondMap.implicitMaps.indexOf(key) > -1
+                                ) {
+                                    newDiv.innerHTML = keySpan.outerHTML;
+                                } else {
+                                    newDiv.innerHTML = keySpan.outerHTML + ': {}';
+                                }
+                                newListItem.appendChild(newDiv);
+                                newListItem.appendChild(newList);
+                                list.appendChild(newListItem);
+                                recurseSecondMap(value, newList, path.concat([index]), color);
+                            }
+                        } else {
+                            newDiv.innerHTML = keySpan.outerHTML + ': ';
+                            let valueSpan = document.createElement('span');
+                            let childText = value;
+                            if (childText === true) {
+                                valueSpan.textContent = "true";
+                                valueSpan.className = "type-boolean";
+                            } else if (childText === false) {
+                                valueSpan.textContent = "false";
+                                valueSpan.className = "type-boolean";
+                            } else if (childText === null) {
+                                valueSpan.textContent = "null";
+                                valueSpan.className = "type-null";
+                            } else if (
+                                Number.isFinite(childText)
+                                && !Number.isNaN(childText)
+                            ) {
+                                valueSpan.textContent = childText + "";
+                                valueSpan.className = "type-number";
+                            } else {
+                                if (safeHTML) {
+                                    if ($.websiteRegex.test(childText)) {
+                                        let fullUrl = childText;
+                                        if (!$.httpRegex.test(childText))
+                                            fullUrl = 'https://' + childText;
+                                        valueSpan.innerHTML =
+                                            DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                    } else {
+                                        valueSpan.innerHTML = `"${childText}"`;
+                                    }
+                                } else {
+                                    if ($.websiteRegex.test(childText)) {
+                                        let fullUrl = childText;
+                                        if (!$.httpRegex.test(childText))
+                                            fullUrl = 'https://' + childText;
+                                        valueSpan.innerHTML =
+                                            DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                    } else {
+                                        valueSpan.textContent = `"${childText}"`;
+                                    }
+                                }
+                                valueSpan.className = "type-string";
+                            }
+                            if (
+                                secondMap.implicitNulls === undefined
+                                || secondMap.implicitNulls.indexOf(key) == -1
+                            ) {
+                                newDiv.appendChild(valueSpan);
+                            } else {
+                                newDiv.innerHTML = newDiv.innerHTML.slice(0, -2);
+                            }
+                            newListItem.appendChild(newDiv);
+                            list.appendChild(newListItem);
+                        }
+                        index++;
+                    }
+                }
+            } else if (Array.isArray(secondMap)) {
+                for (var i = 0, c = secondMap.length; i < c; i++) {
+                    let newList = document.createElement('ul'),
+                        newDiv = document.createElement('code'),
+                        newListItem = document.createElement('li');
+                    // Setting color
+                    newListItem.className = secondMap[i] + '-diff';
+                    if (
+                        typeof secondMap[i] === 'object'
+                        && secondMap[i] !== null
+                    ) {
+                        if (Array.isArray(secondMap[i])) {
+                            if (
+                                secondMap.damonInlineArrays !== undefined
+                                && secondMap.damonInlineArrays.indexOf(i) > -1
+                            ) {
+                                newDiv.innerHTML += '[';
+                                for (let j = 0, k = secondMap[i].length; j < k; j++) {
+                                    let valueSpan = document.createElement('span'),
+                                        value = secondMap[i][j];
+                                    if (value === true) {
+                                        valueSpan.textContent = "true";
+                                        valueSpan.className = "type-boolean";
+                                    } else if (value === false) {
+                                        valueSpan.textContent = "false";
+                                        valueSpan.className = "type-boolean";
+                                    } else if (value === null) {
+                                        valueSpan.textContent = "null";
+                                        valueSpan.className = "type-null";
+                                    } else if (
+                                        Number.isFinite(value)
+                                        && !Number.isNaN(value)
+                                    ) {
+                                        valueSpan.textContent = value + "";
+                                        valueSpan.className = "type-number";
+                                    } else {
+                                        if (safeHTML) {
+                                            if ($.websiteRegex.test(value)) {
+                                                let fullUrl = value;
+                                                if (!$.httpRegex.test(value))
+                                                    fullUrl = ('https://' + value);
+                                                valueSpan.innerHTML =
+                                                    DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                            } else {
+                                                valueSpan.innerHTML = `"${value}"`;
+                                            }
+                                        } else {
+                                            if ($.websiteRegex.test(value)) {
+                                                let fullUrl = value;
+                                                if (!$.httpRegex.test(value))
+                                                    fullUrl = ('https://' + value);
+                                                valueSpan.innerHTML =
+                                                    DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                            } else {
+                                                valueSpan.textContent = `"${value}"`;
+                                            }
+                                        }
+                                        valueSpan.className = "type-string";
+                                    }
+                                    if (j !== 0) {
+                                        newDiv.innerHTML += ', ';
+                                    }
+                                    newDiv.appendChild(valueSpan);
+                                }
+                                newDiv.innerHTML += ']';
+                                newListItem.appendChild(newDiv);
+                                newListItem.appendChild(newList);
+                                list.appendChild(newListItem);
+                            } else {
+                                newDiv.textContent = "[]";
+                                newListItem.appendChild(newDiv);
+                                newListItem.appendChild(newList);
+                                list.appendChild(newListItem);
+                                recurseSecondMap(secondMap[i], newList, path.concat([i]), color);
+                            }
+                        } else {
+                            newDiv.textContent = "{}";
+                            newListItem.appendChild(newDiv);
+                            newListItem.appendChild(newList);
+                            list.appendChild(newListItem);
+                            recurseSecondMap(secondMap[i], newList, path.concat([i]), color);
+                        }
+                    } else {
+                        let childText = secondMap[i];
+                        if (childText === true) {
+                            newDiv.textContent = "true";
+                            newDiv.className = "type-boolean";
+                        } else if (childText === false) {
+                            newDiv.textContent = "false";
+                            newDiv.className = "type-boolean";
+                        } else if (childText === null) {
+                            newDiv.textContent = "null";
+                            newDiv.className = "type-null";
+                        } else if (
+                            Number.isFinite(childText)
+                            && !Number.isNaN(childText)
+                        ) {
+                            newDiv.textContent = childText + "";
+                            newDiv.className = "type-number";
+                        } else {
+                            if (safeHTML) {
+                                if ($.websiteRegex.test(childText)) {
+                                    let fullUrl = childText;
+                                    if (!$.httpRegex.test(childText))
+                                        fullUrl = 'https://' + childText;
+                                    newDiv.innerHTML =
+                                        DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                } else {
+                                    newDiv.innerHTML = `"${childText}"`;
+                                }
+                            } else {
+                                if ($.websiteRegex.test(childText)) {
+                                    let fullUrl = childText;
+                                    if (!$.httpRegex.test(childText))
+                                        fullUrl = 'https://' + childText;
+                                    newDiv.innerHTML =
+                                        DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
+                                } else {
+                                    newDiv.textContent = `"${childText}"`;
+                                }
+                            }
+                            newDiv.className = "type-string";
+                        }
+                        newListItem.appendChild(newDiv);
+                        newListItem.appendChild(newList);
+                        list.appendChild(newListItem);
+                    }
+                }
+            }
+        }
+    }
+
+    damonTableToCSV(string) {
+        const $ = this;
+        let map = $.damon.damonToMap(string),
+            output = '';
+        let index = 0;
+        for (const [key, value] of map) {
+            if (index === 0 && key === '00') {
+                output += '"' + value + '"\n';
+                index++;
+                continue;
+            }
+            for (let i = 0, c = value.length; i < c; i++) {
+                output += '"' + value[i] + '"';
+                if (i != c - 1) {
+                    output += ',';
+                }
+            }
+            output += '\n';
+            index++;
         }
     }
 };
