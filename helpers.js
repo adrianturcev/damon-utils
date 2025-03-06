@@ -1,4 +1,6 @@
-var h = {
+module.exports = function (document) {
+    this.document = document;
+    return {
 // For sanity's sake
 
     // # Nil
@@ -23,6 +25,7 @@ var h = {
             return true;
         } else {
             return false;
+
         }
     },
 
@@ -98,19 +101,20 @@ var h = {
     },
 
     /**
-     * Template tag identity
-     * triggers html syntax highlighting
+     * DOM-rendering template tag
      * @param {*} strings
-     * @returns
+     * @returns {object} a DocumentFragment
      */
     html(strings) {
         let output = strings[0], // assumes empty string start?
             max = Math.max(strings.length, arguments.length - 1);
-        for (let i = 1; i < strings.length; i++) {
+        for (let i = 1; i < max; i++) {
             output += arguments[i];
             output += strings[i];
         }
-        return output;
+        let fragment = document.createDocumentFragment();
+        fragment.innerHTML = output;
+        return fragment;
     },
 
     // # DATA-STATE
@@ -274,4 +278,4 @@ var h = {
     pipe(input, ...functions) {
         return functions.reduce((res, fun) => fun(res), input);
     }
-};
+};};
