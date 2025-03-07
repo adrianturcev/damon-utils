@@ -1,4 +1,5 @@
 const DOMPurify = require('dompurify');
+const helpers = require('./helpers.js');
 
 //#### Utils
 module.exports =
@@ -1736,7 +1737,7 @@ class DamonUtils {
                             // Setting color
                             newListItem.className = diffMapKeyColor + '-diff';
                             if (
-                                newListItem.className !== 'green-diff'
+                                newListItem.className === 'red-diff'
                                 && index <= Array.from(firstMapCurrentFractal.keys()).length - 1
                             ) {
                                 if (index > Array.from(secondMapCurrentFractal.keys()).length -  1) {
@@ -1761,6 +1762,9 @@ class DamonUtils {
                                 firstMapValue = secondMapCurrentFractal.get(firstMapKey);
                                 key = firstMapKey;
                                 value = firstMapValue;
+                                if (newListItem.className === 'green-diff') {
+                                    newListItem.dataset.graphArbo = path.join('-') + '-' + key;
+                                }
                             }
                             if ($.websiteRegex.test(key)) {
                                 let fullUrl = key;
@@ -1980,6 +1984,9 @@ class DamonUtils {
                         } else {
                             newListItem.className = '';
                             value = firstMapCurrentFractal[i];
+                            if (newListItem.className === 'green-diff') {
+                                newListItem.dataset.graphArbo = path.join('-') + '-' + key;
+                            }
                         }
                         if (
                             typeof value === 'object'
