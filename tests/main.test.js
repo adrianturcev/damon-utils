@@ -49,9 +49,9 @@ describe('# DAMON UTILS', function () {
                         - n`,
                 expectedOutput =
                 h.html`<ul class="DAMON-List">
-                    <li class=""><code><span class="type-key">Divide</span>: {}</code>
+                    <li class="" data-graph-arbo="0"><code><span class="type-key">Divide</span>: {}</code>
                         <ul>
-                            <li class=""><code><span class="type-key">n</span>: <span class="type-null">null</span></code></li>
+                            <li class="" data-graph-arbo="0-0"><code><span class="type-key">n</span>: <span class="type-null">null</span></code></li>
                             <li class="red-diff"><code><span class="type-key">b</span>: {}</code>
                                 <ul>
                                     <li class="red-diff"><code><span class="type-key">1</span></code></li>

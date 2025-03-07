@@ -1,5 +1,4 @@
 const DOMPurify = require('dompurify');
-const helpers = require('./helpers.js');
 
 //#### Utils
 module.exports =
@@ -1757,14 +1756,18 @@ class DamonUtils {
                                     value = secondMapValue;
                                 }
                             } else {
-                                newListItem.className = '';
+                                if (newListItem.className === 'green-diff') {
+                                    newListItem.dataset.graphArbo = index;
+                                    if (path.length > 0)
+                                        newListItem.dataset.graphArbo = path.join('-') + '-' + index;
+                                    newListItem.className = '';
+                                } else {
+                                    newListItem.className = 'blue-diff';
+                                }
                                 firstMapKey = Array.from(secondMapCurrentFractal.keys())[index];
                                 firstMapValue = secondMapCurrentFractal.get(firstMapKey);
                                 key = firstMapKey;
                                 value = firstMapValue;
-                                if (newListItem.className === 'green-diff') {
-                                    newListItem.dataset.graphArbo = path.join('-') + '-' + key;
-                                }
                             }
                             if ($.websiteRegex.test(key)) {
                                 let fullUrl = key;
@@ -1966,7 +1969,7 @@ class DamonUtils {
                         // Setting color
                         newListItem.className = diffMap[i].split('-')[1] + '-diff';
                         if (
-                            newListItem.className !== 'green-diff'
+                            newListItem.className === 'red-diff'
                             && i <= firstMapCurrentFractal.length - 1
                         ) {
                             if (i > secondMapCurrentFractal.length - 1) {
@@ -1982,11 +1985,15 @@ class DamonUtils {
                                 value = secondMapCurrentFractal[i];
                             }
                         } else {
-                            newListItem.className = '';
-                            value = firstMapCurrentFractal[i];
                             if (newListItem.className === 'green-diff') {
-                                newListItem.dataset.graphArbo = path.join('-') + '-' + key;
+                                newListItem.dataset.graphArbo = i;
+                                if (path.length > 0)
+                                    newListItem.dataset.graphArbo = path.join('-') + '-' + i;
+                                newListItem.className = '';
+                            } else {
+                                newListItem.className = 'blue-diff';
                             }
+                            value = firstMapCurrentFractal[i];
                         }
                         if (
                             typeof value === 'object'
