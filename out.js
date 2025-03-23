@@ -2796,12 +2796,10 @@
                   damonMap.get(i + "").implicitNulls.push(lineValues[z]);
                 } catch (error) {
                   damonMap.get(i + "").set(
-                    JSON.parse(`"${lineValues[z].slice(1, -1).replace(/(?<!\\)"/g, '"')}"`),
+                    JSON.parse(JSON.stringify(lineValues[z].slice(1, -1))),
                     null
                   );
-                  damonMap.get(i + "").implicitNulls.push(
-                    `"${lineValues[z].slice(1, -1).replace(/(?<!\\)"/g, '"')}"`
-                  );
+                  damonMap.get(i + "").implicitNulls.push(JSON.parse(JSON.stringify(lineValues[z].slice(1, -1))));
                 }
               } else {
                 try {
@@ -2809,10 +2807,10 @@
                   damonMap.get(i + "").implicitNulls.push(`"${lineValues[z]}"`);
                 } catch (error) {
                   damonMap.get(i + "").set(
-                    JSON.parse(`"${lineValues[z].replace(/(?<!\\)"/g, '"')}"`),
+                    JSON.parse(JSON.stringify(lineValues[z])),
                     null
                   );
-                  damonMap.get(i + "").implicitNulls.push(`"${lineValues[z].replace(/(?<!\\)"/g, '"')}"`);
+                  damonMap.get(i + "").implicitNulls.push(JSON.stringify(lineValues[z]));
                 }
               }
             }
