@@ -1018,7 +1018,7 @@
          * @param {string} jsonContext
          * @returns {object} DOM
          */
-        mapToHtmlList(jsonMap, safeHTML2 = false, jsonContext = void 0) {
+        mapToHtmlList(jsonMap, safeHTML = false, jsonContext = void 0) {
           let $ = this;
           try {
             $.damon.mapToJSON(jsonMap);
@@ -1074,7 +1074,7 @@
                             childValueSpan.textContent = childValue + "";
                             childValueSpan.className = "type-number";
                           } else {
-                            if (safeHTML2) {
+                            if (safeHTML) {
                               if ($.websiteRegex.test(childValue)) {
                                 let fullUrl = childValue;
                                 if (!$.httpRegex.test(childValue))
@@ -1140,7 +1140,7 @@
                       valueSpan2.textContent = childText + "";
                       valueSpan2.className = "type-number";
                     } else {
-                      if (safeHTML2) {
+                      if (safeHTML) {
                         if ($.websiteRegex.test(childText)) {
                           let fullUrl = childText;
                           if (!$.httpRegex.test(childText))
@@ -1193,7 +1193,7 @@
                           valueSpan2.textContent = value + "";
                           valueSpan2.className = "type-number";
                         } else {
-                          if (safeHTML2) {
+                          if (safeHTML) {
                             if ($.websiteRegex.test(value)) {
                               let fullUrl = value;
                               if (!$.httpRegex.test(value))
@@ -1253,7 +1253,7 @@
                     newDiv.textContent = childText + "";
                     newDiv.className = "type-number";
                   } else {
-                    if (safeHTML2) {
+                    if (safeHTML) {
                       if ($.websiteRegex.test(childText)) {
                         let fullUrl = childText;
                         if (!$.httpRegex.test(childText))
@@ -1287,7 +1287,7 @@
          * @param {boolean} [safeHTML=false]
          * @returns {object} DOM
          */
-        mapToHtmlTable(jsonMap, safeHTML2 = false) {
+        mapToHtmlTable(jsonMap, safeHTML = false) {
           let $ = this;
           try {
             $.damon.mapToJSON(jsonMap);
@@ -1307,7 +1307,7 @@
                 for (const [childKey, childValue] of value) {
                   if (childValue === null) {
                     let headerCell = document.createElement("th");
-                    if (safeHTML2) {
+                    if (safeHTML) {
                       if ($.websiteRegex.test(childKey)) {
                         headerCell.innerHTML = DOMPurify.sanitize(`<a href="${childKey}">${childKey}</a>`);
                       } else {
@@ -1337,7 +1337,7 @@
                 for (const [childKey, childValue] of value) {
                   if (childValue === null) {
                     let dataCell = document.createElement("td");
-                    if (safeHTML2) {
+                    if (safeHTML) {
                       if ($.websiteRegex.test(childKey)) {
                         dataCell.innerHTML = DOMPurify.sanitize(`<a href="${childKey}">${childKey}</a>`);
                       } else {
@@ -1359,7 +1359,7 @@
               }
             } else if (typeof value !== "object" && key == "00") {
               let caption = document.createElement("caption");
-              if (safeHTML2) {
+              if (safeHTML) {
                 caption.innerHTML = value;
               } else {
                 caption.textContent = value;
@@ -1382,7 +1382,7 @@
          * @param {boolean} [safeHTML=false]
          * @returns {object} DOM
          */
-        mapTreeLeavesToHtmlTable(jsonMap, safeHTML2 = false) {
+        mapTreeLeavesToHtmlTable(jsonMap, safeHTML = false) {
           let $ = this;
           try {
             $.damon.mapToJSON(jsonMap);
@@ -1412,7 +1412,7 @@
               }
             } else if (typeof value !== "object" && key == "caption") {
               let caption = document.createElement("caption");
-              if (safeHTML2) {
+              if (safeHTML) {
                 caption.innerHTML = value;
               } else {
                 caption.textContent = value;
@@ -1471,7 +1471,7 @@
                   line.push(jsonMap2[0]);
                   for (let i = 0, c = line.length; i < c; i++) {
                     let headerCell = document.createElement("th");
-                    if (safeHTML2) {
+                    if (safeHTML) {
                       headerCell.innerHTML = line[i];
                     } else {
                       headerCell.textContent = line[i];
@@ -1492,7 +1492,7 @@
                     let tableRow = document.createElement("tr");
                     for (let z = 0, x = line.length; z < x; z++) {
                       let dataCell2 = document.createElement("td");
-                      if (safeHTML2) {
+                      if (safeHTML) {
                         dataCell2.innerHTML = line[z];
                       } else {
                         dataCell2.textContent = line[z];
@@ -1500,7 +1500,7 @@
                       tableRow.appendChild(dataCell2);
                     }
                     let dataCell = document.createElement("td");
-                    if (safeHTML2) {
+                    if (safeHTML) {
                       dataCell.innerHTML = jsonMap2[i];
                     } else {
                       dataCell.textContent = jsonMap2[i];
@@ -2152,7 +2152,7 @@
          * @param {*} secondMap
          * @returns {string} list
          */
-        renderDiff(firstMap, secondMap) {
+        renderDiff(firstMap, secondMap, safeHTML = false) {
           let $ = this, list = document.createElement("ul"), diffMap = $._mapsDiff(firstMap, secondMap);
           list.className = "DAMON-List";
           recurseDiffMap(diffMap, list);

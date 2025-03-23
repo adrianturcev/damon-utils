@@ -1660,7 +1660,7 @@ class DamonUtils {
      * @param {*} secondMap
      * @returns {string} list
      */
-    renderDiff(firstMap, secondMap) {
+    renderDiff(firstMap, secondMap, safeHTML = false) {
         let $ = this,
             list = document.createElement('ul'),
             diffMap = $._mapsDiff(firstMap, secondMap);
