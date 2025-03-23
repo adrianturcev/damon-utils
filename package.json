@@ -29,7 +29,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.14.0",
-        "damon2": "2.1.27",
+        "damon2": "2.2.2",
         "esbuild": "^0.24.0",
         "eslint": "^9.12.0",
         "eslint-plugin-jsdoc": "^50.4.3",
