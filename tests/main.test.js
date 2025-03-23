@@ -180,5 +180,27 @@ describe('# DAMON UTILS', function () {
                 beautify(htmlTable)
             );
         });
+        it('Returns a csv table', function () {
+            var tableTestTwo =
+                `- {}
+                    - 0: {}
+                        - heading1
+                        - heading2
+                        - heading3
+                    - 1: {}
+                        - A
+                        - B
+                        - C
+                    - 2: {}
+                        - A
+                        - B
+                        - C`.replaceAll('\n' + '    '.repeat(4), '\n');
+            var csv =
+                `"heading1","heading2","heading3"
+                "A","B","C"
+                "A","B","C"`.replaceAll('\n' + '    '.repeat(4), '\n');
+            assert.equal(damonUtils.damonTableToCSV(tableTestTwo), csv);
+            assert.equal(damonUtils.csvToDamonTable(csv), tableTestTwo);
+        });
     });
 });

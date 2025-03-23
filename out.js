@@ -45,8 +45,10 @@
         };
       }
       var arrayForEach = unapply(Array.prototype.forEach);
+      var arrayLastIndexOf = unapply(Array.prototype.lastIndexOf);
       var arrayPop = unapply(Array.prototype.pop);
       var arrayPush = unapply(Array.prototype.push);
+      var arraySplice = unapply(Array.prototype.splice);
       var stringToLowerCase = unapply(String.prototype.toLowerCase);
       var stringToString = unapply(String.prototype.toString);
       var stringMatch = unapply(String.prototype.match);
@@ -149,7 +151,7 @@
       var xml = freeze(["xlink:href", "xml:id", "xlink:title", "xml:space", "xmlns:xlink"]);
       var MUSTACHE_EXPR = seal(/\{\{[\w\W]*|[\w\W]*\}\}/gm);
       var ERB_EXPR = seal(/<%[\w\W]*|[\w\W]*%>/gm);
-      var TMPLIT_EXPR = seal(/\$\{[\w\W]*}/gm);
+      var TMPLIT_EXPR = seal(/\$\{[\w\W]*/gm);
       var DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]+$/);
       var ARIA_ATTR = seal(/^aria-[\-\w]+$/);
       var IS_ALLOWED_URI = seal(
@@ -236,9 +238,9 @@
       function createDOMPurify() {
         let window2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : getGlobal();
         const DOMPurify = (root) => createDOMPurify(root);
-        DOMPurify.version = "3.2.3";
+        DOMPurify.version = "3.2.4";
         DOMPurify.removed = [];
-        if (!window2 || !window2.document || window2.document.nodeType !== NODE_TYPE.document) {
+        if (!window2 || !window2.document || window2.document.nodeType !== NODE_TYPE.document || !window2.Element) {
           DOMPurify.isSupported = false;
           return DOMPurify;
         }
@@ -960,7 +962,11 @@
           }
           arrayPush(hooks[entryPoint], hookFunction);
         };
-        DOMPurify.removeHook = function(entryPoint) {
+        DOMPurify.removeHook = function(entryPoint, hookFunction) {
+          if (hookFunction !== void 0) {
+            const index = arrayLastIndexOf(hooks[entryPoint], hookFunction);
+            return index === -1 ? void 0 : arraySplice(hooks[entryPoint], index, 1)[0];
+          }
           return arrayPop(hooks[entryPoint]);
         };
         DOMPurify.removeHooks = function(entryPoint) {
@@ -1012,7 +1018,7 @@
          * @param {string} jsonContext
          * @returns {object} DOM
          */
-        mapToHtmlList(jsonMap, safeHTML = false, jsonContext = void 0) {
+        mapToHtmlList(jsonMap, safeHTML2 = false, jsonContext = void 0) {
           let $ = this;
           try {
             $.damon.mapToJSON(jsonMap);
@@ -1025,9 +1031,9 @@
             schema = JSON.parse(jsonContext);
           }
           list.className = "DAMON-List";
-          recurse(jsonMap, list);
+          recurse2(jsonMap, list);
           return list;
-          function recurse(jsonMap2, listItem) {
+          function recurse2(jsonMap2, listItem) {
             if (typeof listItem !== "object" || listItem == null || Array.isArray(listItem)) {
               throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
             }
@@ -1068,7 +1074,7 @@
                             childValueSpan.textContent = childValue + "";
                             childValueSpan.className = "type-number";
                           } else {
-                            if (safeHTML) {
+                            if (safeHTML2) {
                               if ($.websiteRegex.test(childValue)) {
                                 let fullUrl = childValue;
                                 if (!$.httpRegex.test(childValue))
@@ -1103,7 +1109,7 @@
                         newListItem.appendChild(newDiv);
                         newListItem.appendChild(newList);
                         listItem.appendChild(newListItem);
-                        recurse(value, newList);
+                        recurse2(value, newList);
                       }
                     } else {
                       if (jsonMap2.implicitMaps !== void 0 && jsonMap2.implicitMaps.indexOf(key) > -1) {
@@ -1114,49 +1120,49 @@
                       newListItem.appendChild(newDiv);
                       newListItem.appendChild(newList);
                       listItem.appendChild(newListItem);
-                      recurse(value, newList);
+                      recurse2(value, newList);
                     }
                   } else {
                     jsonItemIndex++;
                     newDiv.innerHTML = keySpan.outerHTML + ": ";
-                    let valueSpan = document.createElement("span");
+                    let valueSpan2 = document.createElement("span");
                     let childText = value;
                     if (childText === true) {
-                      valueSpan.textContent = "true";
-                      valueSpan.className = "type-boolean";
+                      valueSpan2.textContent = "true";
+                      valueSpan2.className = "type-boolean";
                     } else if (childText === false) {
-                      valueSpan.textContent = "false";
-                      valueSpan.className = "type-boolean";
+                      valueSpan2.textContent = "false";
+                      valueSpan2.className = "type-boolean";
                     } else if (childText === null) {
-                      valueSpan.textContent = "null";
-                      valueSpan.className = "type-null";
+                      valueSpan2.textContent = "null";
+                      valueSpan2.className = "type-null";
                     } else if (Number.isFinite(childText) && !Number.isNaN(childText)) {
-                      valueSpan.textContent = childText + "";
-                      valueSpan.className = "type-number";
+                      valueSpan2.textContent = childText + "";
+                      valueSpan2.className = "type-number";
                     } else {
-                      if (safeHTML) {
+                      if (safeHTML2) {
                         if ($.websiteRegex.test(childText)) {
                           let fullUrl = childText;
                           if (!$.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
-                          valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                          valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
-                          valueSpan.innerHTML = `"${childText}"`;
+                          valueSpan2.innerHTML = `"${childText}"`;
                         }
                       } else {
                         if ($.websiteRegex.test(childText)) {
                           let fullUrl = childText;
                           if (!$.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
-                          valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                          valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
-                          valueSpan.textContent = `"${childText}"`;
+                          valueSpan2.textContent = `"${childText}"`;
                         }
                       }
-                      valueSpan.className = "type-string";
+                      valueSpan2.className = "type-string";
                     }
                     if (jsonMap2.implicitNulls === void 0 || jsonMap2.implicitNulls.indexOf(key) == -1) {
-                      newDiv.appendChild(valueSpan);
+                      newDiv.appendChild(valueSpan2);
                     } else {
                       newDiv.innerHTML = newDiv.innerHTML.slice(0, -2);
                     }
@@ -1173,45 +1179,45 @@
                     if (jsonMap2.damonInlineArrays !== void 0 && jsonMap2.damonInlineArrays.indexOf(i) > -1) {
                       newDiv.innerHTML += "[";
                       for (let j = 0, k = jsonMap2[i].length; j < k; j++) {
-                        let valueSpan = document.createElement("span"), value = jsonMap2[i][j];
+                        let valueSpan2 = document.createElement("span"), value = jsonMap2[i][j];
                         if (value === true) {
-                          valueSpan.textContent = "true";
-                          valueSpan.className = "type-boolean";
+                          valueSpan2.textContent = "true";
+                          valueSpan2.className = "type-boolean";
                         } else if (value === false) {
-                          valueSpan.textContent = "false";
-                          valueSpan.className = "type-boolean";
+                          valueSpan2.textContent = "false";
+                          valueSpan2.className = "type-boolean";
                         } else if (value === null) {
-                          valueSpan.textContent = "null";
-                          valueSpan.className = "type-null";
+                          valueSpan2.textContent = "null";
+                          valueSpan2.className = "type-null";
                         } else if (Number.isFinite(value) && !Number.isNaN(value)) {
-                          valueSpan.textContent = value + "";
-                          valueSpan.className = "type-number";
+                          valueSpan2.textContent = value + "";
+                          valueSpan2.className = "type-number";
                         } else {
-                          if (safeHTML) {
+                          if (safeHTML2) {
                             if ($.websiteRegex.test(value)) {
                               let fullUrl = value;
                               if (!$.httpRegex.test(value))
                                 fullUrl = "https://" + value;
-                              valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                              valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                             } else {
-                              valueSpan.innerHTML = `"${value}"`;
+                              valueSpan2.innerHTML = `"${value}"`;
                             }
                           } else {
                             if ($.websiteRegex.test(value)) {
                               let fullUrl = value;
                               if (!$.httpRegex.test(value))
                                 fullUrl = "https://" + value;
-                              valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                              valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                             } else {
-                              valueSpan.textContent = `"${value}"`;
+                              valueSpan2.textContent = `"${value}"`;
                             }
                           }
-                          valueSpan.className = "type-string";
+                          valueSpan2.className = "type-string";
                         }
                         if (j !== 0) {
                           newDiv.innerHTML += ", ";
                         }
-                        newDiv.appendChild(valueSpan);
+                        newDiv.appendChild(valueSpan2);
                       }
                       newDiv.innerHTML += "]";
                       newListItem.appendChild(newDiv);
@@ -1222,14 +1228,14 @@
                       newListItem.appendChild(newDiv);
                       newListItem.appendChild(newList);
                       listItem.appendChild(newListItem);
-                      recurse(jsonMap2[i], newList);
+                      recurse2(jsonMap2[i], newList);
                     }
                   } else {
                     newDiv.textContent = "{}";
                     newListItem.appendChild(newDiv);
                     newListItem.appendChild(newList);
                     listItem.appendChild(newListItem);
-                    recurse(jsonMap2[i], newList);
+                    recurse2(jsonMap2[i], newList);
                   }
                 } else {
                   jsonItemIndex++;
@@ -1247,7 +1253,7 @@
                     newDiv.textContent = childText + "";
                     newDiv.className = "type-number";
                   } else {
-                    if (safeHTML) {
+                    if (safeHTML2) {
                       if ($.websiteRegex.test(childText)) {
                         let fullUrl = childText;
                         if (!$.httpRegex.test(childText))
@@ -1281,7 +1287,7 @@
          * @param {boolean} [safeHTML=false]
          * @returns {object} DOM
          */
-        mapToHtmlTable(jsonMap, safeHTML = false) {
+        mapToHtmlTable(jsonMap, safeHTML2 = false) {
           let $ = this;
           try {
             $.damon.mapToJSON(jsonMap);
@@ -1301,7 +1307,7 @@
                 for (const [childKey, childValue] of value) {
                   if (childValue === null) {
                     let headerCell = document.createElement("th");
-                    if (safeHTML) {
+                    if (safeHTML2) {
                       if ($.websiteRegex.test(childKey)) {
                         headerCell.innerHTML = DOMPurify.sanitize(`<a href="${childKey}">${childKey}</a>`);
                       } else {
@@ -1331,7 +1337,7 @@
                 for (const [childKey, childValue] of value) {
                   if (childValue === null) {
                     let dataCell = document.createElement("td");
-                    if (safeHTML) {
+                    if (safeHTML2) {
                       if ($.websiteRegex.test(childKey)) {
                         dataCell.innerHTML = DOMPurify.sanitize(`<a href="${childKey}">${childKey}</a>`);
                       } else {
@@ -1353,7 +1359,7 @@
               }
             } else if (typeof value !== "object" && key == "00") {
               let caption = document.createElement("caption");
-              if (safeHTML) {
+              if (safeHTML2) {
                 caption.innerHTML = value;
               } else {
                 caption.textContent = value;
@@ -1376,7 +1382,7 @@
          * @param {boolean} [safeHTML=false]
          * @returns {object} DOM
          */
-        mapTreeLeavesToHtmlTable(jsonMap, safeHTML = false) {
+        mapTreeLeavesToHtmlTable(jsonMap, safeHTML2 = false) {
           let $ = this;
           try {
             $.damon.mapToJSON(jsonMap);
@@ -1392,21 +1398,21 @@
             if (typeof value === "object" && !Array.isArray(value)) {
               if (key == "head" && !headingsEncountered) {
                 try {
-                  recurse(value, tHead);
+                  recurse2(value, tHead);
                 } catch (e) {
                   return;
                 }
                 headingsEncountered = true;
               } else if (key == "body") {
                 try {
-                  recurse(value, tBody);
+                  recurse2(value, tBody);
                 } catch (e) {
                   return;
                 }
               }
             } else if (typeof value !== "object" && key == "caption") {
               let caption = document.createElement("caption");
-              if (safeHTML) {
+              if (safeHTML2) {
                 caption.innerHTML = value;
               } else {
                 caption.textContent = value;
@@ -1422,7 +1428,7 @@
           }
           table.appendChild(tBody);
           return table;
-          function recurse(jsonMap2, tableSubContainer, level = 0, line = []) {
+          function recurse2(jsonMap2, tableSubContainer, level = 0, line = []) {
             if (typeof tableSubContainer !== "object" || tableSubContainer == null) {
               throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
             }
@@ -1431,7 +1437,7 @@
                 if (Array.from(jsonMap2.keys()).length == 1) {
                   if (typeof jsonMap2.get(Array.from(jsonMap2.keys())[0]) === "object" && jsonMap2.get(Array.from(jsonMap2.keys())[0]) !== null) {
                     jsonItemIndex++;
-                    recurse(
+                    recurse2(
                       jsonMap2.get(Array.from(jsonMap2.keys())[0]),
                       tableSubContainer,
                       level + 1,
@@ -1450,7 +1456,7 @@
                 for (const [key, value] of jsonMap2) {
                   if (typeof value === "object" && value !== null) {
                     jsonItemIndex++;
-                    recurse(value, tableSubContainer, level + 1, line.concat([key]));
+                    recurse2(value, tableSubContainer, level + 1, line.concat([key]));
                   } else {
                     throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
                   }
@@ -1465,7 +1471,7 @@
                   line.push(jsonMap2[0]);
                   for (let i = 0, c = line.length; i < c; i++) {
                     let headerCell = document.createElement("th");
-                    if (safeHTML) {
+                    if (safeHTML2) {
                       headerCell.innerHTML = line[i];
                     } else {
                       headerCell.textContent = line[i];
@@ -1486,7 +1492,7 @@
                     let tableRow = document.createElement("tr");
                     for (let z = 0, x = line.length; z < x; z++) {
                       let dataCell2 = document.createElement("td");
-                      if (safeHTML) {
+                      if (safeHTML2) {
                         dataCell2.innerHTML = line[z];
                       } else {
                         dataCell2.textContent = line[z];
@@ -1494,7 +1500,7 @@
                       tableRow.appendChild(dataCell2);
                     }
                     let dataCell = document.createElement("td");
-                    if (safeHTML) {
+                    if (safeHTML2) {
                       dataCell.innerHTML = jsonMap2[i];
                     } else {
                       dataCell.textContent = jsonMap2[i];
@@ -1518,11 +1524,11 @@
           let $ = this;
           var listItemIndex = 0;
           if (list.firstElementChild.textContent == "{}") {
-            return $._mapToJSON(recurse(list, /* @__PURE__ */ new Map()));
+            return $._mapToJSON(recurse2(list, /* @__PURE__ */ new Map()));
           } else if (list.firstElementChild.textContent == "[]") {
-            return $._mapToJSON(recurse(list, []));
+            return $._mapToJSON(recurse2(list, []));
           }
-          function recurse(list2, jsonMap) {
+          function recurse2(list2, jsonMap) {
             if (typeof list2 !== "object" || list2 == null || Array.isArray(list2)) {
               throw new Error("Error List Item number " + listItemIndex + ": @param { {} } list");
             }
@@ -1558,7 +1564,7 @@
                         if (text.slice(-3) == " []") {
                           jsonMap.set(text.slice(0, -4), []);
                           if (list2.children[i].children[1].tagName == "UL") {
-                            recurse(list2.children[i].children[1], jsonMap.get(text.slice(0, -4)));
+                            recurse2(list2.children[i].children[1], jsonMap.get(text.slice(0, -4)));
                           } else {
                             throw new Error(
                               "Error List Item number " + listItemIndex + ": not DAMON-compliant."
@@ -1567,7 +1573,7 @@
                         } else if (text.slice(-3) == " {}") {
                           jsonMap.set(text.slice(0, -4), /* @__PURE__ */ new Map());
                           if (list2.children[i].children[1].tagName == "UL") {
-                            recurse(list2.children[i].children[1], jsonMap.get(text.slice(0, -4)));
+                            recurse2(list2.children[i].children[1], jsonMap.get(text.slice(0, -4)));
                           } else {
                             throw new Error(
                               "Error List Item number " + listItemIndex + ": not DAMON-compliant."
@@ -1606,7 +1612,7 @@
                         if (text == "[]") {
                           jsonMap.push([]);
                           if (list2.children[i].children[1] && list2.children[i].children[1].tagName == "UL") {
-                            recurse(list2.children[i].children[1], jsonMap[jsonMap.length - 1]);
+                            recurse2(list2.children[i].children[1], jsonMap[jsonMap.length - 1]);
                           } else {
                             throw new Error(
                               "Error List Item number " + listItemIndex + ": not DAMON-compliant."
@@ -1615,7 +1621,7 @@
                         } else if (text == "{}") {
                           jsonMap.push({});
                           if (list2.children[i].children[1] && list2.children[i].children[1].tagName == "UL") {
-                            recurse(list2.children[i].children[1], jsonMap[jsonMap.length - 1]);
+                            recurse2(list2.children[i].children[1], jsonMap[jsonMap.length - 1]);
                           } else {
                             throw new Error(
                               "Error List Item number " + listItemIndex + ": not DAMON-compliant."
@@ -1773,29 +1779,29 @@
           let damonMap = $.damon.damonToMap(damonString), pathsList = [];
           _walkAndPushPaths(damonMap);
           return pathsList;
-          function _walkAndPushPaths(map, currentPath = []) {
+          function _walkAndPushPaths(map, currentPath2 = []) {
             if (typeof map === "object" && map !== null && !Array.isArray(map) && map instanceof Map && map.constructor === Map) {
               for (const [key, value] of map) {
                 if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map && Array.from(value.keys()).length) {
-                  pathsList.push(currentPath.concat(key));
-                  _walkAndPushPaths(value, currentPath.concat([key]));
+                  pathsList.push(currentPath2.concat(key));
+                  _walkAndPushPaths(value, currentPath2.concat([key]));
                 } else if (Array.isArray(value) && (map.damonInlineArrays == void 0 || map.damonInlineArrays.indexOf(key) === -1) && value.length) {
-                  pathsList.push(currentPath.concat(key));
-                  _walkAndPushPaths(value, currentPath.concat([key]));
+                  pathsList.push(currentPath2.concat(key));
+                  _walkAndPushPaths(value, currentPath2.concat([key]));
                 } else {
-                  pathsList.push(currentPath.concat(key).concat(value));
+                  pathsList.push(currentPath2.concat(key).concat(value));
                 }
               }
             } else {
               for (let i = 0, c = map.length; i < c; i++) {
                 if (typeof map[i] === "object" && map[i] !== null && !Array.isArray(map[i]) && map[i] instanceof Map && map[i].constructor === Map && Array.from(map[i].keys()).length) {
-                  pathsList.push(currentPath.concat(i));
-                  _walkAndPushPaths(map[i], currentPath.concat([i]));
+                  pathsList.push(currentPath2.concat(i));
+                  _walkAndPushPaths(map[i], currentPath2.concat([i]));
                 } else if (Array.isArray(map[i]) && (map.damonInlineArrays == void 0 || map.damonInlineArrays.indexOf(i) === -1) && map[i].length) {
-                  pathsList.push(currentPath.concat(i));
-                  _walkAndPushPaths(map[i], currentPath.concat([i]));
+                  pathsList.push(currentPath2.concat(i));
+                  _walkAndPushPaths(map[i], currentPath2.concat([i]));
                 } else {
-                  pathsList.push(currentPath.concat(map[i]));
+                  pathsList.push(currentPath2.concat(map[i]));
                 }
               }
             }
@@ -1923,7 +1929,7 @@
          * @param {damonValue} firstMap
          * @param {damonValue} secondMap
         */
-        mapsDiff(firstMap, secondMap) {
+        _mapsDiff(firstMap, secondMap) {
           let $ = this;
           try {
             $.damon.mapToJSON(firstMap);
@@ -1944,75 +1950,415 @@
             _walkAndDiff(firstMap);
             return diffMap;
           }
-          function _walkAndDiff(map, currentPath = []) {
+          function _walkAndDiff(map, currentPath2 = []) {
             if (typeof map === "object" && map !== null && !Array.isArray(map) && map instanceof Map && map.constructor === Map) {
+              let secondMapKey = "", secondMapValue = null, secondMapCurrentFractal = secondMap;
+              for (let i = 0, c = currentPath2.length; i < c; i++) {
+                if (typeof secondMapCurrentFractal === "object" && secondMapCurrentFractal !== null && !Array.isArray(secondMapCurrentFractal) && secondMapCurrentFractal instanceof Map && secondMapCurrentFractal.constructor === Map) {
+                  secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath2[i]]);
+                } else {
+                  secondMapCurrentFractal = secondMapCurrentFractal[currentPath2[i]];
+                }
+              }
+              let diffMapCurrentFractal = diffMap;
+              for (let i = 0, c = currentPath2.length; i < c; i++) {
+                if (typeof diffMapCurrentFractal === "object" && diffMapCurrentFractal !== null && !Array.isArray(diffMapCurrentFractal) && diffMapCurrentFractal instanceof Map && diffMapCurrentFractal.constructor === Map && Array.from(diffMapCurrentFractal.keys()).length) {
+                  diffMapCurrentFractal = diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath2[i]]);
+                } else {
+                  diffMapCurrentFractal = diffMapCurrentFractal[currentPath2[i]];
+                }
+              }
               let index = 0;
               for (const [key, value] of map) {
-                let secondMapKey = "", secondMapValue = null, secondMapCurrentFractal = secondMap;
-                for (let i = 0, c = currentPath.length; i < c; i++) {
-                  if (typeof secondMapCurrentFractal === "object" && secondMapCurrentFractal !== null && !Array.isArray(secondMapCurrentFractal) && secondMapCurrentFractal instanceof Map && secondMapCurrentFractal.constructor === Map) {
-                    secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath[i]]);
-                  } else {
-                    secondMapCurrentFractal = secondMapCurrentFractal[currentPath[i]];
-                  }
-                }
-                secondMapKey = Array.from(secondMapCurrentFractal.keys())[index];
-                secondMapValue = secondMapCurrentFractal.get(secondMapKey);
-                let diffMapCurrentFractal = diffMap;
-                for (let i = 0, c = currentPath.length; i < c; i++) {
-                  if (typeof diffMapCurrentFractal === "object" && diffMapCurrentFractal !== null && !Array.isArray(diffMapCurrentFractal) && diffMapCurrentFractal instanceof Map && diffMapCurrentFractal.constructor === Map && Array.from(diffMapCurrentFractal.keys()).length) {
-                    diffMapCurrentFractal = diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath[i]]);
-                  } else {
-                    diffMapCurrentFractal = diffMapCurrentFractal[currentPath[i]];
-                  }
-                }
-                if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map) {
-                  if (typeof secondMapValue === "object" && secondMapValue !== null && !Array.isArray(secondMapValue) && secondMapValue instanceof Map && secondMapValue.constructor === Map) {
-                    if (key === secondMapKey) {
-                      diffMapCurrentFractal.set(index + "-green", /* @__PURE__ */ new Map());
-                      if (Array.from(value.keys()).length > 0) {
-                        _walkAndDiff(value, currentPath.concat([index]));
-                      }
-                    } else if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && (typeof secondMapCurrentFractal.get(key) === "object" && secondMapCurrentFractal.get(key) !== null && !Array.isArray(secondMapCurrentFractal.get(key)) && secondMapCurrentFractal.get(key) instanceof Map && secondMapCurrentFractal.get(key).constructor === Map)) {
+                if (index > Array.from(secondMapCurrentFractal.keys()).length - 1) {
+                  if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map) {
+                    if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && (typeof secondMapCurrentFractal.get(key) === "object" && secondMapCurrentFractal.get(key) !== null && !Array.isArray(secondMapCurrentFractal.get(key)) && secondMapCurrentFractal.get(key) instanceof Map && secondMapCurrentFractal.get(key).constructor === Map)) {
+                      diffMapCurrentFractal.set(index + "-yellow", null);
+                    } else {
+                      diffMapCurrentFractal.set(index + "-red", null);
+                    }
+                  } else if (Array.isArray(value)) {
+                    if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && Array.isArray(secondMapCurrentFractal.get(key))) {
                       diffMapCurrentFractal.set(index + "-yellow", null);
                     } else {
                       diffMapCurrentFractal.set(index + "-red", null);
                     }
                   } else {
-                    diffMapCurrentFractal.set(index + "-red", null);
-                  }
-                } else if (Array.isArray(value)) {
-                  if (Array.isArray(secondMapValue)) {
-                    if (key === secondMapKey) {
-                      diffMapCurrentFractal.set(index + "-green", []);
-                      if (value.length > 0) {
-                        _walkAndDiff(value, currentPath.concat([index]));
-                      }
-                    } else if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && Array.isArray(secondMapCurrentFractal.get(key))) {
+                    if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && value === secondMapCurrentFractal.get(key)) {
                       diffMapCurrentFractal.set(index + "-yellow", null);
                     } else {
                       diffMapCurrentFractal.set(index + "-red", null);
                     }
-                  } else {
-                    diffMapCurrentFractal.set(index + "-red", null);
                   }
                 } else {
-                  if (value === secondMapValue) {
-                    if (key === secondMapKey) {
-                      diffMapCurrentFractal.set(index + "-green", "green");
-                    } else if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && value === secondMapCurrentFractal.get(key)) {
-                      diffMapCurrentFractal.set(index + "-yellow", null);
+                  secondMapKey = Array.from(secondMapCurrentFractal.keys())[index];
+                  secondMapValue = secondMapCurrentFractal.get(secondMapKey);
+                  if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map) {
+                    if (typeof secondMapValue === "object" && secondMapValue !== null && !Array.isArray(secondMapValue) && secondMapValue instanceof Map && secondMapValue.constructor === Map) {
+                      if (key === secondMapKey) {
+                        diffMapCurrentFractal.set(index + "-green", /* @__PURE__ */ new Map());
+                        if (Array.from(value.keys()).length > 0) {
+                          _walkAndDiff(value, currentPath2.concat([index]));
+                        }
+                      } else if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && (typeof secondMapCurrentFractal.get(key) === "object" && secondMapCurrentFractal.get(key) !== null && !Array.isArray(secondMapCurrentFractal.get(key)) && secondMapCurrentFractal.get(key) instanceof Map && secondMapCurrentFractal.get(key).constructor === Map)) {
+                        diffMapCurrentFractal.set(index + "-yellow", null);
+                      } else {
+                        diffMapCurrentFractal.set(index + "-red", null);
+                      }
+                    } else {
+                      diffMapCurrentFractal.set(index + "-red", null);
+                    }
+                  } else if (Array.isArray(value)) {
+                    if (Array.isArray(secondMapValue)) {
+                      if (key === secondMapKey) {
+                        diffMapCurrentFractal.set(index + "-green", []);
+                        if (value.length > 0) {
+                          _walkAndDiff(value, currentPath2.concat([index]));
+                        }
+                      } else if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && Array.isArray(secondMapCurrentFractal.get(key))) {
+                        diffMapCurrentFractal.set(index + "-yellow", null);
+                      } else {
+                        diffMapCurrentFractal.set(index + "-red", null);
+                      }
                     } else {
                       diffMapCurrentFractal.set(index + "-red", null);
                     }
                   } else {
-                    diffMapCurrentFractal.set(index + "-red", null);
+                    if (value === secondMapValue) {
+                      if (key === secondMapKey) {
+                        diffMapCurrentFractal.set(index + "-green", "green");
+                      } else if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && value === secondMapCurrentFractal.get(key)) {
+                        diffMapCurrentFractal.set(index + "-yellow", null);
+                      } else {
+                        diffMapCurrentFractal.set(index + "-red", null);
+                      }
+                    } else {
+                      diffMapCurrentFractal.set(index + "-red", null);
+                    }
                   }
                 }
                 index++;
               }
+              if (Array.from(map.keys()).length < Array.from(secondMapCurrentFractal.keys()).length) {
+                let secondMapIndex = 0;
+                for (let [key, value] of secondMapCurrentFractal) {
+                  if (secondMapIndex <= index) {
+                    continue;
+                  }
+                  if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map) {
+                    if (Array.from(map.keys()).indexOf(key) !== -1 && (typeof map.get(key) === "object" && map.get(key) !== null && !Array.isArray(map.get(key)) && map.get(key) instanceof Map && map.get(key).constructor === Map)) {
+                      diffMapCurrentFractal.set(index + "-yellow", null);
+                    } else {
+                      diffMapCurrentFractal.set(index + "-red", null);
+                    }
+                  } else if (Array.isArray(value)) {
+                    if (Array.from(map.keys()).indexOf(key) !== -1 && Array.isArray(map.get(key))) {
+                      diffMapCurrentFractal.set(index + "-yellow", null);
+                    } else {
+                      diffMapCurrentFractal.set(index + "-red", null);
+                    }
+                  } else {
+                    if (Array.from(map.keys()).indexOf(key) !== -1 && value === map.get(key)) {
+                      diffMapCurrentFractal.set(index + "-yellow", null);
+                    } else {
+                      diffMapCurrentFractal.set(index + "-red", null);
+                    }
+                  }
+                  secondMapIndex++;
+                }
+              }
             } else {
+              let secondMapValue = null, secondMapCurrentFractal = secondMap;
+              for (let z = 0, x = currentPath2.length; z < x; z++) {
+                if (typeof secondMapCurrentFractal === "object" && secondMapCurrentFractal !== null && !Array.isArray(secondMapCurrentFractal) && secondMapCurrentFractal instanceof Map && secondMapCurrentFractal.constructor === Map && Array.from(secondMapCurrentFractal.keys()).length) {
+                  secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath2[z]]);
+                } else {
+                  secondMapCurrentFractal = secondMapCurrentFractal[currentPath2[z]];
+                }
+              }
+              let diffMapCurrentFractal = diffMap;
+              for (let i = 0, c = currentPath2.length; i < c; i++) {
+                if (typeof diffMapCurrentFractal === "object" && diffMapCurrentFractal !== null && !Array.isArray(diffMapCurrentFractal) && diffMapCurrentFractal instanceof Map && diffMapCurrentFractal.constructor === Map && Array.from(diffMapCurrentFractal.keys()).length) {
+                  diffMapCurrentFractal = diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath2[i]]);
+                } else {
+                  diffMapCurrentFractal = diffMapCurrentFractal[currentPath2[i]];
+                }
+              }
               for (let i = 0, c = map.length; i < c; i++) {
+                if (i > secondMapCurrentFractal.length - 1) {
+                  diffMapCurrentFractal[i] = "red";
+                } else {
+                  secondMapValue = secondMapCurrentFractal[i];
+                  if (typeof map[i] === "object" && map[i] !== null && !Array.isArray(map[i]) && map[i] instanceof Map && map[i].constructor === Map) {
+                    if (typeof secondMapValue === "object" && secondMapValue !== null && !Array.isArray(secondMapValue) && secondMapValue instanceof Map && secondMapValue.constructor === Map) {
+                      diffMapCurrentFractal[i] = /* @__PURE__ */ new Map();
+                      if (Array.from(map[i].keys()).length > 0) {
+                        _walkAndDiff(map[i], currentPath2.concat([i]));
+                      }
+                    } else {
+                      diffMapCurrentFractal[i] = "red";
+                    }
+                  } else if (Array.isArray(map[i])) {
+                    if (Array.isArray(secondMapValue)) {
+                      diffMapCurrentFractal[i] = [];
+                      if (map[i].length > 0) {
+                        _walkAndDiff(map[i], currentPath2.concat([i]));
+                      }
+                    } else {
+                      diffMapCurrentFractal[i] = "red";
+                    }
+                  } else {
+                    if (map[i] === secondMapValue) {
+                      diffMapCurrentFractal[i] = "green";
+                    } else {
+                      diffMapCurrentFractal[i] = "red";
+                    }
+                  }
+                }
+              }
+              if (map.length < secondMapCurrentFractal.length) {
+                for (let i = 0, c = secondMapCurrentFractal.length; i < c; i++) {
+                  if (i <= map.length - 1) {
+                    continue;
+                  }
+                  diffMapCurrentFractal[i] = "red";
+                }
+              }
+            }
+          }
+        }
+        /**
+         * @param {*} firstMap
+         * @param {*} secondMap
+         * @returns {Map} outputMap
+         */
+        sortMap(firstMap, secondMap) {
+          let $ = this, firstMapKeys = Array.from(firstMap.keys()), secondMapKeys = Array.from(secondMap.keys()), outputMap = /* @__PURE__ */ new Map();
+          for (let i = 0, c = firstMapKeys.length; i < c; i++) {
+            if (secondMap.get(firstMapKeys[i]) !== void 0) {
+              outputMap.set(firstMapKeys[i], secondMap.get(firstMapKeys[i]));
+            }
+          }
+          for (let i = 0, c = secondMapKeys.length; i < c; i++) {
+            if (firstMapKeys.indexOf(secondMapKeys[i]) == -1) {
+              outputMap.set(secondMapKeys[i], secondMap.get(secondMapKeys[i]));
+            }
+          }
+          return outputMap;
+        }
+        /**
+         * Produces a blocks diff
+         * @param {*} firstMap
+         * @param {*} secondMap
+         * @returns {string} list
+         */
+        renderDiff(firstMap, secondMap) {
+          let $ = this, list = document.createElement("ul"), diffMap = $._mapsDiff(firstMap, secondMap);
+          list.className = "DAMON-List";
+          recurseDiffMap(diffMap, list);
+          return list;
+          function recurseDiffMap(diffMap2, list2, path = [], color = "green") {
+            if (color === "green") {
+              if (typeof list2 !== "object" || list2 == null || Array.isArray(list2)) {
+                throw new Error("Error List Item " + path.concat("-") + ": @param { {} } list");
+              }
+              if (typeof diffMap2 === "object" && diffMap2 !== null && !Array.isArray(diffMap2) && diffMap2 instanceof Map && diffMap2.constructor === Map) {
+                if (list2.tagName == "UL") {
+                  let firstMapKey = "", firstMapValue = null, firstMapCurrentFractal = firstMap;
+                  for (let i2 = 0, c2 = path.length; i2 < c2; i2++) {
+                    if (typeof firstMapCurrentFractal === "object" && firstMapCurrentFractal !== null && !Array.isArray(firstMapCurrentFractal) && firstMapCurrentFractal instanceof Map && firstMapCurrentFractal.constructor === Map) {
+                      firstMapCurrentFractal = firstMapCurrentFractal.get(Array.from(firstMapCurrentFractal.keys())[path[i2]]);
+                    } else {
+                      firstMapCurrentFractal = firstMapCurrentFractal[path[i2]];
+                    }
+                  }
+                  let secondMapKey = "", secondMapValue = null, secondMapCurrentFractal = secondMap;
+                  for (let i2 = 0, c2 = path.length; i2 < c2; i2++) {
+                    if (typeof secondMapCurrentFractal === "object" && secondMapCurrentFractal !== null && !Array.isArray(secondMapCurrentFractal) && secondMapCurrentFractal instanceof Map && secondMapCurrentFractal.constructor === Map) {
+                      secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[path[i2]]);
+                    } else {
+                      secondMapCurrentFractal = secondMapCurrentFractal[path[i2]];
+                    }
+                  }
+                  let index = 0;
+                  for (let [key, value] of diffMap2) {
+                    let diffMapKeyColor = Array.from(diffMap2.keys())[index].split("-")[1], diffMapValue = diffMap2.get(Array.from(diffMap2.keys())[index]);
+                    let newList = document.createElement("ul"), newDiv = document.createElement("code"), keySpan = document.createElement("span"), newListItem = document.createElement("li");
+                    keySpan.className = "type-key";
+                    newListItem.className = diffMapKeyColor + "-diff";
+                    if (newListItem.className === "red-diff" && index <= Array.from(firstMapCurrentFractal.keys()).length - 1) {
+                      if (index > Array.from(secondMapCurrentFractal.keys()).length - 1) {
+                        key = "";
+                        value = "";
+                      } else {
+                        if (index > Array.from(firstMapCurrentFractal.keys()).length - 1) {
+                          if (newListItem.className == "red-diff") {
+                            newListItem.className = "blue-diff";
+                          } else {
+                            newListItem.className = "green-diff";
+                          }
+                        }
+                        secondMapKey = Array.from(secondMapCurrentFractal.keys())[index];
+                        secondMapValue = secondMapCurrentFractal.get(secondMapKey);
+                        key = secondMapKey;
+                        value = secondMapValue;
+                      }
+                    } else {
+                      if (newListItem.className === "green-diff") {
+                        newListItem.dataset.graphArbo = index;
+                        if (path.length > 0)
+                          newListItem.dataset.graphArbo = path.join("-") + "-" + index;
+                        newListItem.className = "";
+                      } else {
+                        newListItem.className = "blue-diff";
+                      }
+                      firstMapKey = Array.from(secondMapCurrentFractal.keys())[index];
+                      firstMapValue = secondMapCurrentFractal.get(firstMapKey);
+                      key = firstMapKey;
+                      value = firstMapValue;
+                    }
+                    if ($.websiteRegex.test(key)) {
+                      let fullUrl = key;
+                      if (!$.httpRegex.test(key))
+                        fullUrl = "https://" + key;
+                      let keyLink = DOMPurify.sanitize(`<a href="${fullUrl}">${fullUrl}</a>`);
+                      keySpan.innerHTML = keyLink;
+                    } else {
+                      keySpan.textContent = key;
+                    }
+                    if (typeof value === "object" && value !== null) {
+                      if (Array.isArray(value)) {
+                        if (firstMap.damonInlineArrays !== void 0 && firstMap.damonInlineArrays.indexOf(key) > -1) {
+                          newDiv.innerHTML = keySpan.outerHTML + ": [";
+                          for (let j = 0, k = value.length; j < k; j++) {
+                            let childValueSpan = document.createElement("span"), childValue = value[j];
+                            if (childValue === true) {
+                              childValueSpan.textContent = "true";
+                              childValueSpan.className = "type-boolean";
+                            } else if (childValue === false) {
+                              childValueSpan.textContent = "false";
+                              childValueSpan.className = "type-boolean";
+                            } else if (childValue === null) {
+                              childValueSpan.textContent = "null";
+                              childValueSpan.className = "type-null";
+                            } else if (Number.isFinite(childValue) && !Number.isNaN(childValue)) {
+                              childValueSpan.textContent = childValue + "";
+                              childValueSpan.className = "type-number";
+                            } else {
+                              if (safeHTML) {
+                                if ($.websiteRegex.test(childValue)) {
+                                  let fullUrl = childValue;
+                                  if (!$.httpRegex.test(childValue))
+                                    fullUrl = "https://" + childValue;
+                                  childValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                                } else {
+                                  childValueSpan.innerHTML = `"${childValue}"`;
+                                }
+                              } else {
+                                if ($.websiteRegex.test(childValue)) {
+                                  let fullUrl = childValue;
+                                  if (!$.httpRegex.test(childValue))
+                                    fullUrl = "https://" + childValue;
+                                  childValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                                } else {
+                                  childValueSpan.textContent = `"${childValue}"`;
+                                }
+                              }
+                              childValueSpan.className = "type-string";
+                            }
+                            if (j !== 0) {
+                              newDiv.innerHTML += ", ";
+                            }
+                            newDiv.appendChild(childValueSpan);
+                          }
+                          newDiv.innerHTML += "]";
+                          newListItem.appendChild(newDiv);
+                          newListItem.appendChild(newList);
+                          list2.appendChild(newListItem);
+                        } else {
+                          newDiv.innerHTML = keySpan.outerHTML + ": []";
+                          newListItem.appendChild(newDiv);
+                          newListItem.appendChild(newList);
+                          list2.appendChild(newListItem);
+                          if (diffMapKeyColor == "green") {
+                            recurseDiffMap(diffMapValue, newList, path.concat([index]), diffMapKeyColor);
+                          } else {
+                            recurseDiffMap(diffMapValue, newList, path.concat([index]), diffMapKeyColor);
+                          }
+                        }
+                      } else {
+                        if (firstMap.implicitMaps !== void 0 && firstMap.implicitMaps.indexOf(key) > -1) {
+                          newDiv.innerHTML = keySpan.outerHTML;
+                        } else {
+                          newDiv.innerHTML = keySpan.outerHTML + ": {}";
+                        }
+                        newListItem.appendChild(newDiv);
+                        newListItem.appendChild(newList);
+                        list2.appendChild(newListItem);
+                        if (diffMapKeyColor == "green") {
+                          recurseDiffMap(diffMapValue, newList, path.concat([index]), diffMapKeyColor);
+                        } else {
+                          recurseDiffMap(diffMapValue, newList, path.concat([index]), diffMapKeyColor);
+                        }
+                      }
+                    } else {
+                      newDiv.innerHTML = keySpan.outerHTML + ": ";
+                      let valueSpan2 = document.createElement("span");
+                      let childText = value;
+                      if (childText === true) {
+                        valueSpan2.textContent = "true";
+                        valueSpan2.className = "type-boolean";
+                      } else if (childText === false) {
+                        valueSpan2.textContent = "false";
+                        valueSpan2.className = "type-boolean";
+                      } else if (childText === null) {
+                        valueSpan2.textContent = "null";
+                        valueSpan2.className = "type-null";
+                      } else if (Number.isFinite(childText) && !Number.isNaN(childText)) {
+                        valueSpan2.textContent = childText + "";
+                        valueSpan2.className = "type-number";
+                      } else {
+                        if (safeHTML) {
+                          if ($.websiteRegex.test(childText)) {
+                            let fullUrl = childText;
+                            if (!$.httpRegex.test(childText))
+                              fullUrl = "https://" + childText;
+                            valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                          } else {
+                            valueSpan2.innerHTML = `"${childText}"`;
+                          }
+                        } else {
+                          if ($.websiteRegex.test(childText)) {
+                            let fullUrl = childText;
+                            if (!$.httpRegex.test(childText))
+                              fullUrl = "https://" + childText;
+                            valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                          } else {
+                            valueSpan2.textContent = `"${childText}"`;
+                          }
+                        }
+                        valueSpan2.className = "type-string";
+                      }
+                      if (firstMap.implicitNulls === void 0 || firstMap.implicitNulls.indexOf(key) == -1) {
+                        newDiv.appendChild(valueSpan2);
+                      } else {
+                        newDiv.innerHTML = newDiv.innerHTML.slice(0, -2);
+                      }
+                      newListItem.appendChild(newDiv);
+                      list2.appendChild(newListItem);
+                    }
+                    index++;
+                  }
+                }
+              } else if (Array.isArray(diffMap2)) {
+                let firstMapValue = null, firstMapCurrentFractal = firstMap;
+                for (let z = 0, x = currentPath.length; z < x; z++) {
+                  if (typeof firstMapCurrentFractal === "object" && firstMapCurrentFractal !== null && !Array.isArray(firstMapCurrentFractal) && firstMapCurrentFractal instanceof Map && firstMapCurrentFractal.constructor === Map && Array.from(firstMapCurrentFractal.keys()).length) {
+                    firstMapCurrentFractal = firstMapCurrentFractal.get(Array.from(firstMapCurrentFractal.keys())[currentPath[z]]);
+                  } else {
+                    firstMapCurrentFractal = firstMapCurrentFractal[currentPath[z]];
+                  }
+                }
                 let secondMapValue = null, secondMapCurrentFractal = secondMap;
                 for (let z = 0, x = currentPath.length; z < x; z++) {
                   if (typeof secondMapCurrentFractal === "object" && secondMapCurrentFractal !== null && !Array.isArray(secondMapCurrentFractal) && secondMapCurrentFractal instanceof Map && secondMapCurrentFractal.constructor === Map && Array.from(secondMapCurrentFractal.keys()).length) {
@@ -2021,43 +2367,457 @@
                     secondMapCurrentFractal = secondMapCurrentFractal[currentPath[z]];
                   }
                 }
-                secondMapValue = secondMapCurrentFractal[i];
-                let diffMapCurrentFractal = diffMap;
-                for (let i2 = 0, c2 = currentPath.length; i2 < c2; i2++) {
-                  if (typeof diffMapCurrentFractal === "object" && diffMapCurrentFractal !== null && !Array.isArray(diffMapCurrentFractal) && diffMapCurrentFractal instanceof Map && diffMapCurrentFractal.constructor === Map && Array.from(diffMapCurrentFractal.keys()).length) {
-                    diffMapCurrentFractal = diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath[i2]]);
+                for (var i = 0, c = diffMap2.length; i < c; i++) {
+                  let itemColor = diffMap2[i].split("-")[1];
+                  let newList = document.createElement("ul"), newDiv = document.createElement("code"), newListItem = document.createElement("li"), value;
+                  newListItem.className = diffMap2[i].split("-")[1] + "-diff";
+                  if (newListItem.className === "red-diff" && i <= firstMapCurrentFractal.length - 1) {
+                    if (i > secondMapCurrentFractal.length - 1) {
+                      value = "";
+                    } else {
+                      if (i > firstMapCurrentFractal.length - 1) {
+                        if (newListItem.className == "red-diff") {
+                          newListItem.className = "blue-diff";
+                        } else {
+                          newListItem.className = "green-diff";
+                        }
+                      }
+                      value = secondMapCurrentFractal[i];
+                    }
                   } else {
-                    diffMapCurrentFractal = diffMapCurrentFractal[currentPath[i2]];
+                    if (newListItem.className === "green-diff") {
+                      newListItem.dataset.graphArbo = i;
+                      if (path.length > 0)
+                        newListItem.dataset.graphArbo = path.join("-") + "-" + i;
+                      newListItem.className = "";
+                    } else {
+                      newListItem.className = "blue-diff";
+                    }
+                    value = firstMapCurrentFractal[i];
+                  }
+                  if (typeof value === "object" && value !== null) {
+                    if (Array.isArray(value)) {
+                      if (firstMap.damonInlineArrays !== void 0 && firstMap.damonInlineArrays.indexOf(i) > -1) {
+                        newDiv.innerHTML += "[";
+                        for (let j = 0, k = value.length; j < k; j++) {
+                          let arrayValueSpan = document.createElement("span"), arrayValue = value[j];
+                          if (arrayValue === true) {
+                            arrayValueSpan.textContent = "true";
+                            arrayValueSpan.className = "type-boolean";
+                          } else if (arrayValue === false) {
+                            arrayValueSpan.textContent = "false";
+                            arrayValueSpan.className = "type-boolean";
+                          } else if (arrayValue === null) {
+                            arrayValueSpan.textContent = "null";
+                            arrayValueSpan.className = "type-null";
+                          } else if (Number.isFinite(arrayValue) && !Number.isNaN(arrayValue)) {
+                            arrayValueSpan.textContent = arrayValue + "";
+                            arrayValueSpan.className = "type-number";
+                          } else {
+                            if (safeHTML) {
+                              if ($.websiteRegex.test(arrayValue)) {
+                                let fullUrl = arrayValue;
+                                if (!$.httpRegex.test(arrayValue))
+                                  fullUrl = "https://" + arrayValue;
+                                arrayValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                              } else {
+                                arrayValueSpan.innerHTML = `"${arrayValue}"`;
+                              }
+                            } else {
+                              if ($.websiteRegex.test(arrayValue)) {
+                                let fullUrl = arrayValue;
+                                if (!$.httpRegex.test(arrayValue))
+                                  fullUrl = "https://" + arrayValue;
+                                arrayValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                              } else {
+                                arrayValueSpan.textContent = `"${arrayValue}"`;
+                              }
+                            }
+                            arrayValueSpan.className = "type-string";
+                          }
+                          if (j !== 0) {
+                            newDiv.innerHTML += ", ";
+                          }
+                          newDiv.appendChild(valueSpan);
+                        }
+                        newDiv.innerHTML += "]";
+                        newListItem.appendChild(newDiv);
+                        newListItem.appendChild(newList);
+                        list2.appendChild(newListItem);
+                      } else {
+                        newDiv.textContent = "[]";
+                        newListItem.appendChild(newDiv);
+                        newListItem.appendChild(newList);
+                        list2.appendChild(newListItem);
+                        recurseDiffMap(value, newList, path.concat([i]), itemColor);
+                      }
+                    } else {
+                      newDiv.textContent = "{}";
+                      newListItem.appendChild(newDiv);
+                      newListItem.appendChild(newList);
+                      list2.appendChild(newListItem);
+                      recurseDiffMap(value, newList, path.concat([i]), itemColor);
+                    }
+                  } else {
+                    let childText = value;
+                    if (childText === true) {
+                      newDiv.textContent = "true";
+                      newDiv.className = "type-boolean";
+                    } else if (childText === false) {
+                      newDiv.textContent = "false";
+                      newDiv.className = "type-boolean";
+                    } else if (childText === null) {
+                      newDiv.textContent = "null";
+                      newDiv.className = "type-null";
+                    } else if (Number.isFinite(childText) && !Number.isNaN(childText)) {
+                      newDiv.textContent = childText + "";
+                      newDiv.className = "type-number";
+                    } else {
+                      if (safeHTML) {
+                        if ($.websiteRegex.test(childText)) {
+                          let fullUrl = childText;
+                          if (!$.httpRegex.test(childText))
+                            fullUrl = "https://" + childText;
+                          newDiv.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                        } else {
+                          newDiv.innerHTML = `"${childText}"`;
+                        }
+                      } else {
+                        if ($.websiteRegex.test(childText)) {
+                          let fullUrl = childText;
+                          if (!$.httpRegex.test(childText))
+                            fullUrl = "https://" + childText;
+                          newDiv.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                        } else {
+                          newDiv.textContent = `"${childText}"`;
+                        }
+                      }
+                      newDiv.className = "type-string";
+                    }
+                    newListItem.appendChild(newDiv);
+                    newListItem.appendChild(newList);
+                    list2.appendChild(newListItem);
                   }
                 }
-                if (typeof map[i] === "object" && map[i] !== null && !Array.isArray(map[i]) && map[i] instanceof Map && map[i].constructor === Map) {
-                  if (typeof secondMapValue === "object" && secondMapValue !== null && !Array.isArray(secondMapValue) && secondMapValue instanceof Map && secondMapValue.constructor === Map) {
-                    diffMapCurrentFractal[i] = /* @__PURE__ */ new Map();
-                    if (Array.from(map[i].keys()).length > 0) {
-                      _walkAndDiff(map[i], currentPath.concat([i]));
-                    }
+              }
+            } else if (["red", "yellow"].indexOf(color) > -1) {
+              let secondMapKey = "", secondMapValue = null, secondMapCurrentFractal = secondMap;
+              for (let i2 = 0, c2 = path.length; i2 < c2; i2++) {
+                if (typeof secondMapCurrentFractal === "object" && secondMapCurrentFractal !== null && !Array.isArray(secondMapCurrentFractal) && secondMapCurrentFractal instanceof Map && secondMapCurrentFractal.constructor === Map) {
+                  secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[path[i2]]);
+                } else {
+                  secondMapCurrentFractal = secondMapCurrentFractal[path[i2]];
+                }
+              }
+              recurseSecondMap(secondMapCurrentFractal, list2, path, color);
+            }
+          }
+          function recurseSecondMap(secondMap2, list2, path, color) {
+            if (typeof list2 !== "object" || list2 == null || Array.isArray(list2)) {
+              throw new Error("Error List Item " + path.concat("-") + ": @param { {} } list");
+            }
+            if (typeof secondMap2 === "object" && secondMap2 !== null && !Array.isArray(secondMap2) && secondMap2 instanceof Map && secondMap2.constructor === Map) {
+              if (list2.tagName == "UL") {
+                let index = 0;
+                for (const [key, value] of secondMap2) {
+                  let newList = document.createElement("ul"), newDiv = document.createElement("code"), keySpan = document.createElement("span"), newListItem = document.createElement("li");
+                  keySpan.className = "type-key";
+                  newListItem.className = "red-diff";
+                  if ($.websiteRegex.test(key)) {
+                    let fullUrl = key;
+                    if (!$.httpRegex.test(key))
+                      fullUrl = "https://" + key;
+                    let keyLink = DOMPurify.sanitize(`<a href="${fullUrl}">${fullUrl}</a>`);
+                    keySpan.innerHTML = keyLink;
                   } else {
-                    diffMapCurrentFractal[i] = "red";
+                    keySpan.textContent = key;
                   }
-                } else if (Array.isArray(map[i])) {
-                  if (Array.isArray(secondMapValue)) {
-                    diffMapCurrentFractal[i] = [];
-                    if (map[i].length > 0) {
-                      _walkAndDiff(map[i], currentPath.concat([i]));
+                  if (typeof value === "object" && value !== null) {
+                    if (Array.isArray(value)) {
+                      if (secondMap2.damonInlineArrays !== void 0 && secondMap2.damonInlineArrays.indexOf(key) > -1) {
+                        newDiv.innerHTML = keySpan.outerHTML + ": [";
+                        for (let j = 0, k = value.length; j < k; j++) {
+                          let childValueSpan = document.createElement("span"), childValue = value[j];
+                          if (childValue === true) {
+                            childValueSpan.textContent = "true";
+                            childValueSpan.className = "type-boolean";
+                          } else if (childValue === false) {
+                            childValueSpan.textContent = "false";
+                            childValueSpan.className = "type-boolean";
+                          } else if (childValue === null) {
+                            childValueSpan.textContent = "null";
+                            childValueSpan.className = "type-null";
+                          } else if (Number.isFinite(childValue) && !Number.isNaN(childValue)) {
+                            childValueSpan.textContent = childValue + "";
+                            childValueSpan.className = "type-number";
+                          } else {
+                            if (safeHTML) {
+                              if ($.websiteRegex.test(childValue)) {
+                                let fullUrl = childValue;
+                                if (!$.httpRegex.test(childValue))
+                                  fullUrl = "https://" + childValue;
+                                childValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                              } else {
+                                childValueSpan.innerHTML = `"${childValue}"`;
+                              }
+                            } else {
+                              if ($.websiteRegex.test(childValue)) {
+                                let fullUrl = childValue;
+                                if (!$.httpRegex.test(childValue))
+                                  fullUrl = "https://" + childValue;
+                                childValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                              } else {
+                                childValueSpan.textContent = `"${childValue}"`;
+                              }
+                            }
+                            childValueSpan.className = "type-string";
+                          }
+                          if (j !== 0) {
+                            newDiv.innerHTML += ", ";
+                          }
+                          newDiv.appendChild(childValueSpan);
+                        }
+                        newDiv.innerHTML += "]";
+                        newListItem.appendChild(newDiv);
+                        newListItem.appendChild(newList);
+                        list2.appendChild(newListItem);
+                      } else {
+                        newDiv.innerHTML = keySpan.outerHTML + ": []";
+                        newListItem.appendChild(newDiv);
+                        newListItem.appendChild(newList);
+                        list2.appendChild(newListItem);
+                        recurse(value, newList, path.concat([index]), color);
+                      }
+                    } else {
+                      if (secondMap2.implicitMaps !== void 0 && secondMap2.implicitMaps.indexOf(key) > -1) {
+                        newDiv.innerHTML = keySpan.outerHTML;
+                      } else {
+                        newDiv.innerHTML = keySpan.outerHTML + ": {}";
+                      }
+                      newListItem.appendChild(newDiv);
+                      newListItem.appendChild(newList);
+                      list2.appendChild(newListItem);
+                      recurseSecondMap(value, newList, path.concat([index]), color);
                     }
                   } else {
-                    diffMapCurrentFractal[i] = "red";
+                    newDiv.innerHTML = keySpan.outerHTML + ": ";
+                    let valueSpan2 = document.createElement("span");
+                    let childText = value;
+                    if (childText === true) {
+                      valueSpan2.textContent = "true";
+                      valueSpan2.className = "type-boolean";
+                    } else if (childText === false) {
+                      valueSpan2.textContent = "false";
+                      valueSpan2.className = "type-boolean";
+                    } else if (childText === null) {
+                      valueSpan2.textContent = "null";
+                      valueSpan2.className = "type-null";
+                    } else if (Number.isFinite(childText) && !Number.isNaN(childText)) {
+                      valueSpan2.textContent = childText + "";
+                      valueSpan2.className = "type-number";
+                    } else {
+                      if (safeHTML) {
+                        if ($.websiteRegex.test(childText)) {
+                          let fullUrl = childText;
+                          if (!$.httpRegex.test(childText))
+                            fullUrl = "https://" + childText;
+                          valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                        } else {
+                          valueSpan2.innerHTML = `"${childText}"`;
+                        }
+                      } else {
+                        if ($.websiteRegex.test(childText)) {
+                          let fullUrl = childText;
+                          if (!$.httpRegex.test(childText))
+                            fullUrl = "https://" + childText;
+                          valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                        } else {
+                          valueSpan2.textContent = `"${childText}"`;
+                        }
+                      }
+                      valueSpan2.className = "type-string";
+                    }
+                    if (secondMap2.implicitNulls === void 0 || secondMap2.implicitNulls.indexOf(key) == -1) {
+                      newDiv.appendChild(valueSpan2);
+                    } else {
+                      newDiv.innerHTML = newDiv.innerHTML.slice(0, -2);
+                    }
+                    newListItem.appendChild(newDiv);
+                    list2.appendChild(newListItem);
+                  }
+                  index++;
+                }
+              }
+            } else if (Array.isArray(secondMap2)) {
+              for (var i = 0, c = secondMap2.length; i < c; i++) {
+                let newList = document.createElement("ul"), newDiv = document.createElement("code"), newListItem = document.createElement("li");
+                newListItem.className = secondMap2[i] + "-diff";
+                if (typeof secondMap2[i] === "object" && secondMap2[i] !== null) {
+                  if (Array.isArray(secondMap2[i])) {
+                    if (secondMap2.damonInlineArrays !== void 0 && secondMap2.damonInlineArrays.indexOf(i) > -1) {
+                      newDiv.innerHTML += "[";
+                      for (let j = 0, k = secondMap2[i].length; j < k; j++) {
+                        let valueSpan2 = document.createElement("span"), value = secondMap2[i][j];
+                        if (value === true) {
+                          valueSpan2.textContent = "true";
+                          valueSpan2.className = "type-boolean";
+                        } else if (value === false) {
+                          valueSpan2.textContent = "false";
+                          valueSpan2.className = "type-boolean";
+                        } else if (value === null) {
+                          valueSpan2.textContent = "null";
+                          valueSpan2.className = "type-null";
+                        } else if (Number.isFinite(value) && !Number.isNaN(value)) {
+                          valueSpan2.textContent = value + "";
+                          valueSpan2.className = "type-number";
+                        } else {
+                          if (safeHTML) {
+                            if ($.websiteRegex.test(value)) {
+                              let fullUrl = value;
+                              if (!$.httpRegex.test(value))
+                                fullUrl = "https://" + value;
+                              valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                            } else {
+                              valueSpan2.innerHTML = `"${value}"`;
+                            }
+                          } else {
+                            if ($.websiteRegex.test(value)) {
+                              let fullUrl = value;
+                              if (!$.httpRegex.test(value))
+                                fullUrl = "https://" + value;
+                              valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                            } else {
+                              valueSpan2.textContent = `"${value}"`;
+                            }
+                          }
+                          valueSpan2.className = "type-string";
+                        }
+                        if (j !== 0) {
+                          newDiv.innerHTML += ", ";
+                        }
+                        newDiv.appendChild(valueSpan2);
+                      }
+                      newDiv.innerHTML += "]";
+                      newListItem.appendChild(newDiv);
+                      newListItem.appendChild(newList);
+                      list2.appendChild(newListItem);
+                    } else {
+                      newDiv.textContent = "[]";
+                      newListItem.appendChild(newDiv);
+                      newListItem.appendChild(newList);
+                      list2.appendChild(newListItem);
+                      recurseSecondMap(secondMap2[i], newList, path.concat([i]), color);
+                    }
+                  } else {
+                    newDiv.textContent = "{}";
+                    newListItem.appendChild(newDiv);
+                    newListItem.appendChild(newList);
+                    list2.appendChild(newListItem);
+                    recurseSecondMap(secondMap2[i], newList, path.concat([i]), color);
                   }
                 } else {
-                  if (map[i] === secondMapValue) {
-                    diffMapCurrentFractal[i] = "green";
+                  let childText = secondMap2[i];
+                  if (childText === true) {
+                    newDiv.textContent = "true";
+                    newDiv.className = "type-boolean";
+                  } else if (childText === false) {
+                    newDiv.textContent = "false";
+                    newDiv.className = "type-boolean";
+                  } else if (childText === null) {
+                    newDiv.textContent = "null";
+                    newDiv.className = "type-null";
+                  } else if (Number.isFinite(childText) && !Number.isNaN(childText)) {
+                    newDiv.textContent = childText + "";
+                    newDiv.className = "type-number";
                   } else {
-                    diffMapCurrentFractal[i] = "red";
+                    if (safeHTML) {
+                      if ($.websiteRegex.test(childText)) {
+                        let fullUrl = childText;
+                        if (!$.httpRegex.test(childText))
+                          fullUrl = "https://" + childText;
+                        newDiv.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                      } else {
+                        newDiv.innerHTML = `"${childText}"`;
+                      }
+                    } else {
+                      if ($.websiteRegex.test(childText)) {
+                        let fullUrl = childText;
+                        if (!$.httpRegex.test(childText))
+                          fullUrl = "https://" + childText;
+                        newDiv.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                      } else {
+                        newDiv.textContent = `"${childText}"`;
+                      }
+                    }
+                    newDiv.className = "type-string";
                   }
+                  newListItem.appendChild(newDiv);
+                  newListItem.appendChild(newList);
+                  list2.appendChild(newListItem);
                 }
               }
             }
           }
+        }
+        damonTableToCSV(string) {
+          const $ = this;
+          let map = $.damon.damonToMap(string), output = "";
+          let index = 0;
+          for (const [key, value] of map) {
+            if (index === 0 && key === "00") {
+              output += '"' + value + '"\n';
+              index++;
+              continue;
+            }
+            let valueKeys = Array.from(value.keys());
+            for (let i = 0, c = valueKeys.length; i < c; i++) {
+              output += '"' + valueKeys[i] + '"';
+              if (i != c - 1) {
+                output += ",";
+              }
+            }
+            output += "\n";
+            index++;
+          }
+          return output.slice(0, -1);
+        }
+        csvToDamonTable(string) {
+          const $ = this;
+          let lines = string.split("\n"), damonMap = /* @__PURE__ */ new Map();
+          for (let i = 0, c = lines.length; i < c; i++) {
+            let rowMap = /* @__PURE__ */ new Map();
+            rowMap.implicitNulls = [];
+            damonMap.set(i + "", rowMap);
+            let lineValues = lines[i].split(",");
+            for (let z = 0, x = lineValues.length; z < x; z++) {
+              if (lineValues[z][0] === '"' && lineValues[z][lineValues[z].length - 1] === '"') {
+                try {
+                  damonMap.get(i + "").set(JSON.parse(lineValues[z]), null);
+                  damonMap.get(i + "").implicitNulls.push(lineValues[z]);
+                } catch (error) {
+                  damonMap.get(i + "").set(
+                    JSON.parse(`"${lineValues[z].slice(1, -1).replace(/(?<!\\)"/g, '"')}"`),
+                    null
+                  );
+                  damonMap.get(i + "").implicitNulls.push(
+                    `"${lineValues[z].slice(1, -1).replace(/(?<!\\)"/g, '"')}"`
+                  );
+                }
+              } else {
+                try {
+                  damonMap.get(i + "").set(JSON.parse(`"${lineValues[z]}"`), null);
+                  damonMap.get(i + "").implicitNulls.push(`"${lineValues[z]}"`);
+                } catch (error) {
+                  damonMap.get(i + "").set(
+                    JSON.parse(`"${lineValues[z].replace(/(?<!\\)"/g, '"')}"`),
+                    null
+                  );
+                  damonMap.get(i + "").implicitNulls.push(`"${lineValues[z].replace(/(?<!\\)"/g, '"')}"`);
+                }
+              }
+            }
+          }
+          return $.damon.mapToDamon(damonMap);
         }
       };
     }
@@ -2071,6 +2831,6 @@
 /*! Bundled license information:
 
 dompurify/dist/purify.cjs.js:
-  (*! @license DOMPurify 3.2.3 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.2.3/LICENSE *)
+  (*! @license DOMPurify 3.2.4 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.2.4/LICENSE *)
 */
 //# sourceMappingURL=out.js.map

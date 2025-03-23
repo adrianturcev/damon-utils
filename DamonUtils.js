@@ -2454,14 +2454,56 @@ class DamonUtils {
                 index++;
                 continue;
             }
-            for (let i = 0, c = value.length; i < c; i++) {
-                output += '"' + value[i] + '"';
-                if (i != c - 1) {
+            let valueKeys = Array.from(value.keys());
+            for (let i = 0, c = valueKeys.length; i < c; i++) {
+                output += '"' + valueKeys[i] + '"';
+                if (i != (c - 1)) {
                     output += ',';
                 }
             }
             output += '\n';
             index++;
         }
+        return output.slice(0, -1);
+    }
+
+    csvToDamonTable(string) {
+        const $ = this;
+        let lines = string.split("\n"),
+            damonMap = new Map();
+        for (let i = 0, c = lines.length; i < c; i++) {
+            let rowMap = new Map();
+            rowMap.implicitNulls = [];
+            damonMap.set(i + "", rowMap);
+            let lineValues = lines[i].split(',');
+            for (let z = 0, x = lineValues.length; z < x; z++) {
+                if (lineValues[z][0] === '"' && lineValues[z][lineValues[z].length - 1] === '"') {
+                    try {
+                        damonMap.get(i + "").set(JSON.parse(lineValues[z]), null);
+                        damonMap.get(i + "").implicitNulls.push(lineValues[z]);
+                    } catch (error) {
+                        damonMap.get(i + "").set(
+                            JSON.parse(`"${lineValues[z].slice(1, -1).replace(/(?<!\\)"/g, '\"')}"`),
+                            null
+                        );
+                        damonMap.get(i + "").implicitNulls.push(
+                            `"${lineValues[z].slice(1, -1).replace(/(?<!\\)"/g, '\"')}"`
+                        );
+                    }
+                } else {
+                    try {
+                        damonMap.get(i + "").set(JSON.parse(`"${lineValues[z]}"`), null);
+                        damonMap.get(i + "").implicitNulls.push(`"${lineValues[z]}"`);
+                    } catch (error) {
+                        damonMap.get(i + "").set(
+                            JSON.parse(`"${lineValues[z].replace(/(?<!\\)"/g, '\"')}"`),
+                            null
+                        );
+                        damonMap.get(i + "").implicitNulls.push(`"${lineValues[z].replace(/(?<!\\)"/g, '\"')}"`);
+                    }
+                }
+            }
+        }
+        return $.damon.mapToDamon(damonMap);
     }
 };
