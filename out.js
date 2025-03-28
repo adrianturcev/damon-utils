@@ -2042,7 +2042,8 @@
               if (Array.from(map.keys()).length < Array.from(secondMapCurrentFractal.keys()).length) {
                 let secondMapIndex = 0;
                 for (let [key, value] of secondMapCurrentFractal) {
-                  if (secondMapIndex <= index) {
+                  if (secondMapIndex <= index - 1) {
+                    secondMapIndex++;
                     continue;
                   }
                   if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map) {

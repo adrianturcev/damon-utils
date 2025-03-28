@@ -1495,7 +1495,8 @@ class DamonUtils {
                 if (Array.from(map.keys()).length < Array.from(secondMapCurrentFractal.keys()).length) {
                     let secondMapIndex = 0;
                     for (let [key, value] of secondMapCurrentFractal) {
-                        if (secondMapIndex <= index) {
+                        if (secondMapIndex <= index - 1) {
+                            secondMapIndex++;
                             continue;
                         }
                         if (
