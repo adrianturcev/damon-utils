@@ -1663,11 +1663,21 @@ class DamonUtils {
      */
     renderDiff(firstMap, secondMap, safeHTML = false) {
         let $ = this,
+            diff = document.createElement('div'),
+            legend = document.createElement('div'),
             list = document.createElement('ul'),
             diffMap = $._mapsDiff(firstMap, secondMap);
+        diff.className = 'DAMON-Diff';
+        legend.className = 'DAMON-Diff-legend';
         list.className = 'DAMON-List';
+        legend.innerHTML =
+            '<span id="damonDiffRed"><span>Red</span>: Difference</span>; '
+            + '<span id="damonDiffBlue"><span>Blue</span>: Addition</span>; '
+            + '<span id="damonDiffGreen"><span>Green</span>: Displacement</span>';
         recurseDiffMap(diffMap, list);
-        return list;
+        diff.appendChild(legend);
+        diff.appendChild(list);
+        return diff;
         /**
          * @param {*} diffMap
          * @param {*} listItem
@@ -1747,8 +1757,10 @@ class DamonUtils {
                                     if (index > Array.from(firstMapCurrentFractal.keys()).length -  1) {
                                         if (newListItem.className == 'red-diff') {
                                             newListItem.className = 'blue-diff';
+                                            newListItem.setAttribute('aria-describedby', 'damonDiffBlue');
                                         } else {
                                             newListItem.className = 'green-diff';
+                                            newListItem.setAttribute('aria-describedby', 'damonDiffGreen');
                                         }
                                     }
                                     secondMapKey = Array.from(secondMapCurrentFractal.keys())[index];
@@ -1764,12 +1776,15 @@ class DamonUtils {
                                     newListItem.className = '';
                                 } else {
                                     newListItem.className = 'blue-diff';
+                                    newListItem.setAttribute('aria-describedby', 'damonDiffBlue');
                                 }
                                 firstMapKey = Array.from(secondMapCurrentFractal.keys())[index];
                                 firstMapValue = secondMapCurrentFractal.get(firstMapKey);
                                 key = firstMapKey;
                                 value = firstMapValue;
                             }
+                            if (newListItem.className === 'red-diff')
+                                newListItem.setAttribute('aria-describedby', 'damonDiffRed');
                             if ($.websiteRegex.test(key)) {
                                 let fullUrl = key;
                                 if (!$.httpRegex.test(key))
@@ -1979,8 +1994,10 @@ class DamonUtils {
                                 if (i > firstMapCurrentFractal.length -  1) {
                                     if (newListItem.className == 'red-diff') {
                                         newListItem.className = 'blue-diff';
+                                        newListItem.setAttribute('aria-describedby', 'damonDiffBlue');
                                     } else {
                                         newListItem.className = 'green-diff';
+                                        newListItem.setAttribute('aria-describedby', 'damonDiffGreen');
                                     }
                                 }
                                 value = secondMapCurrentFractal[i];
@@ -1993,9 +2010,12 @@ class DamonUtils {
                                 newListItem.className = '';
                             } else {
                                 newListItem.className = 'blue-diff';
+                                newListItem.setAttribute('aria-describedby', 'damonDiffBlue');
                             }
                             value = firstMapCurrentFractal[i];
                         }
+                        if (newListItem.className === 'red-diff')
+                            newListItem.setAttribute('aria-describedby', 'damonDiffRed');
                         if (
                             typeof value === 'object'
                             && value !== null
@@ -2164,6 +2184,7 @@ class DamonUtils {
                         keySpan.className = "type-key";
                         // Setting color
                         newListItem.className = 'red-diff';
+                        newListItem.setAttribute('aria-describedby', 'damonDiffRed');
                         if ($.websiteRegex.test(key)) {
                             let fullUrl = key;
                             if (!$.httpRegex.test(key))
@@ -2319,6 +2340,7 @@ class DamonUtils {
                         newListItem = document.createElement('li');
                     // Setting color
                     newListItem.className = secondMap[i] + '-diff';
+                    newListItem.setAttribute('aria-describedby', 'damonDiffRed');
                     if (
                         typeof secondMap[i] === 'object'
                         && secondMap[i] !== null

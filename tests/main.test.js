@@ -48,19 +48,22 @@ describe('# DAMON UTILS', function () {
                         - 1
                         - n`,
                 expectedOutput =
-                h.html`<ul class="DAMON-List">
-                    <li class="" data-graph-arbo="0"><code><span class="type-key">Divide</span>: {}</code>
-                        <ul>
-                            <li class="" data-graph-arbo="0-0"><code><span class="type-key">n</span>: <span class="type-null">null</span></code></li>
-                            <li class="red-diff"><code><span class="type-key">b</span>: {}</code>
-                                <ul>
-                                    <li class="red-diff"><code><span class="type-key">1</span></code></li>
-                                    <li class="red-diff"><code><span class="type-key">n</span></code></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>`.innerHTML.replaceAll('\n' + '    '.repeat(4), '\n'),
+                h.html`<div class="DAMON-Diff">
+                    <div class="DAMON-Diff-legend"><span id="damonDiffRed"><span>Red</span>: Difference</span>; <span id="damonDiffBlue"><span>Blue</span>: Addition</span>; <span id="damonDiffGreen"><span>Green</span>: Displacement</span></div>
+                    <ul class="DAMON-List">
+                        <li class="" data-graph-arbo="0"><code><span class="type-key">Divide</span>: {}</code>
+                            <ul>
+                                <li class="" data-graph-arbo="0-0"><code><span class="type-key">n</span>: <span class="type-null">null</span></code></li>
+                                <li class="red-diff" aria-describedby="damonDiffRed"><code><span class="type-key">b</span>: {}</code>
+                                    <ul>
+                                        <li class="red-diff" aria-describedby="damonDiffRed"><code><span class="type-key">1</span></code></li>
+                                        <li class="red-diff" aria-describedby="damonDiffRed"><code><span class="type-key">n</span></code></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>`.innerHTML.replaceAll('\n' + '    '.repeat(4), '\n'),
                 renderDiff = damonUtils._mapsDiff(damon.damonToMap(firstMap), damon.damonToMap(secondMap)),
                 htmlOutput = damonUtils.renderDiff(damon.damonToMap(firstMap), damon.damonToMap(secondMap));
             assert.equal(expectedOutput, beautify(htmlOutput.outerHTML));
