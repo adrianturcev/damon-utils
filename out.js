@@ -2777,6 +2777,10 @@
             }
           }
         }
+        /**
+         * @param {String} string
+         * @returns
+         */
         damonTableToCSV(string) {
           const $ = this;
           let map = $.damon.damonToMap(string), output = "";
@@ -2799,6 +2803,10 @@
           }
           return output.slice(0, -1);
         }
+        /**
+         * @param {String} string
+         * @returns
+         */
         csvToDamonTable(string) {
           const $ = this;
           let lines = string.split("\n"), damonMap = /* @__PURE__ */ new Map();
@@ -2834,6 +2842,29 @@
             }
           }
           return $.damon.mapToDamon(damonMap);
+        }
+        /**
+         * @param {HTMLCollection} listItems
+         */
+        wrapListContentsForStyling(listItems) {
+          let $ = this;
+          for (let i = 0, c = listItems.length; i < c; i++) {
+            let div = document.createElement("div");
+            for (let z = listItems[i].childNodes.length - 1; z >= 0; z--) {
+              if (listItems[i].childNodes[z].tagName && listItems[i].childNodes[z].tagName !== "UL" || listItems[i].childNodes[z].nodeType == 3 && listItems[i].childNodes[z].data != "\n" && listItems[i].childNodes[z].data != "\r\n") {
+                if (div.childNodes.length == 0) {
+                  div.appendChild(listItems[i].childNodes[z]);
+                } else {
+                  div.insertBefore(listItems[i].childNodes[z], div.childNodes[0]);
+                }
+              }
+            }
+            if (listItems[i].firstElementChild) {
+              listItems[i].insertBefore(div, listItems[i].firstElementChild);
+            } else {
+              listItems[i].appendChild(div);
+            }
+          }
         }
       };
     }

@@ -206,4 +206,36 @@ describe('# DAMON UTILS', function () {
             assert.equal(damonUtils.csvToDamonTable(csv), tableTestTwo);
         });
     });
+    describe('## List contents wrapping', function () {
+        it('Returns a list with item contents wrapped in divs', function () {
+            let damonList =
+                `- {}
+                    - key: null
+                    - list: []
+                        - {}
+                        - {}`.replaceAll('\n' + '    '.repeat(4), '\n'),
+                returnValue =
+                `<ul class="DAMON-List">
+                    <li>
+                        <div><code><span class="type-key">key</span>: <span class="type-null">null</span></code></div>
+                    </li>
+                    <li>
+                        <div><code><span class="type-key">list</span>: []</code></div>
+                        <ul>
+                            <li>
+                                <div><code>{}</code></div>
+                                <ul></ul>
+                            </li>
+                            <li>
+                                <div><code>{}</code></div>
+                                <ul></ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>`.replaceAll('\n' + '    '.repeat(4), '\n');
+            let test = damonUtils.mapToHtmlList(damon.damonToMap(damonList));
+            damonUtils.wrapListContentsForStyling(test.getElementsByTagName('li'));
+            assert.equal(beautify(test.outerHTML), returnValue);
+        });
+    });
 });
