@@ -60,6 +60,9 @@
       var typeErrorCreate = unconstruct(TypeError);
       function unapply(func) {
         return function(thisArg) {
+          if (thisArg instanceof RegExp) {
+            thisArg.lastIndex = 0;
+          }
           for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
             args[_key - 1] = arguments[_key];
           }
@@ -238,7 +241,7 @@
       function createDOMPurify() {
         let window2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : getGlobal();
         const DOMPurify = (root) => createDOMPurify(root);
-        DOMPurify.version = "3.2.4";
+        DOMPurify.version = "3.2.5";
         DOMPurify.removed = [];
         if (!window2 || !window2.document || window2.document.nodeType !== NODE_TYPE.document || !window2.Element) {
           DOMPurify.isSupported = false;
@@ -650,7 +653,7 @@
             tagName,
             allowedTags: ALLOWED_TAGS
           });
-          if (currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(/<[/\w]/g, currentNode.innerHTML) && regExpTest(/<[/\w]/g, currentNode.textContent)) {
+          if (currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(/<[/\w!]/g, currentNode.innerHTML) && regExpTest(/<[/\w!]/g, currentNode.textContent)) {
             _forceRemove(currentNode);
             return true;
           }
@@ -1771,43 +1774,6 @@
           }
         }
         /**
-         * @param {string} damonString
-         * @returns {Array<Array<string|number>>} pathsList
-         */
-        getPathsList(damonString) {
-          const $ = this;
-          let damonMap = $.damon.damonToMap(damonString), pathsList = [];
-          _walkAndPushPaths(damonMap);
-          return pathsList;
-          function _walkAndPushPaths(map, currentPath = []) {
-            if (typeof map === "object" && map !== null && !Array.isArray(map) && map instanceof Map && map.constructor === Map) {
-              for (const [key, value] of map) {
-                if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map && Array.from(value.keys()).length) {
-                  pathsList.push(currentPath.concat(key));
-                  _walkAndPushPaths(value, currentPath.concat([key]));
-                } else if (Array.isArray(value) && (map.damonInlineArrays == void 0 || map.damonInlineArrays.indexOf(key) === -1) && value.length) {
-                  pathsList.push(currentPath.concat(key));
-                  _walkAndPushPaths(value, currentPath.concat([key]));
-                } else {
-                  pathsList.push(currentPath.concat(key).concat(value));
-                }
-              }
-            } else {
-              for (let i = 0, c = map.length; i < c; i++) {
-                if (typeof map[i] === "object" && map[i] !== null && !Array.isArray(map[i]) && map[i] instanceof Map && map[i].constructor === Map && Array.from(map[i].keys()).length) {
-                  pathsList.push(currentPath.concat(i));
-                  _walkAndPushPaths(map[i], currentPath.concat([i]));
-                } else if (Array.isArray(map[i]) && (map.damonInlineArrays == void 0 || map.damonInlineArrays.indexOf(i) === -1) && map[i].length) {
-                  pathsList.push(currentPath.concat(i));
-                  _walkAndPushPaths(map[i], currentPath.concat([i]));
-                } else {
-                  pathsList.push(currentPath.concat(map[i]));
-                }
-              }
-            }
-          }
-        }
-        /**
          * Arrays of inline-arrays produce array-parameters
          * @param {string} damonString
          * @return {string} mathJs
@@ -2878,6 +2844,6 @@
 /*! Bundled license information:
 
 dompurify/dist/purify.cjs.js:
-  (*! @license DOMPurify 3.2.4 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.2.4/LICENSE *)
+  (*! @license DOMPurify 3.2.5 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.2.5/LICENSE *)
 */
 //# sourceMappingURL=out.js.map
