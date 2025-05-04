@@ -1779,29 +1779,29 @@
           let damonMap = $.damon.damonToMap(damonString), pathsList = [];
           _walkAndPushPaths(damonMap);
           return pathsList;
-          function _walkAndPushPaths(map, currentPath2 = []) {
+          function _walkAndPushPaths(map, currentPath = []) {
             if (typeof map === "object" && map !== null && !Array.isArray(map) && map instanceof Map && map.constructor === Map) {
               for (const [key, value] of map) {
                 if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map && Array.from(value.keys()).length) {
-                  pathsList.push(currentPath2.concat(key));
-                  _walkAndPushPaths(value, currentPath2.concat([key]));
+                  pathsList.push(currentPath.concat(key));
+                  _walkAndPushPaths(value, currentPath.concat([key]));
                 } else if (Array.isArray(value) && (map.damonInlineArrays == void 0 || map.damonInlineArrays.indexOf(key) === -1) && value.length) {
-                  pathsList.push(currentPath2.concat(key));
-                  _walkAndPushPaths(value, currentPath2.concat([key]));
+                  pathsList.push(currentPath.concat(key));
+                  _walkAndPushPaths(value, currentPath.concat([key]));
                 } else {
-                  pathsList.push(currentPath2.concat(key).concat(value));
+                  pathsList.push(currentPath.concat(key).concat(value));
                 }
               }
             } else {
               for (let i = 0, c = map.length; i < c; i++) {
                 if (typeof map[i] === "object" && map[i] !== null && !Array.isArray(map[i]) && map[i] instanceof Map && map[i].constructor === Map && Array.from(map[i].keys()).length) {
-                  pathsList.push(currentPath2.concat(i));
-                  _walkAndPushPaths(map[i], currentPath2.concat([i]));
+                  pathsList.push(currentPath.concat(i));
+                  _walkAndPushPaths(map[i], currentPath.concat([i]));
                 } else if (Array.isArray(map[i]) && (map.damonInlineArrays == void 0 || map.damonInlineArrays.indexOf(i) === -1) && map[i].length) {
-                  pathsList.push(currentPath2.concat(i));
-                  _walkAndPushPaths(map[i], currentPath2.concat([i]));
+                  pathsList.push(currentPath.concat(i));
+                  _walkAndPushPaths(map[i], currentPath.concat([i]));
                 } else {
-                  pathsList.push(currentPath2.concat(map[i]));
+                  pathsList.push(currentPath.concat(map[i]));
                 }
               }
             }
@@ -1950,22 +1950,22 @@
             _walkAndDiff(firstMap);
             return diffMap;
           }
-          function _walkAndDiff(map, currentPath2 = []) {
+          function _walkAndDiff(map, currentPath = []) {
             if (typeof map === "object" && map !== null && !Array.isArray(map) && map instanceof Map && map.constructor === Map) {
               let secondMapKey = "", secondMapValue = null, secondMapCurrentFractal = secondMap;
-              for (let i = 0, c = currentPath2.length; i < c; i++) {
+              for (let i = 0, c = currentPath.length; i < c; i++) {
                 if (typeof secondMapCurrentFractal === "object" && secondMapCurrentFractal !== null && !Array.isArray(secondMapCurrentFractal) && secondMapCurrentFractal instanceof Map && secondMapCurrentFractal.constructor === Map) {
-                  secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath2[i]]);
+                  secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath[i]]);
                 } else {
-                  secondMapCurrentFractal = secondMapCurrentFractal[currentPath2[i]];
+                  secondMapCurrentFractal = secondMapCurrentFractal[currentPath[i]];
                 }
               }
               let diffMapCurrentFractal = diffMap;
-              for (let i = 0, c = currentPath2.length; i < c; i++) {
+              for (let i = 0, c = currentPath.length; i < c; i++) {
                 if (typeof diffMapCurrentFractal === "object" && diffMapCurrentFractal !== null && !Array.isArray(diffMapCurrentFractal) && diffMapCurrentFractal instanceof Map && diffMapCurrentFractal.constructor === Map && Array.from(diffMapCurrentFractal.keys()).length) {
-                  diffMapCurrentFractal = diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath2[i]]);
+                  diffMapCurrentFractal = diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath[i]]);
                 } else {
-                  diffMapCurrentFractal = diffMapCurrentFractal[currentPath2[i]];
+                  diffMapCurrentFractal = diffMapCurrentFractal[currentPath[i]];
                 }
               }
               let index = 0;
@@ -1998,7 +1998,7 @@
                       if (key === secondMapKey) {
                         diffMapCurrentFractal.set(index + "-green", /* @__PURE__ */ new Map());
                         if (Array.from(value.keys()).length > 0) {
-                          _walkAndDiff(value, currentPath2.concat([index]));
+                          _walkAndDiff(value, currentPath.concat([index]));
                         }
                       } else if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && (typeof secondMapCurrentFractal.get(key) === "object" && secondMapCurrentFractal.get(key) !== null && !Array.isArray(secondMapCurrentFractal.get(key)) && secondMapCurrentFractal.get(key) instanceof Map && secondMapCurrentFractal.get(key).constructor === Map)) {
                         diffMapCurrentFractal.set(index + "-yellow", null);
@@ -2013,7 +2013,7 @@
                       if (key === secondMapKey) {
                         diffMapCurrentFractal.set(index + "-green", []);
                         if (value.length > 0) {
-                          _walkAndDiff(value, currentPath2.concat([index]));
+                          _walkAndDiff(value, currentPath.concat([index]));
                         }
                       } else if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && Array.isArray(secondMapCurrentFractal.get(key))) {
                         diffMapCurrentFractal.set(index + "-yellow", null);
@@ -2070,19 +2070,19 @@
               }
             } else {
               let secondMapValue = null, secondMapCurrentFractal = secondMap;
-              for (let z = 0, x = currentPath2.length; z < x; z++) {
+              for (let z = 0, x = currentPath.length; z < x; z++) {
                 if (typeof secondMapCurrentFractal === "object" && secondMapCurrentFractal !== null && !Array.isArray(secondMapCurrentFractal) && secondMapCurrentFractal instanceof Map && secondMapCurrentFractal.constructor === Map && Array.from(secondMapCurrentFractal.keys()).length) {
-                  secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath2[z]]);
+                  secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath[z]]);
                 } else {
-                  secondMapCurrentFractal = secondMapCurrentFractal[currentPath2[z]];
+                  secondMapCurrentFractal = secondMapCurrentFractal[currentPath[z]];
                 }
               }
               let diffMapCurrentFractal = diffMap;
-              for (let i = 0, c = currentPath2.length; i < c; i++) {
+              for (let i = 0, c = currentPath.length; i < c; i++) {
                 if (typeof diffMapCurrentFractal === "object" && diffMapCurrentFractal !== null && !Array.isArray(diffMapCurrentFractal) && diffMapCurrentFractal instanceof Map && diffMapCurrentFractal.constructor === Map && Array.from(diffMapCurrentFractal.keys()).length) {
-                  diffMapCurrentFractal = diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath2[i]]);
+                  diffMapCurrentFractal = diffMapCurrentFractal.get(Array.from(diffMapCurrentFractal.keys())[currentPath[i]]);
                 } else {
-                  diffMapCurrentFractal = diffMapCurrentFractal[currentPath2[i]];
+                  diffMapCurrentFractal = diffMapCurrentFractal[currentPath[i]];
                 }
               }
               for (let i = 0, c = map.length; i < c; i++) {
@@ -2094,7 +2094,7 @@
                     if (typeof secondMapValue === "object" && secondMapValue !== null && !Array.isArray(secondMapValue) && secondMapValue instanceof Map && secondMapValue.constructor === Map) {
                       diffMapCurrentFractal[i] = /* @__PURE__ */ new Map();
                       if (Array.from(map[i].keys()).length > 0) {
-                        _walkAndDiff(map[i], currentPath2.concat([i]));
+                        _walkAndDiff(map[i], currentPath.concat([i]));
                       }
                     } else {
                       diffMapCurrentFractal[i] = "red";
@@ -2103,7 +2103,7 @@
                     if (Array.isArray(secondMapValue)) {
                       diffMapCurrentFractal[i] = [];
                       if (map[i].length > 0) {
-                        _walkAndDiff(map[i], currentPath2.concat([i]));
+                        _walkAndDiff(map[i], currentPath.concat([i]));
                       }
                     } else {
                       diffMapCurrentFractal[i] = "red";
@@ -2363,19 +2363,19 @@
                 }
               } else if (Array.isArray(diffMap2)) {
                 let firstMapValue = null, firstMapCurrentFractal = firstMap;
-                for (let z = 0, x = currentPath.length; z < x; z++) {
+                for (let z = 0, x = path.length; z < x; z++) {
                   if (typeof firstMapCurrentFractal === "object" && firstMapCurrentFractal !== null && !Array.isArray(firstMapCurrentFractal) && firstMapCurrentFractal instanceof Map && firstMapCurrentFractal.constructor === Map && Array.from(firstMapCurrentFractal.keys()).length) {
-                    firstMapCurrentFractal = firstMapCurrentFractal.get(Array.from(firstMapCurrentFractal.keys())[currentPath[z]]);
+                    firstMapCurrentFractal = firstMapCurrentFractal.get(Array.from(firstMapCurrentFractal.keys())[path[z]]);
                   } else {
-                    firstMapCurrentFractal = firstMapCurrentFractal[currentPath[z]];
+                    firstMapCurrentFractal = firstMapCurrentFractal[path[z]];
                   }
                 }
                 let secondMapValue = null, secondMapCurrentFractal = secondMap;
-                for (let z = 0, x = currentPath.length; z < x; z++) {
+                for (let z = 0, x = path.length; z < x; z++) {
                   if (typeof secondMapCurrentFractal === "object" && secondMapCurrentFractal !== null && !Array.isArray(secondMapCurrentFractal) && secondMapCurrentFractal instanceof Map && secondMapCurrentFractal.constructor === Map && Array.from(secondMapCurrentFractal.keys()).length) {
-                    secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath[z]]);
+                    secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[path[z]]);
                   } else {
-                    secondMapCurrentFractal = secondMapCurrentFractal[currentPath[z]];
+                    secondMapCurrentFractal = secondMapCurrentFractal[path[z]];
                   }
                 }
                 for (var i = 0, c = diffMap2.length; i < c; i++) {

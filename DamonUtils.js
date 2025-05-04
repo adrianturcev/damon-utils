@@ -1944,7 +1944,7 @@ class DamonUtils {
                 } else if (Array.isArray(diffMap)) {
                     let firstMapValue = null,
                         firstMapCurrentFractal = firstMap;
-                    for (let z = 0, x = currentPath.length; z < x; z++) {
+                    for (let z = 0, x = path.length; z < x; z++) {
                         if (
                             typeof firstMapCurrentFractal === 'object'
                             && firstMapCurrentFractal !== null
@@ -1954,14 +1954,14 @@ class DamonUtils {
                             && Array.from(firstMapCurrentFractal.keys()).length
                         ) {
                             firstMapCurrentFractal =
-                                firstMapCurrentFractal.get(Array.from(firstMapCurrentFractal.keys())[currentPath[z]]);
+                                firstMapCurrentFractal.get(Array.from(firstMapCurrentFractal.keys())[path[z]]);
                         } else {
-                            firstMapCurrentFractal = firstMapCurrentFractal[currentPath[z]];
+                            firstMapCurrentFractal = firstMapCurrentFractal[path[z]];
                         }
                     }
                     let secondMapValue = null,
                         secondMapCurrentFractal = secondMap;
-                    for (let z = 0, x = currentPath.length; z < x; z++) {
+                    for (let z = 0, x = path.length; z < x; z++) {
                         if (
                             typeof secondMapCurrentFractal === 'object'
                             && secondMapCurrentFractal !== null
@@ -1971,9 +1971,9 @@ class DamonUtils {
                             && Array.from(secondMapCurrentFractal.keys()).length
                         ) {
                             secondMapCurrentFractal =
-                                secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[currentPath[z]]);
+                                secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[path[z]]);
                         } else {
-                            secondMapCurrentFractal = secondMapCurrentFractal[currentPath[z]];
+                            secondMapCurrentFractal = secondMapCurrentFractal[path[z]];
                         }
                     }
                     for (var i = 0, c = diffMap.length; i < c; i++) {
