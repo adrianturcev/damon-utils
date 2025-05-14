@@ -1966,8 +1966,6 @@
                         if (Array.from(value.keys()).length > 0) {
                           _walkAndDiff(value, currentPath.concat([index]));
                         }
-                      } else if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && (typeof secondMapCurrentFractal.get(key) === "object" && secondMapCurrentFractal.get(key) !== null && !Array.isArray(secondMapCurrentFractal.get(key)) && secondMapCurrentFractal.get(key) instanceof Map && secondMapCurrentFractal.get(key).constructor === Map)) {
-                        diffMapCurrentFractal.set(index + "-yellow", null);
                       } else {
                         diffMapCurrentFractal.set(index + "-red", null);
                       }
@@ -1981,8 +1979,6 @@
                         if (value.length > 0) {
                           _walkAndDiff(value, currentPath.concat([index]));
                         }
-                      } else if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && Array.isArray(secondMapCurrentFractal.get(key))) {
-                        diffMapCurrentFractal.set(index + "-yellow", null);
                       } else {
                         diffMapCurrentFractal.set(index + "-red", null);
                       }
@@ -1993,8 +1989,6 @@
                     if (value === secondMapValue) {
                       if (key === secondMapKey) {
                         diffMapCurrentFractal.set(index + "-green", "green");
-                      } else if (Array.from(secondMapCurrentFractal.keys()).indexOf(key) !== -1 && value === secondMapCurrentFractal.get(key)) {
-                        diffMapCurrentFractal.set(index + "-yellow", null);
                       } else {
                         diffMapCurrentFractal.set(index + "-red", null);
                       }
@@ -2164,13 +2158,8 @@
                         value = "";
                       } else {
                         if (index > Array.from(firstMapCurrentFractal.keys()).length - 1) {
-                          if (newListItem.className == "red-diff") {
-                            newListItem.className = "blue-diff";
-                            newListItem.setAttribute("aria-describedby", "damonDiffBlue");
-                          } else {
-                            newListItem.className = "green-diff";
-                            newListItem.setAttribute("aria-describedby", "damonDiffGreen");
-                          }
+                          newListItem.className = "blue-diff";
+                          newListItem.setAttribute("aria-describedby", "damonDiffBlue");
                         }
                         secondMapKey = Array.from(secondMapCurrentFractal.keys())[index];
                         secondMapValue = secondMapCurrentFractal.get(secondMapKey);
@@ -2183,14 +2172,32 @@
                         if (path.length > 0)
                           newListItem.dataset.graphArbo = path.join("-") + "-" + index;
                         newListItem.className = "";
+                        firstMapKey = Array.from(secondMapCurrentFractal.keys())[index];
+                        firstMapValue = secondMapCurrentFractal.get(firstMapKey);
+                        key = firstMapKey;
+                        value = firstMapValue;
+                      } else if (newListItem.className === "yellow-diff") {
+                        if (index > Array.from(firstMapCurrentFractal.keys()).length - 1) {
+                          newListItem.className = "green-diff";
+                          newListItem.setAttribute("aria-describedby", "damonDiffGreen");
+                          firstMapKey = Array.from(secondMapCurrentFractal.keys())[index];
+                          firstMapValue = secondMapCurrentFractal.get(firstMapKey);
+                          key = firstMapKey;
+                          value = firstMapValue;
+                        } else {
+                          key = "";
+                          value = "";
+                          newListItem.className = "red-diff";
+                          newListItem.setAttribute("aria-describedby", "damonDiffRed");
+                        }
                       } else {
                         newListItem.className = "blue-diff";
                         newListItem.setAttribute("aria-describedby", "damonDiffBlue");
+                        firstMapKey = Array.from(secondMapCurrentFractal.keys())[index];
+                        firstMapValue = secondMapCurrentFractal.get(firstMapKey);
+                        key = firstMapKey;
+                        value = firstMapValue;
                       }
-                      firstMapKey = Array.from(secondMapCurrentFractal.keys())[index];
-                      firstMapValue = secondMapCurrentFractal.get(firstMapKey);
-                      key = firstMapKey;
-                      value = firstMapValue;
                     }
                     if (newListItem.className === "red-diff")
                       newListItem.setAttribute("aria-describedby", "damonDiffRed");
