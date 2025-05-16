@@ -90,44 +90,44 @@ describe('# DAMON UTILS', function () {
                         - {}`.replaceAll('\n' + '    '.repeat(4), '\n'),
                 htmlList =
                 `<ul class="DAMON-List">
-                    <li><code><span class="type-key">key0</span>: <span class="type-null">null</span></code></li>
-                    <li><code><span class="type-key">k
-                            ey1</span>: []</code>
+                    <li data-graph-arbo="0"><code><span class="type-key">key0</span>: <span class="type-null">null</span></code></li>
+                    <li data-graph-arbo="1"><code><span class="type-key">k
+                                ey1</span>: []</code>
                         <ul>
-                            <li><code>[]</code>
+                            <li data-graph-arbo="1-0"><code>[]</code>
                                 <ul>
-                                    <li><code>{}</code>
+                                    <li data-graph-arbo="1-0-0"><code>{}</code>
                                         <ul></ul>
                                     </li>
-                                    <li><code>[<span class="type-number">1</span>, <span class="type-number">1</span>, <span class="type-number">1</span>]</code>
+                                    <li data-graph-arbo="1-0-1"><code>[<span class="type-number">1</span>, <span class="type-number">1</span>, <span class="type-number">1</span>]</code>
                                         <ul></ul>
                                     </li>
-                                    <li><code class="type-string">"abc"</code>
+                                    <li data-graph-arbo="1-0-2"><code class="type-string">"abc"</code>
                                         <ul></ul>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
-                    <li><code><span class="type-key">1</span>: {}</code>
+                    <li data-graph-arbo="2"><code><span class="type-key">1</span>: {}</code>
                         <ul>
-                            <li><code><span class="type-key">key</span>: <span class="type-number">1</span></code></li>
-                            <li><code><span class="type-key">othe: "rKey</span>: <span class="type-string">": "1e10"</span></code></li>
+                            <li data-graph-arbo="2-0"><code><span class="type-key">key</span>: <span class="type-number">1</span></code></li>
+                            <li data-graph-arbo="2-1"><code><span class="type-key">othe: "rKey</span>: <span class="type-string">": "1e10"</span></code></li>
                         </ul>
                     </li>
-                    <li><code><span class="type-key">More_complex_case</span>: {}</code>
+                    <li data-graph-arbo="3"><code><span class="type-key">More_complex_case</span>: {}</code>
                         <ul>
-                            <li><code><span class="type-key">key</span>: [<span class="type-string">"1e10"</span>, <span class="type-string">"abc"</span>]</code>
+                            <li data-graph-arbo="3-0"><code><span class="type-key">key</span>: [<span class="type-string">"1e10"</span>, <span class="type-string">"abc"</span>]</code>
                                 <ul></ul>
                             </li>
                         </ul>
                     </li>
-                    <li><code><span class="type-key">list</span>: []</code>
+                    <li data-graph-arbo="4"><code><span class="type-key">list</span>: []</code>
                         <ul>
-                            <li><code>{}</code>
+                            <li data-graph-arbo="4-0"><code>{}</code>
                                 <ul></ul>
                             </li>
-                            <li><code>{}</code>
+                            <li data-graph-arbo="4-1"><code>{}</code>
                                 <ul></ul>
                             </li>
                         </ul>
@@ -216,17 +216,17 @@ describe('# DAMON UTILS', function () {
                         - {}`.replaceAll('\n' + '    '.repeat(4), '\n'),
                 returnValue =
                 `<ul class="DAMON-List">
-                    <li>
+                    <li data-graph-arbo="0">
                         <div><code><span class="type-key">key</span>: <span class="type-null">null</span></code></div>
                     </li>
-                    <li>
+                    <li data-graph-arbo="1">
                         <div><code><span class="type-key">list</span>: []</code></div>
                         <ul>
-                            <li>
+                            <li data-graph-arbo="1-0">
                                 <div><code>{}</code></div>
                                 <ul></ul>
                             </li>
-                            <li>
+                            <li data-graph-arbo="1-1">
                                 <div><code>{}</code></div>
                                 <ul></ul>
                             </li>

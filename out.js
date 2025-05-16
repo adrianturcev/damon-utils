@@ -992,18 +992,18 @@
       module.exports = class DamonUtils {
         //# MODEL
         constructor(damon) {
-          let $ = this;
-          $.damon = damon;
-          $.websiteRegex = /^(https?:\/\/)?[-a-zA-Z0-9]*[a-zA-Z0-9]+(\.[-a-zA-Z0-9]*[a-zA-Z0-9]+)+/;
-          $.httpRegex = /^https?:\/\//;
+          let $2 = this;
+          $2.damon = damon;
+          $2.websiteRegex = /^(https?:\/\/)?[-a-zA-Z0-9]*[a-zA-Z0-9]+(\.[-a-zA-Z0-9]*[a-zA-Z0-9]+)+/;
+          $2.httpRegex = /^https?:\/\//;
         }
         /**
          * @param {string} damonString
          * @returns {string}
          */
         damonToSExpression(damonString) {
-          const $ = this;
-          return $.implicitMapToSExpression($.damon.damonToMap(damonString));
+          const $2 = this;
+          return $2.implicitMapToSExpression($2.damon.damonToMap(damonString));
         }
         /**
          * @param {string} string
@@ -1022,9 +1022,9 @@
          * @returns {object} DOM
          */
         mapToHtmlList(jsonMap, safeHTML = false, jsonContext = void 0) {
-          let $ = this;
+          let $2 = this;
           try {
-            $.damon.mapToJSON(jsonMap);
+            $2.damon.mapToJSON(jsonMap);
           } catch (error) {
             console.log(error);
             throw new Error("Provided map value doesn't passes JSON.parse()");
@@ -1036,7 +1036,7 @@
           list.className = "DAMON-List";
           recurse2(jsonMap, list);
           return list;
-          function recurse2(jsonMap2, listItem) {
+          function recurse2(jsonMap2, listItem, path = []) {
             if (typeof listItem !== "object" || listItem == null || Array.isArray(listItem)) {
               throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
             }
@@ -1044,10 +1044,13 @@
               if (listItem.tagName == "UL") {
                 for (const [key, value] of jsonMap2) {
                   let newList = document.createElement("ul"), newDiv = document.createElement("code"), keySpan = document.createElement("span"), newListItem = document.createElement("li");
+                  newListItem.dataset.graphArbo = Array.from(jsonMap2.keys()).indexOf(key);
+                  if (path.length > 0)
+                    newListItem.dataset.graphArbo = path.join("-") + "-" + Array.from(jsonMap2.keys()).indexOf(key);
                   keySpan.className = "type-key";
-                  if ($.websiteRegex.test(key)) {
+                  if ($2.websiteRegex.test(key)) {
                     let fullUrl = key;
-                    if (!$.httpRegex.test(key))
+                    if (!$2.httpRegex.test(key))
                       fullUrl = "https://" + key;
                     let keyLink = DOMPurify.sanitize(`<a href="${fullUrl}">${fullUrl}</a>`);
                     keySpan.innerHTML = keyLink;
@@ -1078,18 +1081,18 @@
                             childValueSpan.className = "type-number";
                           } else {
                             if (safeHTML) {
-                              if ($.websiteRegex.test(childValue)) {
+                              if ($2.websiteRegex.test(childValue)) {
                                 let fullUrl = childValue;
-                                if (!$.httpRegex.test(childValue))
+                                if (!$2.httpRegex.test(childValue))
                                   fullUrl = "https://" + childValue;
                                 childValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                               } else {
                                 childValueSpan.innerHTML = `"${childValue}"`;
                               }
                             } else {
-                              if ($.websiteRegex.test(childValue)) {
+                              if ($2.websiteRegex.test(childValue)) {
                                 let fullUrl = childValue;
-                                if (!$.httpRegex.test(childValue))
+                                if (!$2.httpRegex.test(childValue))
                                   fullUrl = "https://" + childValue;
                                 childValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                               } else {
@@ -1112,7 +1115,7 @@
                         newListItem.appendChild(newDiv);
                         newListItem.appendChild(newList);
                         listItem.appendChild(newListItem);
-                        recurse2(value, newList);
+                        recurse2(value, newList, path.concat([Array.from(jsonMap2.keys()).indexOf(key)]));
                       }
                     } else {
                       if (jsonMap2.implicitMaps !== void 0 && jsonMap2.implicitMaps.indexOf(key) > -1) {
@@ -1123,7 +1126,7 @@
                       newListItem.appendChild(newDiv);
                       newListItem.appendChild(newList);
                       listItem.appendChild(newListItem);
-                      recurse2(value, newList);
+                      recurse2(value, newList, path.concat([Array.from(jsonMap2.keys()).indexOf(key)]));
                     }
                   } else {
                     jsonItemIndex++;
@@ -1144,18 +1147,18 @@
                       valueSpan2.className = "type-number";
                     } else {
                       if (safeHTML) {
-                        if ($.websiteRegex.test(childText)) {
+                        if ($2.websiteRegex.test(childText)) {
                           let fullUrl = childText;
-                          if (!$.httpRegex.test(childText))
+                          if (!$2.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
                           valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
                           valueSpan2.innerHTML = `"${childText}"`;
                         }
                       } else {
-                        if ($.websiteRegex.test(childText)) {
+                        if ($2.websiteRegex.test(childText)) {
                           let fullUrl = childText;
-                          if (!$.httpRegex.test(childText))
+                          if (!$2.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
                           valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
@@ -1177,6 +1180,9 @@
             } else if (Array.isArray(jsonMap2)) {
               for (var i = 0, c = jsonMap2.length; i < c; i++) {
                 let newList = document.createElement("ul"), newDiv = document.createElement("code"), newListItem = document.createElement("li");
+                newListItem.dataset.graphArbo = i;
+                if (path.length > 0)
+                  newListItem.dataset.graphArbo = path.join("-") + "-" + i;
                 if (typeof jsonMap2[i] === "object" && jsonMap2[i] !== null) {
                   if (Array.isArray(jsonMap2[i])) {
                     if (jsonMap2.damonInlineArrays !== void 0 && jsonMap2.damonInlineArrays.indexOf(i) > -1) {
@@ -1197,18 +1203,18 @@
                           valueSpan2.className = "type-number";
                         } else {
                           if (safeHTML) {
-                            if ($.websiteRegex.test(value)) {
+                            if ($2.websiteRegex.test(value)) {
                               let fullUrl = value;
-                              if (!$.httpRegex.test(value))
+                              if (!$2.httpRegex.test(value))
                                 fullUrl = "https://" + value;
                               valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                             } else {
                               valueSpan2.innerHTML = `"${value}"`;
                             }
                           } else {
-                            if ($.websiteRegex.test(value)) {
+                            if ($2.websiteRegex.test(value)) {
                               let fullUrl = value;
-                              if (!$.httpRegex.test(value))
+                              if (!$2.httpRegex.test(value))
                                 fullUrl = "https://" + value;
                               valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                             } else {
@@ -1231,14 +1237,14 @@
                       newListItem.appendChild(newDiv);
                       newListItem.appendChild(newList);
                       listItem.appendChild(newListItem);
-                      recurse2(jsonMap2[i], newList);
+                      recurse2(jsonMap2[i], newList, path.concat(i));
                     }
                   } else {
                     newDiv.textContent = "{}";
                     newListItem.appendChild(newDiv);
                     newListItem.appendChild(newList);
                     listItem.appendChild(newListItem);
-                    recurse2(jsonMap2[i], newList);
+                    recurse2(jsonMap2[i], newList, path.concat(i));
                   }
                 } else {
                   jsonItemIndex++;
@@ -1257,18 +1263,18 @@
                     newDiv.className = "type-number";
                   } else {
                     if (safeHTML) {
-                      if ($.websiteRegex.test(childText)) {
+                      if ($2.websiteRegex.test(childText)) {
                         let fullUrl = childText;
-                        if (!$.httpRegex.test(childText))
+                        if (!$2.httpRegex.test(childText))
                           fullUrl = "https://" + childText;
                         newDiv.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                       } else {
                         newDiv.innerHTML = `"${childText}"`;
                       }
                     } else {
-                      if ($.websiteRegex.test(childText)) {
+                      if ($2.websiteRegex.test(childText)) {
                         let fullUrl = childText;
-                        if (!$.httpRegex.test(childText))
+                        if (!$2.httpRegex.test(childText))
                           fullUrl = "https://" + childText;
                         newDiv.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                       } else {
@@ -1291,9 +1297,9 @@
          * @returns {object} DOM
          */
         mapToHtmlTable(jsonMap, safeHTML = false) {
-          let $ = this;
+          let $2 = this;
           try {
-            $.damon.mapToJSON(jsonMap);
+            $2.damon.mapToJSON(jsonMap);
           } catch (error) {
             throw new Error("Provided map value doesn't passes JSON.parse()");
           }
@@ -1311,13 +1317,13 @@
                   if (childValue === null) {
                     let headerCell = document.createElement("th");
                     if (safeHTML) {
-                      if ($.websiteRegex.test(childKey)) {
+                      if ($2.websiteRegex.test(childKey)) {
                         headerCell.innerHTML = DOMPurify.sanitize(`<a href="${childKey}">${childKey}</a>`);
                       } else {
                         headerCell.innerHTML = `${childKey}`;
                       }
                     } else {
-                      if ($.websiteRegex.test(childKey)) {
+                      if ($2.websiteRegex.test(childKey)) {
                         headerCell.innerHTML = DOMPurify.sanitize(`<a href="${childKey}">${childKey}</a>`);
                       } else {
                         headerCell.textContent = `${childKey}`;
@@ -1341,13 +1347,13 @@
                   if (childValue === null) {
                     let dataCell = document.createElement("td");
                     if (safeHTML) {
-                      if ($.websiteRegex.test(childKey)) {
+                      if ($2.websiteRegex.test(childKey)) {
                         dataCell.innerHTML = DOMPurify.sanitize(`<a href="${childKey}">${childKey}</a>`);
                       } else {
                         dataCell.innerHTML = `${childKey}`;
                       }
                     } else {
-                      if ($.websiteRegex.test(childKey)) {
+                      if ($2.websiteRegex.test(childKey)) {
                         dataCell.innerHTML = DOMPurify.sanitize(`<a href="${childKey}">${childKey}</a>`);
                       } else {
                         dataCell.textContent = `${childKey}`;
@@ -1386,9 +1392,9 @@
          * @returns {object} DOM
          */
         mapTreeLeavesToHtmlTable(jsonMap, safeHTML = false) {
-          let $ = this;
+          let $2 = this;
           try {
-            $.damon.mapToJSON(jsonMap);
+            $2.damon.mapToJSON(jsonMap);
           } catch (error) {
             throw new Error("Provided map value doesn't passes JSON.parse()");
           }
@@ -1524,12 +1530,12 @@
          * @return {string}
          */
         htmlToJSON(list) {
-          let $ = this;
+          let $2 = this;
           var listItemIndex = 0;
           if (list.firstElementChild.textContent == "{}") {
-            return $._mapToJSON(recurse2(list, /* @__PURE__ */ new Map()));
+            return $2._mapToJSON(recurse2(list, /* @__PURE__ */ new Map()));
           } else if (list.firstElementChild.textContent == "[]") {
-            return $._mapToJSON(recurse2(list, []));
+            return $2._mapToJSON(recurse2(list, []));
           }
           function recurse2(list2, jsonMap) {
             if (typeof list2 !== "object" || list2 == null || Array.isArray(list2)) {
@@ -1661,7 +1667,7 @@
          * @returns {string}
          */
         implicitMapToSExpression(jsonMap) {
-          const $ = this;
+          const $2 = this;
           var list = ``;
           if (typeof jsonMap === "object" && jsonMap !== null && jsonMap instanceof Map && jsonMap.constructor === Map) {
             list += "[\r\n";
@@ -1779,8 +1785,8 @@
          * @return {string} mathJs
          */
         damonToMathJs(damonString) {
-          const $ = this;
-          let mathJs = "", damonMap = $.damon.damonToMap(damonString);
+          const $2 = this;
+          let mathJs = "", damonMap = $2.damon.damonToMap(damonString);
           if (Array.isArray(damonMap)) {
             mathJs += "(\r\n";
             _recurse(damonMap);
@@ -1896,10 +1902,10 @@
          * @param {damonValue} secondMap
         */
         _mapsDiff(firstMap, secondMap) {
-          let $ = this;
+          let $2 = this;
           try {
-            $.damon.mapToJSON(firstMap);
-            $.damon.mapToJSON(secondMap);
+            $2.damon.mapToJSON(firstMap);
+            $2.damon.mapToJSON(secondMap);
           } catch (error) {
             throw new Error("Provided map value doesn't passes JSON.parse()");
           }
@@ -2094,7 +2100,7 @@
          * @returns {Map} outputMap
          */
         sortMap(firstMap, secondMap) {
-          let $ = this, firstMapKeys = Array.from(firstMap.keys()), secondMapKeys = Array.from(secondMap.keys()), outputMap = /* @__PURE__ */ new Map();
+          let $2 = this, firstMapKeys = Array.from(firstMap.keys()), secondMapKeys = Array.from(secondMap.keys()), outputMap = /* @__PURE__ */ new Map();
           for (let i = 0, c = firstMapKeys.length; i < c; i++) {
             if (secondMap.get(firstMapKeys[i]) !== void 0) {
               outputMap.set(firstMapKeys[i], secondMap.get(firstMapKeys[i]));
@@ -2114,7 +2120,7 @@
          * @returns {string} list
          */
         renderDiff(firstMap, secondMap, safeHTML = false) {
-          let $ = this, diff = document.createElement("div"), legend = document.createElement("div"), list = document.createElement("ul"), diffMap = $._mapsDiff(firstMap, secondMap);
+          let $2 = this, diff = document.createElement("div"), legend = document.createElement("div"), list = document.createElement("ul"), diffMap = $2._mapsDiff(firstMap, secondMap);
           diff.className = "DAMON-Diff";
           legend.className = "DAMON-Diff-legend";
           list.className = "DAMON-List";
@@ -2201,9 +2207,9 @@
                     }
                     if (newListItem.className === "red-diff")
                       newListItem.setAttribute("aria-describedby", "damonDiffRed");
-                    if ($.websiteRegex.test(key)) {
+                    if ($2.websiteRegex.test(key)) {
                       let fullUrl = key;
-                      if (!$.httpRegex.test(key))
+                      if (!$2.httpRegex.test(key))
                         fullUrl = "https://" + key;
                       let keyLink = DOMPurify.sanitize(`<a href="${fullUrl}">${fullUrl}</a>`);
                       keySpan.innerHTML = keyLink;
@@ -2230,18 +2236,18 @@
                               childValueSpan.className = "type-number";
                             } else {
                               if (safeHTML) {
-                                if ($.websiteRegex.test(childValue)) {
+                                if ($2.websiteRegex.test(childValue)) {
                                   let fullUrl = childValue;
-                                  if (!$.httpRegex.test(childValue))
+                                  if (!$2.httpRegex.test(childValue))
                                     fullUrl = "https://" + childValue;
                                   childValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                                 } else {
                                   childValueSpan.innerHTML = `"${childValue}"`;
                                 }
                               } else {
-                                if ($.websiteRegex.test(childValue)) {
+                                if ($2.websiteRegex.test(childValue)) {
                                   let fullUrl = childValue;
-                                  if (!$.httpRegex.test(childValue))
+                                  if (!$2.httpRegex.test(childValue))
                                     fullUrl = "https://" + childValue;
                                   childValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                                 } else {
@@ -2303,18 +2309,18 @@
                         valueSpan2.className = "type-number";
                       } else {
                         if (safeHTML) {
-                          if ($.websiteRegex.test(childText)) {
+                          if ($2.websiteRegex.test(childText)) {
                             let fullUrl = childText;
-                            if (!$.httpRegex.test(childText))
+                            if (!$2.httpRegex.test(childText))
                               fullUrl = "https://" + childText;
                             valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                           } else {
                             valueSpan2.innerHTML = `"${childText}"`;
                           }
                         } else {
-                          if ($.websiteRegex.test(childText)) {
+                          if ($2.websiteRegex.test(childText)) {
                             let fullUrl = childText;
-                            if (!$.httpRegex.test(childText))
+                            if (!$2.httpRegex.test(childText))
                               fullUrl = "https://" + childText;
                             valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                           } else {
@@ -2404,18 +2410,18 @@
                             arrayValueSpan.className = "type-number";
                           } else {
                             if (safeHTML) {
-                              if ($.websiteRegex.test(arrayValue)) {
+                              if ($2.websiteRegex.test(arrayValue)) {
                                 let fullUrl = arrayValue;
-                                if (!$.httpRegex.test(arrayValue))
+                                if (!$2.httpRegex.test(arrayValue))
                                   fullUrl = "https://" + arrayValue;
                                 arrayValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                               } else {
                                 arrayValueSpan.innerHTML = `"${arrayValue}"`;
                               }
                             } else {
-                              if ($.websiteRegex.test(arrayValue)) {
+                              if ($2.websiteRegex.test(arrayValue)) {
                                 let fullUrl = arrayValue;
-                                if (!$.httpRegex.test(arrayValue))
+                                if (!$2.httpRegex.test(arrayValue))
                                   fullUrl = "https://" + arrayValue;
                                 arrayValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                               } else {
@@ -2463,18 +2469,18 @@
                       newDiv.className = "type-number";
                     } else {
                       if (safeHTML) {
-                        if ($.websiteRegex.test(childText)) {
+                        if ($2.websiteRegex.test(childText)) {
                           let fullUrl = childText;
-                          if (!$.httpRegex.test(childText))
+                          if (!$2.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
                           newDiv.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
                           newDiv.innerHTML = `"${childText}"`;
                         }
                       } else {
-                        if ($.websiteRegex.test(childText)) {
+                        if ($2.websiteRegex.test(childText)) {
                           let fullUrl = childText;
-                          if (!$.httpRegex.test(childText))
+                          if (!$2.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
                           newDiv.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
@@ -2513,9 +2519,9 @@
                   keySpan.className = "type-key";
                   newListItem.className = "red-diff";
                   newListItem.setAttribute("aria-describedby", "damonDiffRed");
-                  if ($.websiteRegex.test(key)) {
+                  if ($2.websiteRegex.test(key)) {
                     let fullUrl = key;
-                    if (!$.httpRegex.test(key))
+                    if (!$2.httpRegex.test(key))
                       fullUrl = "https://" + key;
                     let keyLink = DOMPurify.sanitize(`<a href="${fullUrl}">${fullUrl}</a>`);
                     keySpan.innerHTML = keyLink;
@@ -2542,18 +2548,18 @@
                             childValueSpan.className = "type-number";
                           } else {
                             if (safeHTML) {
-                              if ($.websiteRegex.test(childValue)) {
+                              if ($2.websiteRegex.test(childValue)) {
                                 let fullUrl = childValue;
-                                if (!$.httpRegex.test(childValue))
+                                if (!$2.httpRegex.test(childValue))
                                   fullUrl = "https://" + childValue;
                                 childValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                               } else {
                                 childValueSpan.innerHTML = `"${childValue}"`;
                               }
                             } else {
-                              if ($.websiteRegex.test(childValue)) {
+                              if ($2.websiteRegex.test(childValue)) {
                                 let fullUrl = childValue;
-                                if (!$.httpRegex.test(childValue))
+                                if (!$2.httpRegex.test(childValue))
                                   fullUrl = "https://" + childValue;
                                 childValueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                               } else {
@@ -2607,18 +2613,18 @@
                       valueSpan2.className = "type-number";
                     } else {
                       if (safeHTML) {
-                        if ($.websiteRegex.test(childText)) {
+                        if ($2.websiteRegex.test(childText)) {
                           let fullUrl = childText;
-                          if (!$.httpRegex.test(childText))
+                          if (!$2.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
                           valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
                           valueSpan2.innerHTML = `"${childText}"`;
                         }
                       } else {
-                        if ($.websiteRegex.test(childText)) {
+                        if ($2.websiteRegex.test(childText)) {
                           let fullUrl = childText;
-                          if (!$.httpRegex.test(childText))
+                          if (!$2.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
                           valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
@@ -2663,18 +2669,18 @@
                           valueSpan2.className = "type-number";
                         } else {
                           if (safeHTML) {
-                            if ($.websiteRegex.test(value)) {
+                            if ($2.websiteRegex.test(value)) {
                               let fullUrl = value;
-                              if (!$.httpRegex.test(value))
+                              if (!$2.httpRegex.test(value))
                                 fullUrl = "https://" + value;
                               valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                             } else {
                               valueSpan2.innerHTML = `"${value}"`;
                             }
                           } else {
-                            if ($.websiteRegex.test(value)) {
+                            if ($2.websiteRegex.test(value)) {
                               let fullUrl = value;
-                              if (!$.httpRegex.test(value))
+                              if (!$2.httpRegex.test(value))
                                 fullUrl = "https://" + value;
                               valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                             } else {
@@ -2722,18 +2728,18 @@
                     newDiv.className = "type-number";
                   } else {
                     if (safeHTML) {
-                      if ($.websiteRegex.test(childText)) {
+                      if ($2.websiteRegex.test(childText)) {
                         let fullUrl = childText;
-                        if (!$.httpRegex.test(childText))
+                        if (!$2.httpRegex.test(childText))
                           fullUrl = "https://" + childText;
                         newDiv.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                       } else {
                         newDiv.innerHTML = `"${childText}"`;
                       }
                     } else {
-                      if ($.websiteRegex.test(childText)) {
+                      if ($2.websiteRegex.test(childText)) {
                         let fullUrl = childText;
-                        if (!$.httpRegex.test(childText))
+                        if (!$2.httpRegex.test(childText))
                           fullUrl = "https://" + childText;
                         newDiv.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                       } else {
@@ -2755,8 +2761,8 @@
          * @returns
          */
         damonTableToCSV(string) {
-          const $ = this;
-          let map = $.damon.damonToMap(string), output = "";
+          const $2 = this;
+          let map = $2.damon.damonToMap(string), output = "";
           let index = 0;
           for (const [key, value] of map) {
             if (index === 0 && key === "00") {
@@ -2781,7 +2787,7 @@
          * @returns
          */
         csvToDamonTable(string) {
-          const $ = this;
+          const $2 = this;
           let lines = string.split("\n"), damonMap = /* @__PURE__ */ new Map();
           for (let i = 0, c = lines.length; i < c; i++) {
             let rowMap = /* @__PURE__ */ new Map();
@@ -2814,13 +2820,13 @@
               }
             }
           }
-          return $.damon.mapToDamon(damonMap);
+          return $2.damon.mapToDamon(damonMap);
         }
         /**
          * @param {HTMLCollection} listItems
          */
         wrapListContentsForStyling(listItems) {
-          let $ = this;
+          let $2 = this;
           for (let i = 0, c = listItems.length; i < c; i++) {
             let div = document.createElement("div");
             for (let z = listItems[i].childNodes.length - 1; z >= 0; z--) {
@@ -2837,6 +2843,35 @@
             } else {
               listItems[i].appendChild(div);
             }
+          }
+        }
+        /**
+         * @param {NodeList } listItems
+         * @param {String} damon
+         */
+        addLineNumbers(listItems, damon, startLine = 0) {
+          for (let i = 0, c = listItems.length; i < c; i++) {
+            let lineNumberDiv = document.createElement("div");
+            lineNumberDiv.className = "damon-line-number";
+            let currentLevel = $.damon.damonToMap(damon), abstractPath = listItems[i].dataset.graphArbo.split("-"), concretePath = [];
+            for (let z = 0, x = abstractPath.length; z < x; z++) {
+              if (typeof currentLevel === "object" && currentLevel !== null && !Array.isArray(currentLevel) && currentLevel instanceof Map && currentLevel.constructor === Map) {
+                concretePath.push(Array.from(currentLevel.keys())[abstractPath[z]]);
+                currentLevel = concretePath[concretePath.length - 1];
+              } else {
+                concretePath.push(abstractPath[z]);
+                currentLevel = currentLevel[abstractPath[z]];
+              }
+            }
+            lineNumberDiv.textContent = $.damon.getRangeFromPath(
+              damon,
+              concretePath
+            )[0][0] + 1 + startLine;
+            lineNumberDiv.id = "damonLine" + lineNumberDiv.textContent;
+            listItems[i].setAttribute("aria-labelledBy", lineNumberDiv.id);
+            lineNumberDiv.style.left = "7px";
+            lineNumberDiv.style.top = outputDiv.scrollTop + listItems[i].firstElementChild.getBoundingClientRect().top + "px";
+            outputDiv.appendChild(lineNumberDiv);
           }
         }
       };

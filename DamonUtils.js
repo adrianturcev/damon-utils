@@ -66,7 +66,7 @@ class DamonUtils {
          * @param {object} listItem
          * @returns {object} DOM
          */
-        function recurse(jsonMap, listItem) {
+        function recurse(jsonMap, listItem, path = []) {// imitate renderDiff
             if (
                 typeof listItem !== 'object'
                 || listItem == null
@@ -87,6 +87,10 @@ class DamonUtils {
                             newDiv = document.createElement('code'),
                             keySpan = document.createElement('span'),
                             newListItem = document.createElement('li');
+                        newListItem.dataset.graphArbo = Array.from(jsonMap.keys()).indexOf(key);
+                        if (path.length > 0)
+                            newListItem.dataset.graphArbo =
+                                path.join('-') + '-' + Array.from(jsonMap.keys()).indexOf(key);
                         keySpan.className = "type-key";
                         if ($.websiteRegex.test(key)) {
                             let fullUrl = key;
@@ -171,7 +175,7 @@ class DamonUtils {
                                     newListItem.appendChild(newDiv);
                                     newListItem.appendChild(newList);
                                     listItem.appendChild(newListItem);
-                                    recurse(value, newList);
+                                    recurse(value, newList, path.concat([Array.from(jsonMap.keys()).indexOf(key)]));
                                 }
                             } else {
                                 if (
@@ -185,7 +189,7 @@ class DamonUtils {
                                 newListItem.appendChild(newDiv);
                                 newListItem.appendChild(newList);
                                 listItem.appendChild(newListItem);
-                                recurse(value, newList);
+                                recurse(value, newList, path.concat([Array.from(jsonMap.keys()).indexOf(key)]));
                             }
                         } else {
                             jsonItemIndex++;
@@ -249,6 +253,9 @@ class DamonUtils {
                     let newList = document.createElement('ul'),
                         newDiv = document.createElement('code'),
                         newListItem = document.createElement('li');
+                    newListItem.dataset.graphArbo = i;
+                    if (path.length > 0)
+                        newListItem.dataset.graphArbo = path.join('-') + '-' + i;
                     if (
                         typeof jsonMap[i] === 'object'
                         && jsonMap[i] !== null
@@ -315,14 +322,14 @@ class DamonUtils {
                                 newListItem.appendChild(newDiv);
                                 newListItem.appendChild(newList);
                                 listItem.appendChild(newListItem);
-                                recurse(jsonMap[i], newList);
+                                recurse(jsonMap[i], newList, path.concat(i));
                             }
                         } else {
                             newDiv.textContent = "{}";
                             newListItem.appendChild(newDiv);
                             newListItem.appendChild(newList);
                             listItem.appendChild(newListItem);
-                            recurse(jsonMap[i], newList);
+                            recurse(jsonMap[i], newList, path.concat(i));
                         }
                     } else {
                         jsonItemIndex++;
@@ -2481,6 +2488,47 @@ class DamonUtils {
             } else {
                 listItems[i].appendChild(div);
             }
+        }
+    }
+
+    /**
+     * @param {NodeList } listItems
+     * @param {String} damon
+     */
+    addLineNumbers(listItems, damon, startLine = 0) {
+        // Must occur after rendering
+        for (let i = 0, c = listItems.length; i < c; i++) {
+            let lineNumberDiv = document.createElement('div');
+            lineNumberDiv.className = 'damon-line-number';
+            let currentLevel = $.damon.damonToMap(damon),
+                abstractPath = listItems[i].dataset.graphArbo.split('-'),
+                concretePath = [];
+            for (let z = 0, x = abstractPath.length; z < x; z++) {
+                if (
+                    typeof currentLevel === 'object'
+                    && currentLevel !== null
+                    && !Array.isArray(currentLevel)
+                    && currentLevel instanceof Map
+                    && currentLevel.constructor === Map
+                ) {
+                    concretePath.push(Array.from(currentLevel.keys())[abstractPath[z]]);
+                    currentLevel = concretePath[concretePath.length - 1];
+                } else {
+                    concretePath.push(abstractPath[z]);
+                    currentLevel = currentLevel[abstractPath[z]];
+                }
+            }
+            lineNumberDiv.textContent =
+                $.damon.getRangeFromPath(
+                    damon,
+                    concretePath
+                )[0][0] + 1 + startLine;
+            lineNumberDiv.id = 'damonLine' + lineNumberDiv.textContent;
+            listItems[i].setAttribute("aria-labelledBy", lineNumberDiv.id);
+            lineNumberDiv.style.left = 7 + 'px';
+            lineNumberDiv.style.top =
+                outputDiv.scrollTop + listItems[i].firstElementChild.getBoundingClientRect().top + 'px';
+            outputDiv.appendChild(lineNumberDiv);
         }
     }
 };
