@@ -2492,11 +2492,12 @@ class DamonUtils {
     }
 
     /**
+     * Must occur after rendering
      * @param {NodeList } listItems
      * @param {String} damon
      */
     addLineNumbers(listItems, damon, startLine = 0) {
-        // Must occur after rendering
+        let $ = this;
         for (let i = 0, c = listItems.length; i < c; i++) {
             let lineNumberDiv = document.createElement('div');
             lineNumberDiv.className = 'damon-line-number';
