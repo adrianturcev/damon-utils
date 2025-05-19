@@ -2850,7 +2850,7 @@
          * @param {NodeList } listItems
          * @param {String} damon
          */
-        addLineNumbers(listItems, damon, startLine = 0) {
+        addLineNumbers(listItems, damon, container, startLine = 0) {
           let $ = this;
           for (let i = 0, c = listItems.length; i < c; i++) {
             let lineNumberDiv = document.createElement("div");
@@ -2872,8 +2872,8 @@
             lineNumberDiv.id = "damonLine" + lineNumberDiv.textContent;
             listItems[i].setAttribute("aria-labelledBy", lineNumberDiv.id);
             lineNumberDiv.style.left = "7px";
-            lineNumberDiv.style.top = outputDiv.scrollTop + listItems[i].firstElementChild.getBoundingClientRect().top + "px";
-            outputDiv.appendChild(lineNumberDiv);
+            lineNumberDiv.style.top = container.scrollTop + listItems[i].firstElementChild.getBoundingClientRect().top + "px";
+            container.appendChild(lineNumberDiv);
           }
         }
       };
