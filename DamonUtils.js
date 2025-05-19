@@ -2528,7 +2528,9 @@ class DamonUtils {
             listItems[i].setAttribute("aria-labelledBy", lineNumberDiv.id);
             lineNumberDiv.style.left = 7 + 'px';
             lineNumberDiv.style.top =
-                container.scrollTop + listItems[i].firstElementChild.getBoundingClientRect().top + 'px';
+                container.scrollTop
+                + listItems[i].firstElementChild.getBoundingClientRect().top
+                - container.getBoundingClientRect().top + 'px';
             container.appendChild(lineNumberDiv);
         }
     }
