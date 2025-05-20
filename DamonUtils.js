@@ -2515,7 +2515,7 @@ class DamonUtils {
                     concretePath.push(Array.from(currentLevel.keys())[abstractPath[z]]);
                     currentLevel = concretePath[concretePath.length - 1];
                 } else {
-                    concretePath.push(abstractPath[z]);
+                    concretePath.push(parseInt(abstractPath[z]));
                     currentLevel = currentLevel[abstractPath[z]];
                 }
             }
