@@ -1864,8 +1864,7 @@ class DamonUtils {
                         }
                     }
                 } else if (Array.isArray(diffMap)) {
-                    let firstMapValue = null,
-                        firstMapCurrentFractal = firstMap;
+                    let firstMapCurrentFractal = firstMap;
                     for (let z = 0, x = path.length; z < x; z++) {
                         if (
                             typeof firstMapCurrentFractal === 'object'
@@ -1881,8 +1880,7 @@ class DamonUtils {
                             firstMapCurrentFractal = firstMapCurrentFractal[path[z]];
                         }
                     }
-                    let secondMapValue = null,
-                        secondMapCurrentFractal = secondMap;
+                    let secondMapCurrentFractal = secondMap;
                     for (let z = 0, x = path.length; z < x; z++) {
                         if (
                             typeof secondMapCurrentFractal === 'object'
@@ -1993,7 +1991,6 @@ class DamonUtils {
                                         if (j !== 0) {
                                             newDiv.innerHTML += ', ';
                                         }
-                                        newDiv.appendChild(valueSpan);
                                     }
                                     newDiv.innerHTML += ']';
                                     newListItem.appendChild(newDiv);
@@ -2061,9 +2058,7 @@ class DamonUtils {
                     }
                 }
             } else if (['red', 'yellow'].indexOf(color) > -1) {
-                let secondMapKey = "",
-                    secondMapValue = null,
-                    secondMapCurrentFractal = secondMap;
+                let secondMapCurrentFractal = secondMap;
                 for (let i = 0, c = path.length; i < c; i++) {
                     if (
                         typeof secondMapCurrentFractal === 'object'
@@ -2182,7 +2177,7 @@ class DamonUtils {
                                     newListItem.appendChild(newDiv);
                                     newListItem.appendChild(newList);
                                     list.appendChild(newListItem);
-                                    recurse(value, newList, path.concat([index]), color);
+                                    recurseSecondMap(value, newList, path.concat([index]), color);
                                 }
                             } else {
                                 if (

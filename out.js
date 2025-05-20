@@ -1039,9 +1039,9 @@
             schema = JSON.parse(jsonContext);
           }
           list.className = "DAMON-List";
-          recurse2(jsonMap, list);
+          recurse(jsonMap, list);
           return list;
-          function recurse2(jsonMap2, listItem, path = []) {
+          function recurse(jsonMap2, listItem, path = []) {
             if (typeof listItem !== "object" || listItem == null || Array.isArray(listItem)) {
               throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
             }
@@ -1120,7 +1120,7 @@
                         newListItem.appendChild(newDiv);
                         newListItem.appendChild(newList);
                         listItem.appendChild(newListItem);
-                        recurse2(value, newList, path.concat([Array.from(jsonMap2.keys()).indexOf(key)]));
+                        recurse(value, newList, path.concat([Array.from(jsonMap2.keys()).indexOf(key)]));
                       }
                     } else {
                       if (jsonMap2.implicitMaps !== void 0 && jsonMap2.implicitMaps.indexOf(key) > -1) {
@@ -1131,49 +1131,49 @@
                       newListItem.appendChild(newDiv);
                       newListItem.appendChild(newList);
                       listItem.appendChild(newListItem);
-                      recurse2(value, newList, path.concat([Array.from(jsonMap2.keys()).indexOf(key)]));
+                      recurse(value, newList, path.concat([Array.from(jsonMap2.keys()).indexOf(key)]));
                     }
                   } else {
                     jsonItemIndex++;
                     newDiv.innerHTML = keySpan.outerHTML + ": ";
-                    let valueSpan2 = document.createElement("span");
+                    let valueSpan = document.createElement("span");
                     let childText = value;
                     if (childText === true) {
-                      valueSpan2.textContent = "true";
-                      valueSpan2.className = "type-boolean";
+                      valueSpan.textContent = "true";
+                      valueSpan.className = "type-boolean";
                     } else if (childText === false) {
-                      valueSpan2.textContent = "false";
-                      valueSpan2.className = "type-boolean";
+                      valueSpan.textContent = "false";
+                      valueSpan.className = "type-boolean";
                     } else if (childText === null) {
-                      valueSpan2.textContent = "null";
-                      valueSpan2.className = "type-null";
+                      valueSpan.textContent = "null";
+                      valueSpan.className = "type-null";
                     } else if (Number.isFinite(childText) && !Number.isNaN(childText)) {
-                      valueSpan2.textContent = childText + "";
-                      valueSpan2.className = "type-number";
+                      valueSpan.textContent = childText + "";
+                      valueSpan.className = "type-number";
                     } else {
                       if (safeHTML) {
                         if ($.websiteRegex.test(childText)) {
                           let fullUrl = childText;
                           if (!$.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
-                          valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                          valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
-                          valueSpan2.innerHTML = `"${childText}"`;
+                          valueSpan.innerHTML = `"${childText}"`;
                         }
                       } else {
                         if ($.websiteRegex.test(childText)) {
                           let fullUrl = childText;
                           if (!$.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
-                          valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                          valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
-                          valueSpan2.textContent = `"${childText}"`;
+                          valueSpan.textContent = `"${childText}"`;
                         }
                       }
-                      valueSpan2.className = "type-string";
+                      valueSpan.className = "type-string";
                     }
                     if (jsonMap2.implicitNulls === void 0 || jsonMap2.implicitNulls.indexOf(key) == -1) {
-                      newDiv.appendChild(valueSpan2);
+                      newDiv.appendChild(valueSpan);
                     } else {
                       newDiv.innerHTML = newDiv.innerHTML.slice(0, -2);
                     }
@@ -1193,45 +1193,45 @@
                     if (jsonMap2.damonInlineArrays !== void 0 && jsonMap2.damonInlineArrays.indexOf(i) > -1) {
                       newDiv.innerHTML += "[";
                       for (let j = 0, k = jsonMap2[i].length; j < k; j++) {
-                        let valueSpan2 = document.createElement("span"), value = jsonMap2[i][j];
+                        let valueSpan = document.createElement("span"), value = jsonMap2[i][j];
                         if (value === true) {
-                          valueSpan2.textContent = "true";
-                          valueSpan2.className = "type-boolean";
+                          valueSpan.textContent = "true";
+                          valueSpan.className = "type-boolean";
                         } else if (value === false) {
-                          valueSpan2.textContent = "false";
-                          valueSpan2.className = "type-boolean";
+                          valueSpan.textContent = "false";
+                          valueSpan.className = "type-boolean";
                         } else if (value === null) {
-                          valueSpan2.textContent = "null";
-                          valueSpan2.className = "type-null";
+                          valueSpan.textContent = "null";
+                          valueSpan.className = "type-null";
                         } else if (Number.isFinite(value) && !Number.isNaN(value)) {
-                          valueSpan2.textContent = value + "";
-                          valueSpan2.className = "type-number";
+                          valueSpan.textContent = value + "";
+                          valueSpan.className = "type-number";
                         } else {
                           if (safeHTML) {
                             if ($.websiteRegex.test(value)) {
                               let fullUrl = value;
                               if (!$.httpRegex.test(value))
                                 fullUrl = "https://" + value;
-                              valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                              valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                             } else {
-                              valueSpan2.innerHTML = `"${value}"`;
+                              valueSpan.innerHTML = `"${value}"`;
                             }
                           } else {
                             if ($.websiteRegex.test(value)) {
                               let fullUrl = value;
                               if (!$.httpRegex.test(value))
                                 fullUrl = "https://" + value;
-                              valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                              valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                             } else {
-                              valueSpan2.textContent = `"${value}"`;
+                              valueSpan.textContent = `"${value}"`;
                             }
                           }
-                          valueSpan2.className = "type-string";
+                          valueSpan.className = "type-string";
                         }
                         if (j !== 0) {
                           newDiv.innerHTML += ", ";
                         }
-                        newDiv.appendChild(valueSpan2);
+                        newDiv.appendChild(valueSpan);
                       }
                       newDiv.innerHTML += "]";
                       newListItem.appendChild(newDiv);
@@ -1242,14 +1242,14 @@
                       newListItem.appendChild(newDiv);
                       newListItem.appendChild(newList);
                       listItem.appendChild(newListItem);
-                      recurse2(jsonMap2[i], newList, path.concat(i));
+                      recurse(jsonMap2[i], newList, path.concat(i));
                     }
                   } else {
                     newDiv.textContent = "{}";
                     newListItem.appendChild(newDiv);
                     newListItem.appendChild(newList);
                     listItem.appendChild(newListItem);
-                    recurse2(jsonMap2[i], newList, path.concat(i));
+                    recurse(jsonMap2[i], newList, path.concat(i));
                   }
                 } else {
                   jsonItemIndex++;
@@ -1412,14 +1412,14 @@
             if (typeof value === "object" && !Array.isArray(value)) {
               if (key == "head" && !headingsEncountered) {
                 try {
-                  recurse2(value, tHead);
+                  recurse(value, tHead);
                 } catch (e) {
                   return;
                 }
                 headingsEncountered = true;
               } else if (key == "body") {
                 try {
-                  recurse2(value, tBody);
+                  recurse(value, tBody);
                 } catch (e) {
                   return;
                 }
@@ -1442,7 +1442,7 @@
           }
           table.appendChild(tBody);
           return table;
-          function recurse2(jsonMap2, tableSubContainer, level = 0, line = []) {
+          function recurse(jsonMap2, tableSubContainer, level = 0, line = []) {
             if (typeof tableSubContainer !== "object" || tableSubContainer == null) {
               throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
             }
@@ -1451,7 +1451,7 @@
                 if (Array.from(jsonMap2.keys()).length == 1) {
                   if (typeof jsonMap2.get(Array.from(jsonMap2.keys())[0]) === "object" && jsonMap2.get(Array.from(jsonMap2.keys())[0]) !== null) {
                     jsonItemIndex++;
-                    recurse2(
+                    recurse(
                       jsonMap2.get(Array.from(jsonMap2.keys())[0]),
                       tableSubContainer,
                       level + 1,
@@ -1470,7 +1470,7 @@
                 for (const [key, value] of jsonMap2) {
                   if (typeof value === "object" && value !== null) {
                     jsonItemIndex++;
-                    recurse2(value, tableSubContainer, level + 1, line.concat([key]));
+                    recurse(value, tableSubContainer, level + 1, line.concat([key]));
                   } else {
                     throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
                   }
@@ -1538,11 +1538,11 @@
           let $ = this;
           var listItemIndex = 0;
           if (list.firstElementChild.textContent == "{}") {
-            return $._mapToJSON(recurse2(list, /* @__PURE__ */ new Map()));
+            return $._mapToJSON(recurse(list, /* @__PURE__ */ new Map()));
           } else if (list.firstElementChild.textContent == "[]") {
-            return $._mapToJSON(recurse2(list, []));
+            return $._mapToJSON(recurse(list, []));
           }
-          function recurse2(list2, jsonMap) {
+          function recurse(list2, jsonMap) {
             if (typeof list2 !== "object" || list2 == null || Array.isArray(list2)) {
               throw new Error("Error List Item number " + listItemIndex + ": @param { {} } list");
             }
@@ -1578,7 +1578,7 @@
                         if (text.slice(-3) == " []") {
                           jsonMap.set(text.slice(0, -4), []);
                           if (list2.children[i].children[1].tagName == "UL") {
-                            recurse2(list2.children[i].children[1], jsonMap.get(text.slice(0, -4)));
+                            recurse(list2.children[i].children[1], jsonMap.get(text.slice(0, -4)));
                           } else {
                             throw new Error(
                               "Error List Item number " + listItemIndex + ": not DAMON-compliant."
@@ -1587,7 +1587,7 @@
                         } else if (text.slice(-3) == " {}") {
                           jsonMap.set(text.slice(0, -4), /* @__PURE__ */ new Map());
                           if (list2.children[i].children[1].tagName == "UL") {
-                            recurse2(list2.children[i].children[1], jsonMap.get(text.slice(0, -4)));
+                            recurse(list2.children[i].children[1], jsonMap.get(text.slice(0, -4)));
                           } else {
                             throw new Error(
                               "Error List Item number " + listItemIndex + ": not DAMON-compliant."
@@ -1626,7 +1626,7 @@
                         if (text == "[]") {
                           jsonMap.push([]);
                           if (list2.children[i].children[1] && list2.children[i].children[1].tagName == "UL") {
-                            recurse2(list2.children[i].children[1], jsonMap[jsonMap.length - 1]);
+                            recurse(list2.children[i].children[1], jsonMap[jsonMap.length - 1]);
                           } else {
                             throw new Error(
                               "Error List Item number " + listItemIndex + ": not DAMON-compliant."
@@ -1635,7 +1635,7 @@
                         } else if (text == "{}") {
                           jsonMap.push({});
                           if (list2.children[i].children[1] && list2.children[i].children[1].tagName == "UL") {
-                            recurse2(list2.children[i].children[1], jsonMap[jsonMap.length - 1]);
+                            recurse(list2.children[i].children[1], jsonMap[jsonMap.length - 1]);
                           } else {
                             throw new Error(
                               "Error List Item number " + listItemIndex + ": not DAMON-compliant."
@@ -2298,44 +2298,44 @@
                       }
                     } else {
                       newDiv.innerHTML = keySpan.outerHTML + ": ";
-                      let valueSpan2 = document.createElement("span");
+                      let valueSpan = document.createElement("span");
                       let childText = value;
                       if (childText === true) {
-                        valueSpan2.textContent = "true";
-                        valueSpan2.className = "type-boolean";
+                        valueSpan.textContent = "true";
+                        valueSpan.className = "type-boolean";
                       } else if (childText === false) {
-                        valueSpan2.textContent = "false";
-                        valueSpan2.className = "type-boolean";
+                        valueSpan.textContent = "false";
+                        valueSpan.className = "type-boolean";
                       } else if (childText === null) {
-                        valueSpan2.textContent = "null";
-                        valueSpan2.className = "type-null";
+                        valueSpan.textContent = "null";
+                        valueSpan.className = "type-null";
                       } else if (Number.isFinite(childText) && !Number.isNaN(childText)) {
-                        valueSpan2.textContent = childText + "";
-                        valueSpan2.className = "type-number";
+                        valueSpan.textContent = childText + "";
+                        valueSpan.className = "type-number";
                       } else {
                         if (safeHTML) {
                           if ($.websiteRegex.test(childText)) {
                             let fullUrl = childText;
                             if (!$.httpRegex.test(childText))
                               fullUrl = "https://" + childText;
-                            valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                            valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                           } else {
-                            valueSpan2.innerHTML = `"${childText}"`;
+                            valueSpan.innerHTML = `"${childText}"`;
                           }
                         } else {
                           if ($.websiteRegex.test(childText)) {
                             let fullUrl = childText;
                             if (!$.httpRegex.test(childText))
                               fullUrl = "https://" + childText;
-                            valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                            valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                           } else {
-                            valueSpan2.textContent = `"${childText}"`;
+                            valueSpan.textContent = `"${childText}"`;
                           }
                         }
-                        valueSpan2.className = "type-string";
+                        valueSpan.className = "type-string";
                       }
                       if (firstMap.implicitNulls === void 0 || firstMap.implicitNulls.indexOf(key) == -1) {
-                        newDiv.appendChild(valueSpan2);
+                        newDiv.appendChild(valueSpan);
                       } else {
                         newDiv.innerHTML = newDiv.innerHTML.slice(0, -2);
                       }
@@ -2346,7 +2346,7 @@
                   }
                 }
               } else if (Array.isArray(diffMap2)) {
-                let firstMapValue = null, firstMapCurrentFractal = firstMap;
+                let firstMapCurrentFractal = firstMap;
                 for (let z = 0, x = path.length; z < x; z++) {
                   if (typeof firstMapCurrentFractal === "object" && firstMapCurrentFractal !== null && !Array.isArray(firstMapCurrentFractal) && firstMapCurrentFractal instanceof Map && firstMapCurrentFractal.constructor === Map && Array.from(firstMapCurrentFractal.keys()).length) {
                     firstMapCurrentFractal = firstMapCurrentFractal.get(Array.from(firstMapCurrentFractal.keys())[path[z]]);
@@ -2354,7 +2354,7 @@
                     firstMapCurrentFractal = firstMapCurrentFractal[path[z]];
                   }
                 }
-                let secondMapValue = null, secondMapCurrentFractal = secondMap;
+                let secondMapCurrentFractal = secondMap;
                 for (let z = 0, x = path.length; z < x; z++) {
                   if (typeof secondMapCurrentFractal === "object" && secondMapCurrentFractal !== null && !Array.isArray(secondMapCurrentFractal) && secondMapCurrentFractal instanceof Map && secondMapCurrentFractal.constructor === Map && Array.from(secondMapCurrentFractal.keys()).length) {
                     secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[path[z]]);
@@ -2438,7 +2438,6 @@
                           if (j !== 0) {
                             newDiv.innerHTML += ", ";
                           }
-                          newDiv.appendChild(valueSpan);
                         }
                         newDiv.innerHTML += "]";
                         newListItem.appendChild(newDiv);
@@ -2501,7 +2500,7 @@
                 }
               }
             } else if (["red", "yellow"].indexOf(color) > -1) {
-              let secondMapKey = "", secondMapValue = null, secondMapCurrentFractal = secondMap;
+              let secondMapCurrentFractal = secondMap;
               for (let i2 = 0, c2 = path.length; i2 < c2; i2++) {
                 if (typeof secondMapCurrentFractal === "object" && secondMapCurrentFractal !== null && !Array.isArray(secondMapCurrentFractal) && secondMapCurrentFractal instanceof Map && secondMapCurrentFractal.constructor === Map) {
                   secondMapCurrentFractal = secondMapCurrentFractal.get(Array.from(secondMapCurrentFractal.keys())[path[i2]]);
@@ -2587,7 +2586,7 @@
                         newListItem.appendChild(newDiv);
                         newListItem.appendChild(newList);
                         list2.appendChild(newListItem);
-                        recurse(value, newList, path.concat([index]), color);
+                        recurseSecondMap(value, newList, path.concat([index]), color);
                       }
                     } else {
                       if (secondMap2.implicitMaps !== void 0 && secondMap2.implicitMaps.indexOf(key) > -1) {
@@ -2602,44 +2601,44 @@
                     }
                   } else {
                     newDiv.innerHTML = keySpan.outerHTML + ": ";
-                    let valueSpan2 = document.createElement("span");
+                    let valueSpan = document.createElement("span");
                     let childText = value;
                     if (childText === true) {
-                      valueSpan2.textContent = "true";
-                      valueSpan2.className = "type-boolean";
+                      valueSpan.textContent = "true";
+                      valueSpan.className = "type-boolean";
                     } else if (childText === false) {
-                      valueSpan2.textContent = "false";
-                      valueSpan2.className = "type-boolean";
+                      valueSpan.textContent = "false";
+                      valueSpan.className = "type-boolean";
                     } else if (childText === null) {
-                      valueSpan2.textContent = "null";
-                      valueSpan2.className = "type-null";
+                      valueSpan.textContent = "null";
+                      valueSpan.className = "type-null";
                     } else if (Number.isFinite(childText) && !Number.isNaN(childText)) {
-                      valueSpan2.textContent = childText + "";
-                      valueSpan2.className = "type-number";
+                      valueSpan.textContent = childText + "";
+                      valueSpan.className = "type-number";
                     } else {
                       if (safeHTML) {
                         if ($.websiteRegex.test(childText)) {
                           let fullUrl = childText;
                           if (!$.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
-                          valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                          valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
-                          valueSpan2.innerHTML = `"${childText}"`;
+                          valueSpan.innerHTML = `"${childText}"`;
                         }
                       } else {
                         if ($.websiteRegex.test(childText)) {
                           let fullUrl = childText;
                           if (!$.httpRegex.test(childText))
                             fullUrl = "https://" + childText;
-                          valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                          valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                         } else {
-                          valueSpan2.textContent = `"${childText}"`;
+                          valueSpan.textContent = `"${childText}"`;
                         }
                       }
-                      valueSpan2.className = "type-string";
+                      valueSpan.className = "type-string";
                     }
                     if (secondMap2.implicitNulls === void 0 || secondMap2.implicitNulls.indexOf(key) == -1) {
-                      newDiv.appendChild(valueSpan2);
+                      newDiv.appendChild(valueSpan);
                     } else {
                       newDiv.innerHTML = newDiv.innerHTML.slice(0, -2);
                     }
@@ -2659,45 +2658,45 @@
                     if (secondMap2.damonInlineArrays !== void 0 && secondMap2.damonInlineArrays.indexOf(i) > -1) {
                       newDiv.innerHTML += "[";
                       for (let j = 0, k = secondMap2[i].length; j < k; j++) {
-                        let valueSpan2 = document.createElement("span"), value = secondMap2[i][j];
+                        let valueSpan = document.createElement("span"), value = secondMap2[i][j];
                         if (value === true) {
-                          valueSpan2.textContent = "true";
-                          valueSpan2.className = "type-boolean";
+                          valueSpan.textContent = "true";
+                          valueSpan.className = "type-boolean";
                         } else if (value === false) {
-                          valueSpan2.textContent = "false";
-                          valueSpan2.className = "type-boolean";
+                          valueSpan.textContent = "false";
+                          valueSpan.className = "type-boolean";
                         } else if (value === null) {
-                          valueSpan2.textContent = "null";
-                          valueSpan2.className = "type-null";
+                          valueSpan.textContent = "null";
+                          valueSpan.className = "type-null";
                         } else if (Number.isFinite(value) && !Number.isNaN(value)) {
-                          valueSpan2.textContent = value + "";
-                          valueSpan2.className = "type-number";
+                          valueSpan.textContent = value + "";
+                          valueSpan.className = "type-number";
                         } else {
                           if (safeHTML) {
                             if ($.websiteRegex.test(value)) {
                               let fullUrl = value;
                               if (!$.httpRegex.test(value))
                                 fullUrl = "https://" + value;
-                              valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                              valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                             } else {
-                              valueSpan2.innerHTML = `"${value}"`;
+                              valueSpan.innerHTML = `"${value}"`;
                             }
                           } else {
                             if ($.websiteRegex.test(value)) {
                               let fullUrl = value;
                               if (!$.httpRegex.test(value))
                                 fullUrl = "https://" + value;
-                              valueSpan2.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
+                              valueSpan.innerHTML = DOMPurify.sanitize(`<a href="${fullUrl}">"${fullUrl}"</a>`);
                             } else {
-                              valueSpan2.textContent = `"${value}"`;
+                              valueSpan.textContent = `"${value}"`;
                             }
                           }
-                          valueSpan2.className = "type-string";
+                          valueSpan.className = "type-string";
                         }
                         if (j !== 0) {
                           newDiv.innerHTML += ", ";
                         }
-                        newDiv.appendChild(valueSpan2);
+                        newDiv.appendChild(valueSpan);
                       }
                       newDiv.innerHTML += "]";
                       newListItem.appendChild(newDiv);
