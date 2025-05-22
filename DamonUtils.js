@@ -983,7 +983,7 @@ class DamonUtils {
                         ) {
                             list += '    '.repeat(level) + `${JSON.stringify(key)}` + ', ' + value;
                         } else {
-                            list += '    '.repeat(level) + `${JSON.stringify(key)}` + ', ' + `"${value}"`;
+                            list += '    '.repeat(level) + `${JSON.stringify(key)}` + ', ' + JSON.stringify(value);
                         }
                     }
                     if (key != Array.from(jsonMap.keys())[Array.from(jsonMap.keys()).length - 1]) {
@@ -1096,38 +1096,38 @@ class DamonUtils {
                     ) {
                         if (Array.isArray(value)) {
                             if (value.length > 0) {
-                                mathJs += '    '.repeat(level) + `"${JSON.stringify(_minusculize(key))}"(\r\n`;
+                                mathJs += '    '.repeat(level) + `${JSON.stringify(_minusculize(key))}(\r\n`;
                                 _recurse(value, level + 1);
                                 mathJs += '    '.repeat(level) + `)`;
                             } else {
-                                mathJs += '    '.repeat(level) + `"${JSON.stringify(_minusculize(key))}"()`;
+                                mathJs += '    '.repeat(level) + `${JSON.stringify(_minusculize(key))}()`;
                             }
                         } else {
                             if (Array.from(value.keys()).length > 0) {
-                                mathJs += '    '.repeat(level) + `"${JSON.stringify(_minusculize(key))}"(\r\n`;
+                                mathJs += '    '.repeat(level) + `${JSON.stringify(_minusculize(key))}(\r\n`;
                                 _recurse(value, level + 1);
                                 mathJs += '    '.repeat(level) + `)`;
                             } else {
-                                mathJs += '    '.repeat(level) + `"${JSON.stringify(_minusculize(key))}"()`;
+                                mathJs += '    '.repeat(level) + `${JSON.stringify(_minusculize(key))}()`;
                             }
                         }
                     } else {
                         if (value === true) {
-                            mathJs += '    '.repeat(level) + `"${JSON.stringify(_minusculize(key))}"` + "(true)";
+                            mathJs += '    '.repeat(level) + `${JSON.stringify(_minusculize(key))}` + "(true)";
                         } else if (value === false) {
-                            mathJs += '    '.repeat(level) + `"${JSON.stringify(_minusculize(key))}"` + "(false)";
+                            mathJs += '    '.repeat(level) + `${JSON.stringify(_minusculize(key))}` + "(false)";
                         } else if (value === null) {
-                            mathJs += '    '.repeat(level) + `"${JSON.stringify(_minusculize(key))}"` + "(null)";
+                            mathJs += '    '.repeat(level) + `${JSON.stringify(_minusculize(key))}` + "(null)";
                         } else if (
                             Number.isFinite(value)
                             && !Number.isNaN(value)
                         ) {
-                            mathJs += '    '.repeat(level) + `"${JSON.stringify(_minusculize(key))}"` + '(' + value + ')';
+                            mathJs += '    '.repeat(level) + `${JSON.stringify(_minusculize(key))}` + '(' + value + ')';
                         } else {
                             mathJs +=
                                 '    '.repeat(level)
-                                + `"${JSON.stringify(_minusculize(key))}"`
-                                + '("' + JSON.stringify(value) + '")';
+                                + `${JSON.stringify(_minusculize(key))}`
+                                + '(' + JSON.stringify(value) + ')';
                         }
                     }
                     if (key != Array.from(damonMap.keys())[Array.from(damonMap.keys()).length - 1]) {
@@ -1179,7 +1179,7 @@ class DamonUtils {
                         ) {
                             mathJs += '    '.repeat(level) + damonMap[i];
                         } else {
-                            mathJs += '    '.repeat(level) + `"${JSON.stringify(_minusculize(damonMap[i]))}"`;
+                            mathJs += '    '.repeat(level) + JSON.stringify(damonMap[i]);
                         }
                     }
                     if (i != c - 1) {
@@ -2528,5 +2528,67 @@ class DamonUtils {
                 - container.getBoundingClientRect().top + 'px';
             container.appendChild(lineNumberDiv);
         }
+    }
+
+    /**
+     * @param {string} damon
+     * @param {number} [startLine=0]
+     * @returns
+     */
+    damonGraphToMermaid(damon, startLine = 0) {
+        let $ = this;
+        let map = $.damon.damonToMap(damon),
+            mermaid = '';
+        if (
+            typeof map !== 'object'
+            || map === null
+            || Array.isArray(map)
+            || !(map instanceof Map)
+            || map.constructor !== Map
+        ) {
+            throw new Error("Error: input does not conform to Map type");
+        }
+        let mapIndex = 0;
+        for (const [key, value] of map) {
+            mapIndex++
+            if (
+                typeof value !== 'object'
+                || value === null
+                || Array.isArray(value)
+                || !(value instanceof Map)
+                || value.constructor !== Map
+            ) {
+                throw new Error(
+                    "Error line " + damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to Map type"
+                );
+            }
+            mermaid += key;
+            for (const [subKey, subValue] of value) {
+                mapIndex++
+                if (typeof subValue !== "string") {
+                    throw new Error(
+                        "Error line "
+                        + damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to String type"
+                    );
+                }
+                let adjacents = subValue.split(",");
+                for (let i = 0, c = adjacents.length; i < c; i++) {
+                    if (i == 0) {
+                        if (subKey.length) {
+                            mermaid += " -- " + subKey + " --> " + adjacents[i] + '\r\n';
+                        } else {
+                            mermaid += " --> " + adjacents[i] + '\r\n';
+                        }
+                    } else {
+                        if (subKey.length) {
+                            mermaid += key + " -- " + subKey + " --> " + adjacents[i] + '\r\n';
+                        } else {
+                            mermaid += key + " --> " + adjacents[i] + '\r\n';
+                        }
+                    }
+                }
+            }
+        }
+        return mermaid.slice(0, -2);;
     }
 };

@@ -238,4 +238,24 @@ describe('# DAMON UTILS', function () {
             assert.equal(beautify(test.outerHTML), returnValue);
         });
     });
+
+    describe('## DAMON GRAPH TO MERMAID', function () {
+        it('Returns a mermaid flowchart document', function () {
+            let damonGraph =
+                `
+                - A
+                    - a: "B"
+                - B
+                    - : "C"
+                - C
+                    - : "A,B"
+                `.replaceAll('\n' + '    '.repeat(4), '\n');
+            let mermaidGraph =
+                `A -- a --> B
+                B --> C
+                C --> A
+                C --> B`.replaceAll('\n' + '    '.repeat(4), '\r\n');
+            assert.equal(damonUtils.damonGraphToMermaid(damonGraph), mermaidGraph);
+        });
+    });
 });
