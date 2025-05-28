@@ -2493,7 +2493,7 @@ class DamonUtils {
      */
     addLineNumbers(damon, container, startLine = 0) {
         let $ = this,
-            listItems = container.getElementsByTagName('li[data-graph-arbo]');
+            listItems = container.querySelectorAll('li[data-graph-arbo]');
         for (let i = 0, c = listItems.length; i < c; i++) {
             let lineNumberDiv = document.createElement('div');
             lineNumberDiv.className = 'damon-line-number';
