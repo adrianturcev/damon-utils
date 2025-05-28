@@ -71,6 +71,7 @@ module.exports = [
             "no-ternary": "warn",
             "no-throw-literal": "warn",
             "no-unused-expressions": "warn",
+            "no-unused-vars": "warn",
             "no-undefined": "warn",
             "one-var": "warn",
             "one-var-declaration-per-line": [
@@ -90,14 +91,14 @@ module.exports = [
             "eol-last": "warn",
             "func-call-spacing": "warn",
             "implicit-arrow-linebreak": "warn",
-            "indent": "warn",
+            "indent": "off",
             "key-spacing": "warn",
             "keyword-spacing": "warn",
             "linebreak-style": ["warn", "windows"],
             "max-len": [
                 "warn",
                 {
-                    "code":  120,
+                    "code": 120,
                     "ignoreRegExpLiterals": true
                 }
             ],
@@ -138,7 +139,7 @@ module.exports = [
             ],
             "padded-blocks": ["warn", "never"],
             "quotes": [
-                "warn",
+                "off",
                 "single",
                 {
                     "avoidEscape": true,
@@ -162,7 +163,7 @@ module.exports = [
             "space-infix-ops": "warn",
             "space-unary-ops": "warn",
             "switch-colon-spacing": "warn",
-            "template-curly-spacing": ["warn", "always"],
+            "template-curly-spacing": ["off", "always"],
             "template-tag-spacing": "warn",
             // JSDOC
             "jsdoc/check-access": 1, // Recommended
