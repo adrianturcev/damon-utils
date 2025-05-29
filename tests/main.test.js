@@ -198,12 +198,20 @@ describe('# DAMON UTILS', function () {
                         - A
                         - B
                         - C`.replaceAll('\n' + '    '.repeat(4), '\n');
-            var csv =
+                var csv =
                 `"heading1","heading2","heading3"
                 "A","B","C"
                 "A","B","C"`.replaceAll('\n' + '    '.repeat(4), '\n');
+            var jsonTable =
+                `[
+                    ["heading1", "heading2", "heading3"],
+                    ["A", "B", "C"],
+                    ["A", "B", "C"]
+                ]`.replaceAll('\n' + '    '.repeat(4), '\n');
             assert.equal(damonUtils.damonTableToCSV(tableTestTwo), csv);
             assert.equal(damonUtils.csvToDamonTable(csv), tableTestTwo);
+            assert.equal(damonUtils.damonTableToJSON(tableTestTwo), jsonTable);
+            assert.equal(damonUtils.jsonToDamonTable(jsonTable), tableTestTwo);
         });
     });
     describe('## List contents wrapping', function () {

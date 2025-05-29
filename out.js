@@ -2790,6 +2790,34 @@
          * @param {String} string
          * @returns
          */
+        damonTableToJSON(string) {
+          const $ = this;
+          let map = $.damon.damonToMap(string), output = "[\n";
+          let index = 0;
+          for (const [key, value] of map) {
+            output += "    [";
+            if (index === 0 && key === "00") {
+              output += JSON.stringify(value) + "],\n";
+              index++;
+              continue;
+            }
+            let valueKeys = Array.from(value.keys());
+            for (let i = 0, c = valueKeys.length; i < c; i++) {
+              output += JSON.stringify(valueKeys[i]);
+              if (i != c - 1) {
+                output += ", ";
+              }
+            }
+            output += "],\n";
+            index++;
+          }
+          output = output.slice(0, -2) + "\n]";
+          return output;
+        }
+        /**
+         * @param {String} string
+         * @returns
+         */
         csvToDamonTable(string) {
           const $ = this;
           let lines = string.split("\n"), damonMap = /* @__PURE__ */ new Map();
@@ -2822,6 +2850,25 @@
                   damonMap.get(i + "").implicitNulls.push(JSON.stringify(lineValues[z]));
                 }
               }
+            }
+          }
+          return $.damon.mapToDamon(damonMap);
+        }
+        /**
+         * @param {String} string
+         * @returns
+         */
+        jsonToDamonTable(string) {
+          const $ = this;
+          let lines = JSON.parse(string).map((x) => JSON.stringify(x)), damonMap = /* @__PURE__ */ new Map();
+          for (let i = 0, c = lines.length; i < c; i++) {
+            let rowMap = /* @__PURE__ */ new Map();
+            rowMap.implicitNulls = [];
+            damonMap.set(i + "", rowMap);
+            let lineValues = JSON.parse(lines[i]);
+            for (let z = 0, x = lineValues.length; z < x; z++) {
+              damonMap.get(i + "").set(lineValues[z], null);
+              damonMap.get(i + "").implicitNulls.push(lineValues[z]);
             }
           }
           return $.damon.mapToDamon(damonMap);
