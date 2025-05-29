@@ -2385,7 +2385,7 @@ class DamonUtils {
 
     /**
      * @param {String} string
-     * @returns
+     * @returns  {string}
      */
     damonTableToCSV(string) {
         const $ = this;
@@ -2413,7 +2413,7 @@ class DamonUtils {
 
     /**
      * @param {String} string
-     * @returns
+     * @returns {string}
      */
     damonTableToJSON(string) {
         const $ = this;
@@ -2443,7 +2443,7 @@ class DamonUtils {
 
     /**
      * @param {String} string
-     * @returns
+     * @returns {string}
      */
     csvToDamonTable(string) {
         const $ = this;
@@ -2485,7 +2485,7 @@ class DamonUtils {
 
     /**
      * @param {String} string
-     * @returns
+     * @returns {string}
      */
     jsonToDamonTable(string) {
         const $ = this;
@@ -2563,7 +2563,7 @@ class DamonUtils {
                     currentLevel = concretePath[concretePath.length - 1];
                 } else {
                     concretePath.push(parseInt(abstractPath[z]));
-                    currentLevel = currentLevel[abstractPath[z]];
+                    currentLevel = currentLevel.get(currentLevel[abstractPath[z]]);
                 }
             }
             lineNumberDiv.textContent =
@@ -2585,7 +2585,7 @@ class DamonUtils {
     /**
      * @param {string} damon
      * @param {number} [startLine=0]
-     * @returns
+     * @returns {string}
      */
     damonGraphToMermaid(damon, startLine = 0) {
         let $ = this;

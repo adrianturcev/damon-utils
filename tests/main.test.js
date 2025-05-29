@@ -198,7 +198,7 @@ describe('# DAMON UTILS', function () {
                         - A
                         - B
                         - C`.replaceAll('\n' + '    '.repeat(4), '\n');
-                var csv =
+            var csv =
                 `"heading1","heading2","heading3"
                 "A","B","C"
                 "A","B","C"`.replaceAll('\n' + '    '.repeat(4), '\n');
