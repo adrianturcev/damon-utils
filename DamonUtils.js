@@ -1085,7 +1085,10 @@ class DamonUtils {
                 && damonMap instanceof Map
                 && damonMap.constructor === Map
             ) {
-                for (const [key, value] of damonMap) {
+                for (const [k, value] of damonMap) {
+                    let key = k;
+                    if (key == 'Power')
+                        key = 'Pow';
                     if (
                         typeof value === 'object'
                         && value !== null

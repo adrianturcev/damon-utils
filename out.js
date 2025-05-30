@@ -1810,7 +1810,10 @@
           }
           function _recurse(damonMap2, level = 0) {
             if (typeof damonMap2 === "object" && damonMap2 !== null && !Array.isArray(damonMap2) && damonMap2 instanceof Map && damonMap2.constructor === Map) {
-              for (const [key, value] of damonMap2) {
+              for (const [k, value] of damonMap2) {
+                let key = k;
+                if (key == "Power")
+                  key = "Pow";
                 if (typeof value === "object" && value !== null) {
                   if (Array.isArray(value)) {
                     if (value.length > 0) {
