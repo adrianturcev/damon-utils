@@ -136,6 +136,20 @@ describe('# DAMON UTILS', function () {
             assert.equal(beautify(damonUtils.mapToHtmlList(damon.damonToMap(damonList)).outerHTML), beautify(htmlList));
         });
     });
+    describe('## MathJS', function () {
+        it('Returns a mathJs string', function () {
+            let damonMath =
+                `- Pow: {}
+                    - x
+                    - 2`,
+                mathJs =
+                `pow(
+                    x,
+                    2
+                )`.replaceAll('\n' + '    '.repeat(4), '\n');
+            assert.equal(damonUtils.damonToMathJs(damonMath), mathJs);
+        });
+    });
     describe('## TABLE', function () {
         it('Returns an html table', function () {
             var tableTest =

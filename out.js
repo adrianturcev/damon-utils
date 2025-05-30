@@ -1793,15 +1793,11 @@
           const $ = this;
           let mathJs = "", damonMap = $.damon.damonToMap(damonString);
           if (Array.isArray(damonMap)) {
-            mathJs += "(\r\n";
             _recurse(damonMap);
-            mathJs += ")";
-            return mathJs;
+            return mathJs.slice(0, -1);
           } else if (typeof damonMap === "object" && damonMap !== null && damonMap instanceof Map && damonMap.constructor === Map) {
-            mathJs += "(\r\n";
             _recurse(damonMap);
-            mathJs += ")";
-            return mathJs;
+            return mathJs.slice(0, -1);
           } else {
             if (typeof damonMap == "string") {
               damonMap = JSON.stringify(damonMap);
@@ -1810,48 +1806,48 @@
             return damonMap;
           }
           function _minusculize(string) {
-            return string[0].toLowerCase + string.slice(1);
+            return string[0].toLowerCase() + string.slice(1);
           }
-          function _recurse(damonMap2, level = 1) {
+          function _recurse(damonMap2, level = 0) {
             if (typeof damonMap2 === "object" && damonMap2 !== null && !Array.isArray(damonMap2) && damonMap2 instanceof Map && damonMap2.constructor === Map) {
               for (const [key, value] of damonMap2) {
                 if (typeof value === "object" && value !== null) {
                   if (Array.isArray(value)) {
                     if (value.length > 0) {
-                      mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key))}(\r
+                      mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key)).slice(1, -1)}(
 `;
                       _recurse(value, level + 1);
                       mathJs += "    ".repeat(level) + `)`;
                     } else {
-                      mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key))}()`;
+                      mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key)).slice(1, -1)}()`;
                     }
                   } else {
                     if (Array.from(value.keys()).length > 0) {
-                      mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key))}(\r
+                      mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key)).slice(1, -1)}(
 `;
                       _recurse(value, level + 1);
                       mathJs += "    ".repeat(level) + `)`;
                     } else {
-                      mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key))}()`;
+                      mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key)).slice(1, -1)}()`;
                     }
                   }
                 } else {
                   if (value === true) {
-                    mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key))}(true)`;
+                    mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key)).slice(1, -1)}(true)`;
                   } else if (value === false) {
-                    mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key))}(false)`;
+                    mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key)).slice(1, -1)}(false)`;
                   } else if (value === null) {
-                    mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key))}(null)`;
+                    mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key)).slice(1, -1)}`;
                   } else if (Number.isFinite(value) && !Number.isNaN(value)) {
-                    mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key))}(` + value + ")";
+                    mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key)).slice(1, -1)}(` + value + ")";
                   } else {
-                    mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key))}(` + JSON.stringify(value) + ")";
+                    mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key)).slice(1, -1)}(` + JSON.stringify(value) + ")";
                   }
                 }
                 if (key != Array.from(damonMap2.keys())[Array.from(damonMap2.keys()).length - 1]) {
-                  mathJs += ",\r\n";
+                  mathJs += ",\n";
                 } else {
-                  mathJs += "\r\n";
+                  mathJs += "\n";
                 }
               }
             } else if (Array.isArray(damonMap2)) {
@@ -1860,9 +1856,19 @@
                   if (Array.isArray(damonMap2[i])) {
                     if (damonMap2[i].length > 0) {
                       if (damonMap2.damonInlineArrays !== void 0 && damonMap2.damonInlineArrays.indexOf(i) > -1) {
-                        mathJs += "    ".repeat(level) + JSON.stringify(damonMap2[i]);
+                        if (damonMap2[i] === true) {
+                          mathJs += "    ".repeat(level) + "true";
+                        } else if (damonMap2[i] === false) {
+                          mathJs += "    ".repeat(level) + "false";
+                        } else if (damonMap2[i] === null) {
+                          mathJs += "    ".repeat(level) + "null";
+                        } else if (Number.isFinite(damonMap2[i]) && !Number.isNaN(damonMap2[i])) {
+                          mathJs += "    ".repeat(level) + damonMap2[i];
+                        } else {
+                          mathJs += "    ".repeat(level) + JSON.stringify(damonMap2[i]).slice(1, -1);
+                        }
                       } else {
-                        mathJs += "    ".repeat(level) + `(\r
+                        mathJs += "    ".repeat(level) + `(
 `;
                         _recurse(damonMap2[i], level + 1);
                         mathJs += "    ".repeat(level) + `)`;
@@ -1872,7 +1878,7 @@
                     }
                   } else {
                     if (Array.from(damonMap2[i].keys()).length > 0) {
-                      mathJs += "    ".repeat(level) + `(\r
+                      mathJs += "    ".repeat(level) + `(
 `;
                       _recurse(damonMap2[i], level + 1);
                       mathJs += "    ".repeat(level) + `)`;
@@ -1890,13 +1896,13 @@
                   } else if (Number.isFinite(damonMap2[i]) && !Number.isNaN(damonMap2[i])) {
                     mathJs += "    ".repeat(level) + damonMap2[i];
                   } else {
-                    mathJs += "    ".repeat(level) + JSON.stringify(damonMap2[i]);
+                    mathJs += "    ".repeat(level) + JSON.stringify(damonMap2[i]).slice(1, -1);
                   }
                 }
                 if (i != c - 1) {
-                  mathJs += ",\r\n";
+                  mathJs += ",\n";
                 } else {
-                  mathJs += "\r\n";
+                  mathJs += "\n";
                 }
               }
             }
