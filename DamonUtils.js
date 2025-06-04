@@ -2614,7 +2614,7 @@ class DamonUtils {
         }
         let mapIndex = 0;
         for (const [key, value] of map) {
-            mapIndex++
+            mapIndex++;
             if (
                 typeof value !== 'object'
                 || value === null
@@ -2623,16 +2623,17 @@ class DamonUtils {
                 || value.constructor !== Map
             ) {
                 throw new Error(
-                    "Error line " + damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to Map type"
+                    "Error line "
+                    + $.damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to Map type"
                 );
             }
             mermaid += key;
             for (const [subKey, subValue] of value) {
-                mapIndex++
+                mapIndex++;
                 if (typeof subValue !== "string") {
                     throw new Error(
                         "Error line "
-                        + damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to String type"
+                        + $.damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to String type"
                     );
                 }
                 let adjacents = subValue.split(",");
@@ -2653,6 +2654,6 @@ class DamonUtils {
                 }
             }
         }
-        return mermaid.slice(0, -2);;
+        return mermaid.slice(0, -2);
     }
 };

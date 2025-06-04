@@ -2952,7 +2952,7 @@
             mapIndex++;
             if (typeof value !== "object" || value === null || Array.isArray(value) || !(value instanceof Map) || value.constructor !== Map) {
               throw new Error(
-                "Error line " + damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to Map type"
+                "Error line " + $.damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to Map type"
               );
             }
             mermaid += key;
@@ -2960,7 +2960,7 @@
               mapIndex++;
               if (typeof subValue !== "string") {
                 throw new Error(
-                  "Error line " + damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to String type"
+                  "Error line " + $.damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to String type"
                 );
               }
               let adjacents = subValue.split(",");
@@ -2982,7 +2982,6 @@
             }
           }
           return mermaid.slice(0, -2);
-          ;
         }
       };
     }
