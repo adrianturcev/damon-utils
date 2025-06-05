@@ -2955,7 +2955,6 @@
                 "Error line " + $.damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to Map type"
               );
             }
-            mermaid += key;
             for (const [subKey, subValue] of value) {
               mapIndex++;
               if (typeof subValue !== "string") {
@@ -2967,9 +2966,9 @@
               for (let i = 0, c = adjacents.length; i < c; i++) {
                 if (i == 0) {
                   if (subKey.length) {
-                    mermaid += " -- " + subKey + " --> " + adjacents[i] + "\r\n";
+                    mermaid += key + " -- " + subKey + " --> " + adjacents[i] + "\r\n";
                   } else {
-                    mermaid += " --> " + adjacents[i] + "\r\n";
+                    mermaid += key + " --> " + adjacents[i] + "\r\n";
                   }
                 } else {
                   if (subKey.length) {
