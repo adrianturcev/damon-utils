@@ -139,7 +139,7 @@ describe('# DAMON UTILS', function () {
     describe('## MathJS', function () {
         it('Returns a mathJs string', function () {
             let damonMath =
-                `- Pow: {}
+                `- Power: {}
                     - x
                     - 2`,
                 mathJs =

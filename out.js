@@ -1847,7 +1847,7 @@
                     mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key)).slice(1, -1)}(` + JSON.stringify(value) + ")";
                   }
                 }
-                if (key != Array.from(damonMap2.keys())[Array.from(damonMap2.keys()).length - 1]) {
+                if (k != Array.from(damonMap2.keys())[Array.from(damonMap2.keys()).length - 1]) {
                   mathJs += ",\n";
                 } else {
                   mathJs += "\n";

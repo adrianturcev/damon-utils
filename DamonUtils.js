@@ -1129,7 +1129,7 @@ class DamonUtils {
                                 + '(' + JSON.stringify(value) + ')';
                         }
                     }
-                    if (key != Array.from(damonMap.keys())[Array.from(damonMap.keys()).length - 1]) {
+                    if (k != Array.from(damonMap.keys())[Array.from(damonMap.keys()).length - 1]) {
                         mathJs += ",\n";
                     } else {
                         mathJs += "\n";
