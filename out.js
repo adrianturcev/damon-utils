@@ -1342,7 +1342,7 @@
                 tHead.appendChild(row);
                 headingsEncountered = true;
               } else {
-                if (columnsLength == 0)
+                if (jsonItemIndex == 0)
                   columnsLength = value.length;
                 if (value.length != columnsLength) {
                   throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");

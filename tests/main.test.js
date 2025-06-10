@@ -31,6 +31,15 @@ describe('# DAMON UTILS', function () {
                 ],
                 JSON.parse(damonUtils.implicitMapToSExpression(damon.damonToMap(sExpression)))
             );
+            console.log(damonUtils.implicitMapToSExpression(damon.damonToMap(
+`- Equal: {}
+    - f: {}
+        - x
+    - Divide: {}
+        - 1
+        - Power: {}
+            - x
+            - 2`)));
         });
     });
     describe('## DIFF', function () {
