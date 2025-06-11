@@ -31,15 +31,6 @@ describe('# DAMON UTILS', function () {
                 ],
                 JSON.parse(damonUtils.implicitMapToSExpression(damon.damonToMap(sExpression)))
             );
-            console.log(damonUtils.implicitMapToSExpression(damon.damonToMap(
-`- Equal: {}
-    - f: {}
-        - x
-    - Divide: {}
-        - 1
-        - Power: {}
-            - x
-            - 2`)));
         });
     });
     describe('## DIFF', function () {
@@ -163,7 +154,6 @@ describe('# DAMON UTILS', function () {
         it('Returns an html table', function () {
             var tableTest =
                 `- {}
-                    - 00: "Caption"
                     - 0: {}
                         - heading1
                         - heading2
@@ -178,7 +168,6 @@ describe('# DAMON UTILS', function () {
                         - C`;
             var htmlTable =
                 `<table class="DAMON-Table">
-                    <caption>Caption</caption>
                     <thead>
                         <tr>
                             <th>heading1</th>

@@ -1306,16 +1306,16 @@
           try {
             $.damon.mapToJSON(jsonMap);
           } catch (error) {
-            throw new Error("Provided map value doesn't passes JSON.parse()");
+            throw new Error("Provided value doesn't passes JSON.parse().");
           }
           var jsonItemIndex = 0, table = document.createElement("table"), tHead = document.createElement("thead"), tBody = document.createElement("tbody"), headingsEncountered = false, columnsLength = 0;
           table.className = "DAMON-Table";
           if (typeof jsonMap !== "object" || jsonMap == null || Array.isArray(jsonMap) || !(jsonMap instanceof Map) || jsonMap.constructor !== Map) {
-            throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
+            throw new Error("Error: expected an Object value, saw otherwise.");
           }
           for (const [key, value] of jsonMap) {
             if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map) {
-              if (key == "0" && !headingsEncountered) {
+              if (jsonItemIndex == 0) {
                 let row = document.createElement("tr");
                 columnsLength = value.length;
                 for (const [childKey, childValue] of value) {
@@ -1336,16 +1336,18 @@
                     }
                     row.appendChild(headerCell);
                   } else {
-                    throw new Error("Expected implicit null property, saw otherwise");
+                    throw new Error(
+                      "Error row " + jsonItemIndex + ": expected implicit null property, saw otherwise."
+                    );
                   }
                 }
                 tHead.appendChild(row);
                 headingsEncountered = true;
               } else {
-                if (jsonItemIndex == 0)
-                  columnsLength = value.length;
                 if (value.length != columnsLength) {
-                  throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
+                  throw new Error(
+                    "Error row " + jsonItemIndex + ": cells total doesn't match the header's."
+                  );
                 }
                 let row = document.createElement("tr");
                 for (const [childKey, childValue] of value) {
@@ -1366,21 +1368,15 @@
                     }
                     row.appendChild(dataCell);
                   } else {
-                    throw new Error("Expected implicit null property, saw otherwise");
+                    throw new Error(
+                      "Error row " + jsonItemIndex + ": expected implicit null property, saw otherwise."
+                    );
                   }
                 }
                 tBody.appendChild(row);
               }
-            } else if (typeof value !== "object" && key == "00") {
-              let caption = document.createElement("caption");
-              if (safeHTML) {
-                caption.innerHTML = value;
-              } else {
-                caption.textContent = value;
-              }
-              table.appendChild(caption);
             } else {
-              throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
+              throw new Error("Error row " + jsonItemIndex + ": expected an Object value, saw otherwise.");
             }
             jsonItemIndex++;
           }
