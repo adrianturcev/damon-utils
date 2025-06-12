@@ -170,21 +170,21 @@ describe('# DAMON UTILS', function () {
                 `<table class="DAMON-Table">
                     <thead>
                         <tr>
-                            <th>heading1</th>
-                            <th>heading2</th>
-                            <th>heading3</th>
+                            <th data-graph-arbo="0-0">heading1</th>
+                            <th data-graph-arbo="0-1">heading2</th>
+                            <th data-graph-arbo="0-2">heading3</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>A</td>
-                            <td>B</td>
-                            <td>C</td>
+                            <td data-graph-arbo="1-0">A</td>
+                            <td data-graph-arbo="1-1">B</td>
+                            <td data-graph-arbo="1-2">C</td>
                         </tr>
                         <tr>
-                            <td>A</td>
-                            <td>B</td>
-                            <td>C</td>
+                            <td data-graph-arbo="2-0">A</td>
+                            <td data-graph-arbo="2-1">B</td>
+                            <td data-graph-arbo="2-2">C</td>
                         </tr>
                     </tbody>
                 </table>`.replaceAll('\n' + '    '.repeat(4), '\n');

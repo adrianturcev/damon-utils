@@ -1321,6 +1321,7 @@
                 for (const [childKey, childValue] of value) {
                   if (childValue === null) {
                     let headerCell = document.createElement("th");
+                    headerCell.dataset.graphArbo = jsonItemIndex + "-" + row.children.length;
                     if (safeHTML) {
                       if ($.websiteRegex.test(childKey)) {
                         headerCell.innerHTML = DOMPurify.sanitize(`<a href="${childKey}">${childKey}</a>`);
@@ -1353,6 +1354,7 @@
                 for (const [childKey, childValue] of value) {
                   if (childValue === null) {
                     let dataCell = document.createElement("td");
+                    dataCell.dataset.graphArbo = jsonItemIndex + "-" + row.children.length;
                     if (safeHTML) {
                       if ($.websiteRegex.test(childKey)) {
                         dataCell.innerHTML = DOMPurify.sanitize(`<a href="${childKey}">${childKey}</a>`);
