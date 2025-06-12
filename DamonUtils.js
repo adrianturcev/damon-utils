@@ -2576,7 +2576,6 @@ class DamonUtils {
                 )[0][0] + 1 + startLine;
             lineNumberDiv.id = 'damonLine' + lineNumberDiv.textContent;
             listItems[i].setAttribute("aria-labelledBy", lineNumberDiv.id);
-            lineNumberDiv.style.left = 7 + 'px';
             lineNumberDiv.style.top =
                 container.scrollTop
                 + listItems[i].firstElementChild.getBoundingClientRect().top
