@@ -1078,8 +1078,31 @@ class DamonUtils {
             ) {
                 for (const [k, value] of damonMap) {
                     let key = k;
+                    // Normalizing to katex
                     if (key == 'Power')
                         key = 'Pow';
+                    if (key == 'e')
+                        key = '2.718281828459045';
+                    if (key == 'i')
+                        key = 'sqrt(-1)';
+                    if (key == 'LN2')
+                        key = '0.6931471805599453';
+                    if (key == 'LN10')
+                        key = '2.302585092994046';
+                    if (key == 'LOG2E')
+                        key = '1.4426950408889634';
+                    if (key == 'LOG10E')
+                        key = '0.4342944819032518';
+                    if (key == 'phi')
+                        key = '1.618033988749895';
+                    if (key == 'pi')
+                        key = '3.141592653589793';
+                    if (key == 'SQRT1_2')
+                        key = '0.7071067811865476';
+                    if (key == 'SQRT2')
+                        key = '1.4142135623730951';
+                    if (key == 'tau')
+                        key = '6.283185307179586';
                     if (
                         typeof value === 'object'
                         && value !== null
