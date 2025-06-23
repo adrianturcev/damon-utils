@@ -2,7 +2,7 @@
     "name": "damon-utils",
     "description": "A post-processing library for DAMON",
     "authors": "Adrian Turcev",
-    "version": "3.0.3",
+    "version": "3.1.0",
     "license": "MPL-2.0",
     "homepage": "https://github.com/adrianturcev/damon-utils",
     "repository": {
@@ -28,7 +28,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.27.0",
-        "damon2": "2.3.5",
+        "damon2": "2.4.12",
         "esbuild": "^0.25.4",
         "eslint": "^9.27.0",
         "eslint-plugin-jsdoc": "^50.6.17",

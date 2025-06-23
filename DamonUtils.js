@@ -906,13 +906,13 @@ class DamonUtils {
             list += "[\r\n";
             _recurse(jsonMap);
             list += "]";
-            JSON.parse(list)
+            JSON.parse(list);
             return list;
         } else {
             if (typeof jsonMap == 'string') {
                 jsonMap = '"' + jsonMap + '"';
             }
-            JSON.parse(jsonMap)
+            JSON.parse(jsonMap);
             return jsonMap;
         }
         /**
@@ -929,8 +929,9 @@ class DamonUtils {
                 && jsonMap.constructor === Map
             ) {
                 let i = -1;
-                for (const [key, value] of jsonMap) {
+                for (const [k, value] of jsonMap) {
                     i++;
+                    let key = k.slice(k.match(/^[0-9]+-/)[0].length);
                     if (
                         typeof value === 'object'
                         && value !== null
@@ -977,7 +978,7 @@ class DamonUtils {
                             list += '    '.repeat(level) + `${JSON.stringify(key)}` + ', ' + JSON.stringify(value);
                         }
                     }
-                    if (key != Array.from(jsonMap.keys())[Array.from(jsonMap.keys()).length - 1]) {
+                    if (k != Array.from(jsonMap.keys())[Array.from(jsonMap.keys()).length - 1]) {
                         list += ",\r\n";
                     } else {
                         list += "\r\n";

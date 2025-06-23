@@ -29,7 +29,7 @@ describe('# DAMON UTILS', function () {
                         "n"
                     ]
                 ],
-                JSON.parse(damonUtils.implicitMapToSExpression(damon.damonToMap(sExpression)))
+                JSON.parse(damonUtils.implicitMapToSExpression(damon.damonToMap(sExpression, 0, true)))
             );
         });
     });

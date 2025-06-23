@@ -1688,8 +1688,9 @@
           function _recurse(jsonMap2, level = 1) {
             if (typeof jsonMap2 === "object" && jsonMap2 !== null && !Array.isArray(jsonMap2) && jsonMap2 instanceof Map && jsonMap2.constructor === Map) {
               let i2 = -1;
-              for (const [key, value] of jsonMap2) {
+              for (const [k, value] of jsonMap2) {
                 i2++;
+                let key = k.slice(k.match(/^[0-9]+-/)[0].length);
                 if (typeof value === "object" && value !== null) {
                   if (Array.isArray(value)) {
                     if (value.length > 0) {
@@ -1732,7 +1733,7 @@
                     list += "    ".repeat(level) + `${JSON.stringify(key)}, ` + JSON.stringify(value);
                   }
                 }
-                if (key != Array.from(jsonMap2.keys())[Array.from(jsonMap2.keys()).length - 1]) {
+                if (k != Array.from(jsonMap2.keys())[Array.from(jsonMap2.keys()).length - 1]) {
                   list += ",\r\n";
                 } else {
                   list += "\r\n";
