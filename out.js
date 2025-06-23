@@ -1788,9 +1788,9 @@
          * @param {string} damonString
          * @return {string} mathJs
          */
-        damonToMathJs(damonString) {
+        damonMapToMathJs(damonMap) {
           const $ = this;
-          let mathJs = "", damonMap = $.damon.damonToMap(damonString, 0, true);
+          let mathJs = "";
           if (Array.isArray(damonMap)) {
             _recurse(damonMap);
             return mathJs.slice(0, -1);

@@ -147,7 +147,7 @@ describe('# DAMON UTILS', function () {
                     x,
                     2
                 )`.replaceAll('\n' + '    '.repeat(4), '\n');
-            assert.equal(damonUtils.damonToMathJs(damonMath), mathJs);
+            assert.equal(damonUtils.damonMapToMathJs(damon.damonToMap(damonMath, 0, true)), mathJs);
         });
     });
     describe('## TABLE', function () {
