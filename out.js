@@ -1790,7 +1790,7 @@
          */
         damonToMathJs(damonString) {
           const $ = this;
-          let mathJs = "", damonMap = $.damon.damonToMap(damonString);
+          let mathJs = "", damonMap = $.damon.damonToMap(damonString, 0, true);
           if (Array.isArray(damonMap)) {
             _recurse(damonMap);
             return mathJs.slice(0, -1);
@@ -1810,7 +1810,7 @@
           function _recurse(damonMap2, level = 0) {
             if (typeof damonMap2 === "object" && damonMap2 !== null && !Array.isArray(damonMap2) && damonMap2 instanceof Map && damonMap2.constructor === Map) {
               for (const [k, value] of damonMap2) {
-                let key = k;
+                let key = k.slice(k.match(/^[0-9]+-/)[0].length);
                 if (key == "Power")
                   key = "Pow";
                 if (key == "e")

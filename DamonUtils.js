@@ -1041,7 +1041,7 @@ class DamonUtils {
     damonToMathJs(damonString) {
         const $ = this;
         let mathJs = '',
-            damonMap = $.damon.damonToMap(damonString);
+            damonMap = $.damon.damonToMap(damonString, 0, true);
         if (Array.isArray(damonMap)) {
             _recurse(damonMap);
             return mathJs.slice(0, -1);
@@ -1078,7 +1078,7 @@ class DamonUtils {
                 && damonMap.constructor === Map
             ) {
                 for (const [k, value] of damonMap) {
-                    let key = k;
+                    let key = k.slice(k.match(/^[0-9]+-/)[0].length);
                     // Normalizing to katex
                     if (key == 'Power')
                         key = 'Pow';
