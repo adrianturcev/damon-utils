@@ -995,10 +995,14 @@
     "DamonUtils.js"(exports, module) {
       var DOMPurify = require_purify_cjs();
       module.exports = class DamonUtils {
-        //# MODEL
+        /**
+         * Creates an instance of DamonUtils.
+         * @param {string} damon
+         */
         constructor(damon) {
           let $ = this;
           $.damon = damon;
+          $.domPurify = DOMPurify;
           $.websiteRegex = /^(https?:\/\/)?[-a-zA-Z0-9]*[a-zA-Z0-9]+(\.[-a-zA-Z0-9]*[a-zA-Z0-9]+)+/;
           $.httpRegex = /^https?:\/\//;
         }
