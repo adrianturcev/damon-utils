@@ -2795,12 +2795,12 @@
           }
         }
         /**
-         * @param {String} string
+         * @param {damonValue} map
          * @returns  {string}
          */
-        damonTableToCSV(string) {
+        damonTableMapToCSV(map) {
           const $ = this;
-          let map = $.damon.damonToMap(string), output = "";
+          let output = "";
           let index = 0;
           for (const [key, value] of map) {
             if (index === 0 && key === "00") {
@@ -2821,12 +2821,12 @@
           return output.slice(0, -1);
         }
         /**
-         * @param {String} string
+         * @param {damonValue} map
          * @returns {string}
          */
-        damonTableToJSON(string) {
+        damonTableMapToJSON(map) {
           const $ = this;
-          let map = $.damon.damonToMap(string), output = "[\n";
+          let output = "[\n";
           let index = 0;
           for (const [key, value] of map) {
             output += "    [";
@@ -2961,13 +2961,13 @@
           }
         }
         /**
-         * @param {string} damon
+         * @param {damonValue} map
          * @param {number} [startLine=0]
          * @returns {string}
          */
-        damonGraphToMermaid(damon, startLine = 0) {
+        damonGraphMapToMermaid(map, startLine = 0) {
           let $ = this;
-          let map = $.damon.damonToMap(damon), mermaid = "";
+          let mermaid = "";
           if (typeof map !== "object" || map === null || Array.isArray(map) || !(map instanceof Map) || map.constructor !== Map) {
             throw new Error("Error: input does not conform to Map type");
           }

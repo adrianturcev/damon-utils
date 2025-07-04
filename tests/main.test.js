@@ -220,9 +220,9 @@ describe('# DAMON UTILS', function () {
                     ["A", "B", "C"],
                     ["A", "B", "C"]
                 ]`.replaceAll('\n' + '    '.repeat(4), '\n');
-            assert.equal(damonUtils.damonTableToCSV(tableTestTwo), csv);
+            assert.equal(damonUtils.damonTableMapToCSV(damon.damonToMap(tableTestTwo)), csv);
             assert.equal(damonUtils.csvToDamonTable(csv), tableTestTwo);
-            assert.equal(damonUtils.damonTableToJSON(tableTestTwo), jsonTable);
+            assert.equal(damonUtils.damonTableMapToJSON(damon.damonToMap(tableTestTwo)), jsonTable);
             assert.equal(damonUtils.jsonToDamonTable(jsonTable), tableTestTwo);
         });
     });
@@ -275,7 +275,7 @@ describe('# DAMON UTILS', function () {
                 B --> C
                 C --> A
                 C --> B`.replaceAll('\n' + '    '.repeat(4), '\r\n');
-            assert.equal(damonUtils.damonGraphToMermaid(damonGraph), mermaidGraph);
+            assert.equal(damonUtils.damonGraphMapToMermaid(damon.damonToMap(damonGraph)), mermaidGraph);
         });
     });
 });
