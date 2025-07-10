@@ -1061,11 +1061,13 @@
                     let fullUrl = key;
                     if (!$.httpRegex.test(key))
                       fullUrl = "https://" + key;
-                    let keyLink = DOMPurify.sanitize(`<a href="${fullUrl}">${fullUrl}</a>`);
+                    let keyLink = DOMPurify.sanitize(`<a href="${fullUrl}"><span>${fullUrl}</span></a>`);
                     keySpan.innerHTML = keyLink;
                   } else {
                     if (jsonContext !== void 0 && key in schema["@context"]) {
-                      keySpan.innerHTML = DOMPurify.sanitize(`<a href="${schema["@context"][key]["@id"]}">${key}</a>`);
+                      keySpan.innerHTML = DOMPurify.sanitize(
+                        `<a href="${schema["@context"][key]["@id"]}"><span>${key}</span></a>`
+                      );
                     } else {
                       keySpan.textContent = key;
                     }
@@ -1073,7 +1075,7 @@
                   if (typeof value === "object" && value !== null) {
                     if (Array.isArray(value)) {
                       if (jsonMap2.damonInlineArrays !== void 0 && jsonMap2.damonInlineArrays.indexOf(key) > -1) {
-                        newDiv.innerHTML = keySpan.outerHTML + ": [";
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[';
                         for (let j = 0, k = value.length; j < k; j++) {
                           let childValueSpan = document.createElement("span"), childValue = value[j];
                           if (childValue === true) {
@@ -1120,7 +1122,7 @@
                         newListItem.appendChild(newList);
                         listItem.appendChild(newListItem);
                       } else {
-                        newDiv.innerHTML = keySpan.outerHTML + ": []";
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[]';
                         newListItem.appendChild(newDiv);
                         newListItem.appendChild(newList);
                         listItem.appendChild(newListItem);
@@ -1130,7 +1132,7 @@
                       if (jsonMap2.implicitMaps !== void 0 && jsonMap2.implicitMaps.indexOf(key) > -1) {
                         newDiv.innerHTML = keySpan.outerHTML;
                       } else {
-                        newDiv.innerHTML = keySpan.outerHTML + ": {}";
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>{}';
                       }
                       newListItem.appendChild(newDiv);
                       newListItem.appendChild(newList);
@@ -1139,7 +1141,7 @@
                     }
                   } else {
                     jsonItemIndex++;
-                    newDiv.innerHTML = keySpan.outerHTML + ": ";
+                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>';
                     let valueSpan = document.createElement("span");
                     let childText = value;
                     if (childText === true) {
@@ -2250,7 +2252,7 @@
                       let fullUrl = key;
                       if (!$.httpRegex.test(key))
                         fullUrl = "https://" + key;
-                      let keyLink = DOMPurify.sanitize(`<a href="${fullUrl}">${fullUrl}</a>`);
+                      let keyLink = DOMPurify.sanitize(`<a href="${fullUrl}"><span>${fullUrl}</span></a>`);
                       keySpan.innerHTML = keyLink;
                     } else {
                       keySpan.textContent = key;
@@ -2258,7 +2260,7 @@
                     if (typeof value === "object" && value !== null) {
                       if (Array.isArray(value)) {
                         if (firstMap.damonInlineArrays !== void 0 && firstMap.damonInlineArrays.indexOf(key) > -1) {
-                          newDiv.innerHTML = keySpan.outerHTML + ": [";
+                          newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[';
                           for (let j = 0, k = value.length; j < k; j++) {
                             let childValueSpan = document.createElement("span"), childValue = value[j];
                             if (childValue === true) {
@@ -2305,7 +2307,7 @@
                           newListItem.appendChild(newList);
                           list2.appendChild(newListItem);
                         } else {
-                          newDiv.innerHTML = keySpan.outerHTML + ": []";
+                          newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[]';
                           newListItem.appendChild(newDiv);
                           newListItem.appendChild(newList);
                           list2.appendChild(newListItem);
@@ -2319,7 +2321,7 @@
                         if (firstMap.implicitMaps !== void 0 && firstMap.implicitMaps.indexOf(key) > -1) {
                           newDiv.innerHTML = keySpan.outerHTML;
                         } else {
-                          newDiv.innerHTML = keySpan.outerHTML + ": {}";
+                          newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>{}';
                         }
                         newListItem.appendChild(newDiv);
                         newListItem.appendChild(newList);
@@ -2331,7 +2333,7 @@
                         }
                       }
                     } else {
-                      newDiv.innerHTML = keySpan.outerHTML + ": ";
+                      newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>';
                       let valueSpan = document.createElement("span");
                       let childText = value;
                       if (childText === true) {
@@ -2569,7 +2571,7 @@
                   if (typeof value === "object" && value !== null) {
                     if (Array.isArray(value)) {
                       if (secondMap2.damonInlineArrays !== void 0 && secondMap2.damonInlineArrays.indexOf(key) > -1) {
-                        newDiv.innerHTML = keySpan.outerHTML + ": [";
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[';
                         for (let j = 0, k = value.length; j < k; j++) {
                           let childValueSpan = document.createElement("span"), childValue = value[j];
                           if (childValue === true) {
@@ -2616,7 +2618,7 @@
                         newListItem.appendChild(newList);
                         list2.appendChild(newListItem);
                       } else {
-                        newDiv.innerHTML = keySpan.outerHTML + ": []";
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[]';
                         newListItem.appendChild(newDiv);
                         newListItem.appendChild(newList);
                         list2.appendChild(newListItem);
@@ -2626,7 +2628,7 @@
                       if (secondMap2.implicitMaps !== void 0 && secondMap2.implicitMaps.indexOf(key) > -1) {
                         newDiv.innerHTML = keySpan.outerHTML;
                       } else {
-                        newDiv.innerHTML = keySpan.outerHTML + ": {}";
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>{}';
                       }
                       newListItem.appendChild(newDiv);
                       newListItem.appendChild(newList);
@@ -2634,7 +2636,7 @@
                       recurseSecondMap(value, newList, path.concat([index]), color);
                     }
                   } else {
-                    newDiv.innerHTML = keySpan.outerHTML + ": ";
+                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>';
                     let valueSpan = document.createElement("span");
                     let childText = value;
                     if (childText === true) {
@@ -2944,10 +2946,10 @@
             for (let z = 0, x = abstractPath.length; z < x; z++) {
               if (typeof currentLevel === "object" && currentLevel !== null && !Array.isArray(currentLevel) && currentLevel instanceof Map && currentLevel.constructor === Map) {
                 concretePath.push(Array.from(currentLevel.keys())[abstractPath[z]]);
-                currentLevel = concretePath[concretePath.length - 1];
+                currentLevel = currentLevel.get(currentLevel[abstractPath[z]]);
               } else {
                 concretePath.push(parseInt(abstractPath[z]));
-                currentLevel = currentLevel.get(currentLevel[abstractPath[z]]);
+                currentLevel = concretePath[concretePath.length - 1];
               }
             }
             lineNumberDiv.textContent = $.damon.getRangeFromPath(
