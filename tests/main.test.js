@@ -51,13 +51,13 @@ describe('# DAMON UTILS', function () {
                 h.html`<div class="DAMON-Diff">
                     <div class="DAMON-Diff-legend"><span id="damonDiffRed"><span>Red</span>: Difference</span>; <span id="damonDiffBlue"><span>Blue</span>: Addition</span>; <span id="damonDiffGreen"><span>Green</span>: Displacement</span></div>
                     <ul class="DAMON-List">
-                        <li class="" data-graph-arbo="0"><code><span class="type-key">Divide</span><span class="operator">: <span>{}</span></span></code>
+                        <li class="" data-graph-arbo="0"><code><span class="type-key">Divide</span><span class="operator">: </span>{}</code>
                             <ul>
-                                <li class="" data-graph-arbo="0-0"><code><span class="type-key">n</span><span class="operator">: <span></span></span><span class="type-null">null</span></code></li>
-                                <li class="red-diff" aria-describedby="damonDiffRed"><code><span class="type-key">b</span><span class="operator">: <span>{}</span></span></code>
+                                <li class="" data-graph-arbo="0-0"><code><span class="type-key">n</span><span class="operator">: </span><span class="type-null">null</span></code></li>
+                                <li class="red-diff" aria-describedby="damonDiffRed"><code><span class="type-key">b</span><span class="operator">: </span>{}</code>
                                     <ul>
-                                        <li class="red-diff" aria-describedby="damonDiffRed"><code><span class="type-key">1</span><span class="operator">: <span></span></span></code></li>
-                                        <li class="red-diff" aria-describedby="damonDiffRed"><code><span class="type-key">n</span><span class="operator">: <span></span></span></code></li>
+                                        <li class="red-diff" aria-describedby="damonDiffRed"><code><span class="type-key">1</span><span class="operator">: </span></code></li>
+                                        <li class="red-diff" aria-describedby="damonDiffRed"><code><span class="type-key">n</span><span class="operator">: </span></code></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -66,7 +66,6 @@ describe('# DAMON UTILS', function () {
                 </div>`.innerHTML.replaceAll('\n' + '    '.repeat(4), '\n'),
                 renderDiff = damonUtils._mapsDiff(damon.damonToMap(firstMap), damon.damonToMap(secondMap)),
                 htmlOutput = damonUtils.renderDiff(damon.damonToMap(firstMap), damon.damonToMap(secondMap));
-                console.log(beautify(htmlOutput.outerHTML));
             assert.equal(expectedOutput, beautify(htmlOutput.outerHTML));
         });
     });
@@ -91,9 +90,9 @@ describe('# DAMON UTILS', function () {
                         - {}`.replaceAll('\n' + '    '.repeat(4), '\n'),
                 htmlList =
                 `<ul class="DAMON-List">
-                    <li data-graph-arbo="0"><code><span class="type-key">key0</span><span class="operator">: <span></span></span><span class="type-null">null</span></code></li>
+                    <li data-graph-arbo="0"><code><span class="type-key">key0</span><span class="operator">: </span><span class="type-null">null</span></code></li>
                     <li data-graph-arbo="1"><code><span class="type-key">k
-                                ey1</span><span class="operator">: <span>[]</span></span></code>
+                                ey1</span><span class="operator">: </span>[]</code>
                         <ul>
                             <li data-graph-arbo="1-0"><code>[]</code>
                                 <ul>
@@ -110,20 +109,20 @@ describe('# DAMON UTILS', function () {
                             </li>
                         </ul>
                     </li>
-                    <li data-graph-arbo="2"><code><span class="type-key">1</span><span class="operator">: <span>{}</span></span></code>
+                    <li data-graph-arbo="2"><code><span class="type-key">1</span><span class="operator">: </span>{}</code>
                         <ul>
-                            <li data-graph-arbo="2-0"><code><span class="type-key">key</span><span class="operator">: <span></span></span><span class="type-number">1</span></code></li>
-                            <li data-graph-arbo="2-1"><code><span class="type-key">othe: "rKey</span><span class="operator">: <span></span></span><span class="type-string">": "1e10"</span></code></li>
+                            <li data-graph-arbo="2-0"><code><span class="type-key">key</span><span class="operator">: </span><span class="type-number">1</span></code></li>
+                            <li data-graph-arbo="2-1"><code><span class="type-key">othe: "rKey</span><span class="operator">: </span><span class="type-string">": "1e10"</span></code></li>
                         </ul>
                     </li>
-                    <li data-graph-arbo="3"><code><span class="type-key">More_complex_case</span><span class="operator">: <span>{}</span></span></code>
+                    <li data-graph-arbo="3"><code><span class="type-key">More_complex_case</span><span class="operator">: </span>{}</code>
                         <ul>
-                            <li data-graph-arbo="3-0"><code><span class="type-key">key</span><span class="operator">: <span>[</span></span><span class="type-string">"1e10"</span>, <span class="type-string">"abc"</span>]</code>
+                            <li data-graph-arbo="3-0"><code><span class="type-key">key</span><span class="operator">: </span>[<span class="type-string">"1e10"</span>, <span class="type-string">"abc"</span>]</code>
                                 <ul></ul>
                             </li>
                         </ul>
                     </li>
-                    <li data-graph-arbo="4"><code><span class="type-key">list</span><span class="operator">: <span>[]</span></span></code>
+                    <li data-graph-arbo="4"><code><span class="type-key">list</span><span class="operator">: </span>[]</code>
                         <ul>
                             <li data-graph-arbo="4-0"><code>{}</code>
                                 <ul></ul>
@@ -134,7 +133,6 @@ describe('# DAMON UTILS', function () {
                         </ul>
                     </li>
                 </ul>`.replaceAll('\n' + '    '.repeat(4), '\n');
-            console.log(beautify(damonUtils.mapToHtmlList(damon.damonToMap(damonList)).outerHTML));
             assert.equal(beautify(damonUtils.mapToHtmlList(damon.damonToMap(damonList)).outerHTML), beautify(htmlList));
         });
     });
@@ -239,10 +237,10 @@ describe('# DAMON UTILS', function () {
                 returnValue =
                 `<ul class="DAMON-List">
                     <li data-graph-arbo="0">
-                        <div><code><span class="type-key">key</span><span class="operator">: <span></span></span><span class="type-null">null</span></code></div>
+                        <div><code><span class="type-key">key</span><span class="operator">: </span><span class="type-null">null</span></code></div>
                     </li>
                     <li data-graph-arbo="1">
-                        <div><code><span class="type-key">list</span><span class="operator">: <span>[]</span></span></code></div>
+                        <div><code><span class="type-key">list</span><span class="operator">: </span>[]</code></div>
                         <ul>
                             <li data-graph-arbo="1-0">
                                 <div><code>{}</code></div>
@@ -257,7 +255,6 @@ describe('# DAMON UTILS', function () {
                 </ul>`.replaceAll('\n' + '    '.repeat(4), '\n');
             let test = damonUtils.mapToHtmlList(damon.damonToMap(damonList));
             damonUtils.wrapListContentsForStyling(test.getElementsByTagName('li'));
-            console.log(beautify(test.outerHTML));
             assert.equal(beautify(test.outerHTML), returnValue);
         });
     });

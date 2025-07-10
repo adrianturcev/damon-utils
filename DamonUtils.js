@@ -124,7 +124,7 @@ class DamonUtils {
                                     jsonMap.damonInlineArrays !== undefined
                                     && jsonMap.damonInlineArrays.indexOf(key) > -1
                                 ) {
-                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[';
+                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[';
                                     for (let j = 0, k = value.length; j < k; j++) {
                                         let childValueSpan = document.createElement('span'),
                                             childValue = value[j];
@@ -177,7 +177,7 @@ class DamonUtils {
                                     newListItem.appendChild(newList);
                                     listItem.appendChild(newListItem);
                                 } else {
-                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[]';
+                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[]';
                                     newListItem.appendChild(newDiv);
                                     newListItem.appendChild(newList);
                                     listItem.appendChild(newListItem);
@@ -190,7 +190,7 @@ class DamonUtils {
                                 ) {
                                     newDiv.innerHTML = keySpan.outerHTML;
                                 } else {
-                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>{}';
+                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>{}';
                                 }
                                 newListItem.appendChild(newDiv);
                                 newListItem.appendChild(newList);
@@ -199,7 +199,7 @@ class DamonUtils {
                             }
                         } else {
                             jsonItemIndex++;
-                            newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>';
+                            newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>';
                             let valueSpan = document.createElement('span');
                             let childText = value;
                             if (childText === true) {
@@ -1757,7 +1757,7 @@ class DamonUtils {
                                         firstMap.damonInlineArrays !== undefined
                                         && firstMap.damonInlineArrays.indexOf(key) > -1
                                     ) {
-                                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[';
+                                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[';
                                         for (let j = 0, k = value.length; j < k; j++) {
                                             let childValueSpan = document.createElement('span'),
                                                 childValue = value[j];
@@ -1810,7 +1810,7 @@ class DamonUtils {
                                         newListItem.appendChild(newList);
                                         list.appendChild(newListItem);
                                     } else {
-                                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[]';
+                                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[]';
                                         newListItem.appendChild(newDiv);
                                         newListItem.appendChild(newList);
                                         list.appendChild(newListItem);
@@ -1827,7 +1827,7 @@ class DamonUtils {
                                     ) {
                                         newDiv.innerHTML = keySpan.outerHTML;
                                     } else {
-                                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>{}';
+                                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>{}';
                                     }
                                     newListItem.appendChild(newDiv);
                                     newListItem.appendChild(newList);
@@ -1839,7 +1839,7 @@ class DamonUtils {
                                     }
                                 }
                             } else {
-                                newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>';
+                                newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>';
                                 let valueSpan = document.createElement('span');
                                 let childText = value;
                                 if (childText === true) {
@@ -2152,7 +2152,7 @@ class DamonUtils {
                                     secondMap.damonInlineArrays !== undefined
                                     && secondMap.damonInlineArrays.indexOf(key) > -1
                                 ) {
-                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[';
+                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[';
                                     for (let j = 0, k = value.length; j < k; j++) {
                                         let childValueSpan = document.createElement('span'),
                                             childValue = value[j];
@@ -2205,7 +2205,7 @@ class DamonUtils {
                                     newListItem.appendChild(newList);
                                     list.appendChild(newListItem);
                                 } else {
-                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[]';
+                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[]';
                                     newListItem.appendChild(newDiv);
                                     newListItem.appendChild(newList);
                                     list.appendChild(newListItem);
@@ -2218,7 +2218,7 @@ class DamonUtils {
                                 ) {
                                     newDiv.innerHTML = keySpan.outerHTML;
                                 } else {
-                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>{}';
+                                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>{}';
                                 }
                                 newListItem.appendChild(newDiv);
                                 newListItem.appendChild(newList);
@@ -2226,7 +2226,7 @@ class DamonUtils {
                                 recurseSecondMap(value, newList, path.concat([index]), color);
                             }
                         } else {
-                            newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>';
+                            newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>';
                             let valueSpan = document.createElement('span');
                             let childText = value;
                             if (childText === true) {
