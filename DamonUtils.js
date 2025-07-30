@@ -2612,6 +2612,32 @@ class DamonUtils {
     }
 
     /**
+     * Must occur after rendering
+     * @param {NodeList } listItems
+     * @param {String} damon
+     */
+    addTableLineNumbers(damon, container, startLine = 0) {
+        let $ = this,
+            nodeList = container.querySelectorAll('th[data-graph-arbo]:first-child, td[data-graph-arbo]:first-child');
+        for (let i = 0, c = nodeList.length; i < c; i++) {
+            let lineNumberDiv = document.createElement('div');
+            lineNumberDiv.className = 'damon-line-number';
+            lineNumberDiv.textContent =
+                $.damon.getRangeFromPath(
+                    damon,
+                    [Array.from($.damon.damonToMap(damon).keys())[i]]
+                )[0][0] + 1 + startLine;
+            lineNumberDiv.id = 'damonLine' + lineNumberDiv.textContent;
+            nodeList[i].setAttribute("aria-labelledBy", lineNumberDiv.id);
+            lineNumberDiv.style.top =
+                container.scrollTop
+                + nodeList[i].getBoundingClientRect().top
+                - container.getBoundingClientRect().top + 'px';
+            container.appendChild(lineNumberDiv);
+        }
+    }
+
+    /**
      * @param {damonValue} map
      * @param {number} [startLine=0]
      * @returns {string}

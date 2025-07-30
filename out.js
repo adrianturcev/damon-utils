@@ -1075,7 +1075,7 @@
                   if (typeof value === "object" && value !== null) {
                     if (Array.isArray(value)) {
                       if (jsonMap2.damonInlineArrays !== void 0 && jsonMap2.damonInlineArrays.indexOf(key) > -1) {
-                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[';
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[';
                         for (let j = 0, k = value.length; j < k; j++) {
                           let childValueSpan = document.createElement("span"), childValue = value[j];
                           if (childValue === true) {
@@ -1122,7 +1122,7 @@
                         newListItem.appendChild(newList);
                         listItem.appendChild(newListItem);
                       } else {
-                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[]';
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[]';
                         newListItem.appendChild(newDiv);
                         newListItem.appendChild(newList);
                         listItem.appendChild(newListItem);
@@ -1132,7 +1132,7 @@
                       if (jsonMap2.implicitMaps !== void 0 && jsonMap2.implicitMaps.indexOf(key) > -1) {
                         newDiv.innerHTML = keySpan.outerHTML;
                       } else {
-                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>{}';
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>{}';
                       }
                       newListItem.appendChild(newDiv);
                       newListItem.appendChild(newList);
@@ -1141,7 +1141,7 @@
                     }
                   } else {
                     jsonItemIndex++;
-                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>';
+                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>';
                     let valueSpan = document.createElement("span");
                     let childText = value;
                     if (childText === true) {
@@ -2260,7 +2260,7 @@
                     if (typeof value === "object" && value !== null) {
                       if (Array.isArray(value)) {
                         if (firstMap.damonInlineArrays !== void 0 && firstMap.damonInlineArrays.indexOf(key) > -1) {
-                          newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[';
+                          newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[';
                           for (let j = 0, k = value.length; j < k; j++) {
                             let childValueSpan = document.createElement("span"), childValue = value[j];
                             if (childValue === true) {
@@ -2307,7 +2307,7 @@
                           newListItem.appendChild(newList);
                           list2.appendChild(newListItem);
                         } else {
-                          newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[]';
+                          newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[]';
                           newListItem.appendChild(newDiv);
                           newListItem.appendChild(newList);
                           list2.appendChild(newListItem);
@@ -2321,7 +2321,7 @@
                         if (firstMap.implicitMaps !== void 0 && firstMap.implicitMaps.indexOf(key) > -1) {
                           newDiv.innerHTML = keySpan.outerHTML;
                         } else {
-                          newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>{}';
+                          newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>{}';
                         }
                         newListItem.appendChild(newDiv);
                         newListItem.appendChild(newList);
@@ -2333,7 +2333,7 @@
                         }
                       }
                     } else {
-                      newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>';
+                      newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>';
                       let valueSpan = document.createElement("span");
                       let childText = value;
                       if (childText === true) {
@@ -2571,7 +2571,7 @@
                   if (typeof value === "object" && value !== null) {
                     if (Array.isArray(value)) {
                       if (secondMap2.damonInlineArrays !== void 0 && secondMap2.damonInlineArrays.indexOf(key) > -1) {
-                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[';
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[';
                         for (let j = 0, k = value.length; j < k; j++) {
                           let childValueSpan = document.createElement("span"), childValue = value[j];
                           if (childValue === true) {
@@ -2618,7 +2618,7 @@
                         newListItem.appendChild(newList);
                         list2.appendChild(newListItem);
                       } else {
-                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>[]';
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>[]';
                         newListItem.appendChild(newDiv);
                         newListItem.appendChild(newList);
                         list2.appendChild(newListItem);
@@ -2628,7 +2628,7 @@
                       if (secondMap2.implicitMaps !== void 0 && secondMap2.implicitMaps.indexOf(key) > -1) {
                         newDiv.innerHTML = keySpan.outerHTML;
                       } else {
-                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>{}';
+                        newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>{}';
                       }
                       newListItem.appendChild(newDiv);
                       newListItem.appendChild(newList);
@@ -2636,7 +2636,7 @@
                       recurseSecondMap(value, newList, path.concat([index]), color);
                     }
                   } else {
-                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: <span>';
+                    newDiv.innerHTML = keySpan.outerHTML + '<span class="operator">: </span>';
                     let valueSpan = document.createElement("span");
                     let childText = value;
                     if (childText === true) {
@@ -2959,6 +2959,26 @@
             lineNumberDiv.id = "damonLine" + lineNumberDiv.textContent;
             listItems[i].setAttribute("aria-labelledBy", lineNumberDiv.id);
             lineNumberDiv.style.top = container.scrollTop + listItems[i].firstElementChild.getBoundingClientRect().top - container.getBoundingClientRect().top + "px";
+            container.appendChild(lineNumberDiv);
+          }
+        }
+        /**
+         * Must occur after rendering
+         * @param {NodeList } listItems
+         * @param {String} damon
+         */
+        addTableLineNumbers(damon, container, startLine = 0) {
+          let $ = this, nodeList = container.querySelectorAll("th[data-graph-arbo]:first-child, td[data-graph-arbo]:first-child");
+          for (let i = 0, c = nodeList.length; i < c; i++) {
+            let lineNumberDiv = document.createElement("div");
+            lineNumberDiv.className = "damon-line-number";
+            lineNumberDiv.textContent = $.damon.getRangeFromPath(
+              damon,
+              [Array.from($.damon.damonToMap(damon).keys())[i]]
+            )[0][0] + 1 + startLine;
+            lineNumberDiv.id = "damonLine" + lineNumberDiv.textContent;
+            nodeList[i].setAttribute("aria-labelledBy", lineNumberDiv.id);
+            lineNumberDiv.style.top = container.scrollTop + nodeList[i].getBoundingClientRect().top - container.getBoundingClientRect().top + "px";
             container.appendChild(lineNumberDiv);
           }
         }
