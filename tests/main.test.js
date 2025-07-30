@@ -136,7 +136,7 @@ describe('# DAMON UTILS', function () {
             assert.equal(beautify(damonUtils.mapToHtmlList(damon.damonToMap(damonList)).outerHTML), beautify(htmlList));
         });
     });
-    describe('## MathJS', function () {
+    describe('## MATHJS', function () {
         it('Returns a mathJs string', function () {
             let damonMath =
                 `- Power: {}
@@ -226,7 +226,7 @@ describe('# DAMON UTILS', function () {
             assert.equal(damonUtils.jsonToDamonTable(jsonTable), tableTestTwo);
         });
     });
-    describe('## List contents wrapping', function () {
+    describe('## LIST CONTENTS WRAPPING', function () {
         it('Returns a list with item contents wrapped in divs', function () {
             let damonList =
                 `- {}
