@@ -2590,10 +2590,10 @@ class DamonUtils {
                     && currentLevel.constructor === Map
                 ) {
                     concretePath.push(Array.from(currentLevel.keys())[abstractPath[z]]);
-                    currentLevel = currentLevel.get(currentLevel[abstractPath[z]]);
+                    currentLevel = currentLevel.get(concretePath[z]);
                 } else {
                     concretePath.push(parseInt(abstractPath[z]));
-                    currentLevel = concretePath[concretePath.length - 1];
+                    currentLevel = currentLevel[concretePath[z]];
                 }
             }
             lineNumberDiv.textContent =
