@@ -2657,9 +2657,12 @@ class DamonUtils {
         let mapIndex = 0;
         for (const [key, value] of map) {
             mapIndex++;
+            if (value === null) {
+                mermaid += key + '\r\n';
+                continue;
+            }
             if (
                 typeof value !== 'object'
-                || value === null
                 || Array.isArray(value)
                 || !(value instanceof Map)
                 || value.constructor !== Map
