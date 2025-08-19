@@ -2669,30 +2669,34 @@ class DamonUtils {
                     + $.damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to Map type"
                 );
             }
-            for (const [subKey, subValue] of value) {
-                mapIndex++;
-                if (typeof subValue !== "string") {
-                    throw new Error(
-                        "Error line "
-                        + $.damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to String type"
-                    );
-                }
-                let adjacents = subValue.split(",");
-                for (let i = 0, c = adjacents.length; i < c; i++) {
-                    if (i == 0) {
-                        if (subKey.length) {
-                            mermaid += key + " -- " + subKey + " --> " + adjacents[i] + '\r\n';
+            if (Array.from(value.keys()).length) {
+                for (const [subKey, subValue] of value) {
+                    mapIndex++;
+                    if (typeof subValue !== "string") {
+                        throw new Error(
+                            "Error line "
+                            + $.damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to String type"
+                        );
+                    }
+                    let adjacents = subValue.split(",");
+                    for (let i = 0, c = adjacents.length; i < c; i++) {
+                        if (i == 0) {
+                            if (subKey.length) {
+                                mermaid += key + " -- " + subKey + " --> " + adjacents[i] + '\r\n';
+                            } else {
+                                mermaid += key + " --> " + adjacents[i] + '\r\n';
+                            }
                         } else {
-                            mermaid += key + " --> " + adjacents[i] + '\r\n';
-                        }
-                    } else {
-                        if (subKey.length) {
-                            mermaid += key + " -- " + subKey + " --> " + adjacents[i] + '\r\n';
-                        } else {
-                            mermaid += key + " --> " + adjacents[i] + '\r\n';
+                            if (subKey.length) {
+                                mermaid += key + " -- " + subKey + " --> " + adjacents[i] + '\r\n';
+                            } else {
+                                mermaid += key + " --> " + adjacents[i] + '\r\n';
+                            }
                         }
                     }
                 }
+            } else {
+                mermaid += key + '\r\n';
             }
         }
         return mermaid.slice(0, -2);
