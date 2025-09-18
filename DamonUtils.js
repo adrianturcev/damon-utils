@@ -22,7 +22,16 @@ class DamonUtils {
      */
     damonToSExpression(damonString) {
         const $ = this;
-        return $.implicitMapToSExpression($.damon.damonToMap(damonString));
+        return $.prefixedKeysMapToSExpression($.damon.damonToMap(damonString));
+    }
+
+    /**
+     * @param {string} jsonString
+     * @returns {string}
+     */
+    sExpressionToDamon(jsonString) {
+        const $ = this;
+        return $.damon.mapToDamon($.sExpressionToPrefixedKeysMap(jsonString), false, true);
     }
 
     /**
