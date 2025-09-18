@@ -900,7 +900,7 @@ class DamonUtils {
      * @param {damonMap} jsonMap
      * @returns {string}
      */
-    implicitMapToSExpression(jsonMap) {
+    prefixedKeysMapToSExpression(jsonMap) {
         const $ = this;
         var list = ``;
          if (
@@ -1035,6 +1035,34 @@ class DamonUtils {
                         list += "\r\n";
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     *
+     *
+     * @param {String} sExpression
+     * @returns {Map}
+     */
+    sExpressionToPrefixedKeysMap(sExpression) {
+        const $ = this;
+        let damonMap = new Map(),
+            index = 0;
+        damonMap.headless = true;
+        _recurse(JSON.parse(sExpression), damonMap);
+        return damonMap;
+        function _recurse(sExpressionArray, map) {
+            if (Array.isArray(sExpressionArray)) {
+                let childMap = new Map();
+                index++;
+                map.set(index + '-' + sExpressionArray[0], childMap);
+                for (let i = 1, c = sExpressionArray.length; i < c; i++) {
+                    _recurse(sExpressionArray[i], childMap);
+                }
+            } else {
+                index++;
+                map.set(index + '-' + sExpressionArray[0], null);
             }
         }
     }
@@ -2428,6 +2456,7 @@ class DamonUtils {
                 output += '"' + value + '"\n';
                 index++;
                 continue;
+
             }
             let valueKeys = Array.from(value.keys());
             for (let i = 0, c = valueKeys.length; i < c; i++) {

@@ -13,13 +13,13 @@ describe('# DAMON UTILS', function () {
         damonUtils = new DamonUtils(damon);
     describe('## S-EXPRESSION', function () {
         it('Turns a Damon map-based S-expression into a JSON array-based S-expression.', function () {
-            let sExpression =
+            let damonSExpression =
                 `- Divide: {}
                     - n
                     - Add: {}
                         - 1
-                        - n`;
-            assert.deepEqual(
+                        - n`,
+                arraySExpression =
                 [
                     "Divide",
                     "n",
@@ -28,8 +28,18 @@ describe('# DAMON UTILS', function () {
                         "1",
                         "n"
                     ]
-                ],
-                JSON.parse(damonUtils.implicitMapToSExpression(damon.damonToMap(sExpression, 0, true)))
+                ];
+            assert.deepEqual(
+                arraySExpression,
+                JSON.parse(damonUtils.prefixedKeysMapToSExpression(damon.damonToMap(damonSExpression, 0, true)))
+            );
+            assert.deepEqual(
+                damon.mapToJSON(
+                    damonUtils.sExpressionToPrefixedKeysMap(
+                        damonUtils.prefixedKeysMapToSExpression(damon.damonToMap(damonSExpression, 0, true))
+                    )
+                ),
+                damon.mapToJSON(damon.damonToMap(damonSExpression, 0, true))
             );
         });
     });
