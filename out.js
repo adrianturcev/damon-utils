@@ -2951,7 +2951,7 @@
           for (let i = 0, c = listItems.length; i < c; i++) {
             let div = document.createElement("div");
             for (let z = listItems[i].childNodes.length - 1; z >= 0; z--) {
-              if (listItems[i].childNodes[z].tagName && listItems[i].childNodes[z].tagName !== "UL" || listItems[i].childNodes[z].nodeType == 3 && listItems[i].childNodes[z].data != "\n" && listItems[i].childNodes[z].data != "\r\n") {
+              if (listItems[i].childNodes[z].tagName && (listItems[i].childNodes[z].tagName !== "UL" && listItems[i].childNodes[z].tagName !== "OL") || listItems[i].childNodes[z].nodeType == 3 && listItems[i].childNodes[z].data != "\n" && listItems[i].childNodes[z].data != "\r\n") {
                 if (div.childNodes.length == 0) {
                   div.appendChild(listItems[i].childNodes[z]);
                 } else {

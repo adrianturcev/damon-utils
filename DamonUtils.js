@@ -2583,7 +2583,10 @@ class DamonUtils {
                 if (
                     (
                         listItems[i].childNodes[z].tagName
-                        && listItems[i].childNodes[z].tagName !== 'UL'
+                        && (
+                            listItems[i].childNodes[z].tagName !== 'UL'
+                            && listItems[i].childNodes[z].tagName !== 'OL'
+                        )
                     ) || (
                         listItems[i].childNodes[z].nodeType == 3
                         && listItems[i].childNodes[z].data != '\n'
