@@ -1828,7 +1828,7 @@
          * @param {string} damonString
          * @return {string} mathJs
          */
-        damonMapToMathJs(damonMap) {
+        prefixedKeysMapToMathJs(damonMap) {
           const $ = this;
           let mathJs = "";
           if (Array.isArray(damonMap)) {
@@ -1838,6 +1838,7 @@
             _recurse(damonMap);
             return mathJs.slice(0, -1);
           } else {
+            8;
             if (typeof damonMap == "string") {
               damonMap = JSON.stringify(damonMap);
             }
