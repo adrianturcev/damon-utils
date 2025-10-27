@@ -2074,14 +2074,14 @@ class DamonUtils {
                                     newListItem.appendChild(newDiv);
                                     newListItem.appendChild(newList);
                                     list.appendChild(newListItem);
-                                    recurseDiffMap(value, newList, path.concat([i]), itemColor);
+                                    recurseDiffMap(diffMap[i], newList, path.concat([i]), itemColor);
                                 }
                             } else {
                                 newDiv.textContent = "{}";
                                 newListItem.appendChild(newDiv);
                                 newListItem.appendChild(newList);
                                 list.appendChild(newListItem);
-                                recurseDiffMap(value, newList, path.concat([i]), itemColor);
+                                recurseDiffMap(diffMap[i], newList, path.concat([i]), itemColor);
                             }
                         } else {
                             let childText = value;

@@ -2522,14 +2522,14 @@
                         newListItem.appendChild(newDiv);
                         newListItem.appendChild(newList);
                         list2.appendChild(newListItem);
-                        recurseDiffMap(value, newList, path.concat([i]), itemColor);
+                        recurseDiffMap(diffMap2[i], newList, path.concat([i]), itemColor);
                       }
                     } else {
                       newDiv.textContent = "{}";
                       newListItem.appendChild(newDiv);
                       newListItem.appendChild(newList);
                       list2.appendChild(newListItem);
-                      recurseDiffMap(value, newList, path.concat([i]), itemColor);
+                      recurseDiffMap(diffMap2[i], newList, path.concat([i]), itemColor);
                     }
                   } else {
                     let childText = value;

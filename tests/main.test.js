@@ -73,60 +73,10 @@ describe('# DAMON UTILS', function () {
                             </ul>
                         </li>
                     </ul>
-                </div>`.innerHTML.replaceAll('\n' + '    '.repeat(4), '\n');
-            //     renderDiff = damonUtils._mapsDiff(damon.damonToMap(firstMap), damon.damonToMap(secondMap)),
-            //     htmlOutput = damonUtils.renderDiff(damon.damonToMap(firstMap), damon.damonToMap(secondMap));
-            // assert.equal(expectedOutput, beautify(htmlOutput.outerHTML));
-            let test = `
-- Headings: null
-- Data sections: {}
-    - DAMON: {}
-        - property1: ""
-        - property2: ""
-    - DAMON-table: {}
-        - 0: {}
-            - Heading1
-            - Heading2
-            - Heading3
-        - 1: {}
-            - A
-            - B
-            - C
-    - DAMON-graph: {}
-        - A[Data sections]: {}
-            - : "B,C,D,E"
-            - namedRelation: "F"
-        - B[DAMON]: null
-        - C[DAMON-table]: null
-        - D[DAMON-graph]: null
-        - E[DAMON-math]: null
-        - F[DAMON-plot]: null
-    - DAMON-math: []
-        - "Equal"
-        - ["f", "x"]
-        - []
-            - "Divide"
-            - "Pi"
-            - ["Power", "x", 2]
-    - DAMON-plot: []
-        - "Divide"
-        - "Pi"
-        - ["Power", "x", 2]
-- JSON output: null
-- Hypertext: {}
-    - Dollarmath: null
-    - Shortcuts: null
-    - Admonitions: null
-    - Task-lists: null
-    - Definition lists: null
-    - Grid: null
-    - Styledown: null
-    - Mermaid: null
-    - Video: null
-    - Footnotes: null
-- Custom attributes: null
-`;
-            damonUtils.renderDiff(damon.damonToMap(test), damon.damonToMap(test));
+                </div>`.innerHTML.replaceAll('\n' + '    '.repeat(4), '\n'),
+                renderDiff = damonUtils._mapsDiff(damon.damonToMap(firstMap), damon.damonToMap(secondMap)),
+                htmlOutput = damonUtils.renderDiff(damon.damonToMap(firstMap), damon.damonToMap(secondMap));
+            assert.equal(expectedOutput, beautify(htmlOutput.outerHTML));
         });
     });
 
