@@ -2437,8 +2437,8 @@
                   let newList = document.createElement("ul"), newDiv = document.createElement("code"), newListItem = document.createElement("li"), itemColor = "green", value;
                   newListItem.className = "green-diff";
                   if (typeof diffMap2[i] === "string") {
-                    itemColor = diffMap2[i].split("-")[1];
-                    newListItem.className = diffMap2[i].split("-")[1] + "-diff";
+                    itemColor = diffMap2[i];
+                    newListItem.className = diffMap2[i] + "-diff";
                   }
                   if (newListItem.className === "red-diff" && i <= firstMapCurrentFractal.length - 1) {
                     if (i > secondMapCurrentFractal.length - 1) {

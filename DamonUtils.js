@@ -1973,9 +1973,9 @@ class DamonUtils {
                             value;
                         newListItem.className = 'green-diff';
                         if (typeof diffMap[i] === 'string') {
-                            itemColor = diffMap[i].split('-')[1];
+                            itemColor = diffMap[i];
                             // Setting color
-                            newListItem.className = diffMap[i].split('-')[1] + '-diff';
+                            newListItem.className = diffMap[i] + '-diff';
                         }
                         if (
                             newListItem.className === 'red-diff'
