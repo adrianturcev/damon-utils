@@ -2434,9 +2434,12 @@
                   }
                 }
                 for (var i = 0, c = diffMap2.length; i < c; i++) {
-                  let itemColor = diffMap2[i].split("-")[1];
-                  let newList = document.createElement("ul"), newDiv = document.createElement("code"), newListItem = document.createElement("li"), value;
-                  newListItem.className = diffMap2[i].split("-")[1] + "-diff";
+                  let newList = document.createElement("ul"), newDiv = document.createElement("code"), newListItem = document.createElement("li"), itemColor = "green", value;
+                  newListItem.className = "green-diff";
+                  if (typeof diffMap2[i] === "string") {
+                    itemColor = diffMap2[i].split("-")[1];
+                    newListItem.className = diffMap2[i].split("-")[1] + "-diff";
+                  }
                   if (newListItem.className === "red-diff" && i <= firstMapCurrentFractal.length - 1) {
                     if (i > secondMapCurrentFractal.length - 1) {
                       value = "";

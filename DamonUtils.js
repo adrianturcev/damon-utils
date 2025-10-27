@@ -1966,13 +1966,17 @@ class DamonUtils {
                         }
                     }
                     for (var i = 0, c = diffMap.length; i < c; i++) {
-                        let itemColor = diffMap[i].split('-')[1];
                         let newList = document.createElement('ul'),
                             newDiv = document.createElement('code'),
                             newListItem = document.createElement('li'),
+                            itemColor = 'green',
                             value;
-                        // Setting color
-                        newListItem.className = diffMap[i].split('-')[1] + '-diff';
+                        newListItem.className = 'green-diff';
+                        if (typeof diffMap[i] === 'string') {
+                            itemColor = diffMap[i].split('-')[1];
+                            // Setting color
+                            newListItem.className = diffMap[i].split('-')[1] + '-diff';
+                        }
                         if (
                             newListItem.className === 'red-diff'
                             && i <= firstMapCurrentFractal.length - 1
