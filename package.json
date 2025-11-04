@@ -2,7 +2,7 @@
     "name": "damon-utils",
     "description": "A post-processing library for DAMON",
     "authors": "Adrian Turcev",
-    "version": "8.0.4",
+    "version": "8.0.5",
     "license": "MPL-2.0",
     "homepage": "https://github.com/adrianturcev/damon-utils",
     "repository": {
@@ -24,7 +24,8 @@
         "build": "npx grunt dist"
     },
     "dependencies": {
-        "dompurify": "^3.2.6"
+        "dompurify": "^3.2.6",
+        "papaparse": "^5.5.3"
     },
     "devDependencies": {
         "@eslint/js": "^9.27.0",

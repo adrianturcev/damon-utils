@@ -1,4 +1,5 @@
 const DOMPurify = require('dompurify');
+const Papa = require('papaparse');
 
 //#### Utils
 module.exports =
@@ -2466,14 +2467,13 @@ class DamonUtils {
         let index = 0;
         for (const [key, value] of map) {
             if (index === 0 && key === '00') {
-                output += '"' + value + '"\n';
+                output += Papa.unparse([[value]], {quotes: true}) + '\n';
                 index++;
                 continue;
-
             }
             let valueKeys = Array.from(value.keys());
             for (let i = 0, c = valueKeys.length; i < c; i++) {
-                output += '"' + valueKeys[i] + '"';
+                output += Papa.unparse([[valueKeys[i]]], {quotes: true});
                 if (i != (c - 1)) {
                     output += ',';
                 }
@@ -2519,7 +2519,10 @@ class DamonUtils {
      */
     csvToDamonTable(string, headless = false) {
         const $ = this;
-        let lines = string.split("\n"),
+        let parseResult = Papa.parse(string);
+        if (parseResult.meta.aborted)
+            throw new Error('CSV parsing failed');
+        let lines = parseResult.data,
             damonMap = new Map();
         if (headless)
             damonMap.headless = true;
@@ -2527,31 +2530,10 @@ class DamonUtils {
             let rowMap = new Map();
             rowMap.implicitNulls = [];
             damonMap.set(i + "", rowMap);
-            let lineValues = lines[i].split(',');
+            let lineValues = lines[i];
             for (let z = 0, x = lineValues.length; z < x; z++) {
-                if (lineValues[z][0] === '"' && lineValues[z][lineValues[z].length - 1] === '"') {
-                    try {
-                        damonMap.get(i + "").set(JSON.parse(lineValues[z]), null);
-                        damonMap.get(i + "").implicitNulls.push(lineValues[z]);
-                    } catch (error) {
-                        damonMap.get(i + "").set(
-                            JSON.parse(JSON.stringify(lineValues[z].slice(1, -1))),
-                            null
-                        );
-                        damonMap.get(i + "").implicitNulls.push(JSON.parse(JSON.stringify(lineValues[z].slice(1, -1))));
-                    }
-                } else {
-                    try {
-                        damonMap.get(i + "").set(JSON.parse(`"${lineValues[z]}"`), null);
-                        damonMap.get(i + "").implicitNulls.push(`"${lineValues[z]}"`);
-                    } catch (error) {
-                        damonMap.get(i + "").set(
-                            JSON.parse(JSON.stringify(lineValues[z])),
-                            null
-                        );
-                        damonMap.get(i + "").implicitNulls.push(JSON.stringify(lineValues[z]));
-                    }
-                }
+                damonMap.get(i + "").set(lineValues[z], null);
+                damonMap.get(i + "").implicitNulls.push(lineValues[z]);
             }
         }
         return $.damon.mapToDamon(damonMap);
