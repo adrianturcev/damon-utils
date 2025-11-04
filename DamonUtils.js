@@ -2517,10 +2517,12 @@ class DamonUtils {
      * @param {String} string
      * @returns {string}
      */
-    csvToDamonTable(string) {
+    csvToDamonTable(string, headless = false) {
         const $ = this;
         let lines = string.split("\n"),
             damonMap = new Map();
+        if (headless)
+            damonMap.headless = true;
         for (let i = 0, c = lines.length; i < c; i++) {
             let rowMap = new Map();
             rowMap.implicitNulls = [];

@@ -2892,9 +2892,11 @@
          * @param {String} string
          * @returns {string}
          */
-        csvToDamonTable(string) {
+        csvToDamonTable(string, headless = false) {
           const $ = this;
           let lines = string.split("\n"), damonMap = /* @__PURE__ */ new Map();
+          if (headless)
+            damonMap.headless = true;
           for (let i = 0, c = lines.length; i < c; i++) {
             let rowMap = /* @__PURE__ */ new Map();
             rowMap.implicitNulls = [];
