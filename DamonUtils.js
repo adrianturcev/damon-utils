@@ -21,9 +21,18 @@ class DamonUtils {
      * @param {string} damonString
      * @returns {string}
      */
+    damonToHtmlTable(damonString) {
+        const $ = this;
+        return $.mapToHtmlTable($.damon.damonToMap(damonString, 0, true));
+    }
+
+    /**
+     * @param {string} damonString
+     * @returns {string}
+     */
     damonToSExpression(damonString) {
         const $ = this;
-        return $.prefixedKeysMapToSExpression($.damon.damonToMap(damonString));
+        return $.prefixedKeysMapToSExpression($.damon.damonToMap(damonString, 0, true));
     }
 
     /**
@@ -438,7 +447,8 @@ class DamonUtils {
                 if (jsonItemIndex == 0) {
                     let row = document.createElement('tr');
                     columnsLength = value.length;
-                    for (const [childKey, childValue] of value) {
+                    for (const [cK, childValue] of value) {
+                        let childKey = cK.slice(cK.match(/^[0-9]+-/)[0].length);
                         if (childValue === null) {
                             let headerCell = document.createElement('th');
                             headerCell.dataset.graphArbo = jsonItemIndex + '-' + row.children.length;
@@ -474,7 +484,8 @@ class DamonUtils {
                         );
                     }
                     let row = document.createElement('tr');
-                    for (const [childKey, childValue] of value) {
+                    for (const [cK, childValue] of value) {
+                        let childKey = cK.slice(cK.match(/^[0-9]+-/)[0].length);
                         if (childValue === null) {
                             let dataCell = document.createElement('td');
                             dataCell.dataset.graphArbo = jsonItemIndex + '-' + row.children.length;
@@ -512,398 +523,6 @@ class DamonUtils {
         }
         table.appendChild(tBody);
         return table;
-    }
-
-    // Expects a complete tree (all terminal leaves at the same level)
-    /**
-     * @param {damonValue} jsonMap
-     * @param {boolean} [safeHTML=false]
-     * @returns {object} DOM
-     */
-    mapTreeLeavesToHtmlTable(jsonMap, safeHTML = false) {
-        let $ = this;
-        // Parsing check
-        try {
-            $.damon.mapToJSON(jsonMap);
-        } catch (error) {
-            throw new Error("Provided map value doesn't passes JSON.parse()")
-        }
-        var jsonItemIndex = 0,
-            expectedDepth = 0,
-            table = document.createElement('table'),
-            tHead = document.createElement('thead'),
-            tBody = document.createElement('tbody'),
-            headingsEncountered = false;
-        table.className = 'DAMON-LeavesToTable';
-        if (
-            typeof jsonMap !== 'object'
-            || jsonMap == null
-            || Array.isArray(jsonMap)
-            || !(jsonMap instanceof Map)
-            || jsonMap.constructor !== Map
-        ) {
-            throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
-        }
-        for (const [key, value] of jsonMap) {
-            if (
-                typeof value === 'object'
-                && !Array.isArray(value)
-            ) {
-                if (
-                    key == "head"
-                    && !headingsEncountered
-                ) {
-                    try {
-                        recurse(value, tHead);
-                    } catch (e) {
-                        return;
-                    }
-                    headingsEncountered = true;
-                } else if (
-                    key == "body"
-                ) {
-                    try {
-                        recurse(value, tBody);
-                    } catch (e) {
-                        return;
-                    }
-                }
-            } else if (
-                typeof value !== 'object'
-                && key == "caption"
-            ) {
-                let caption = document.createElement('caption');
-                if (safeHTML) {
-                    caption.innerHTML = value;
-                } else {
-                    caption.textContent = value;
-                }
-                table.appendChild(caption);
-            } else {
-                throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
-            }
-            jsonItemIndex++;
-        }
-        if (headingsEncountered) {
-            table.appendChild(tHead);
-        }
-        table.appendChild(tBody);
-        return table;
-        /**
-         * @param {damonValue} jsonMap
-         * @param {object} tableSubContainer
-         * @param {number} [level=0]
-         * @param {array} [line=[]]
-         */
-        function recurse(jsonMap, tableSubContainer, level = 0, line = []) {
-            if (
-                typeof tableSubContainer !== 'object'
-                || tableSubContainer == null
-            ) {
-                throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
-            }
-            if (
-                typeof jsonMap === 'object'
-                && jsonMap !== null
-                && !Array.isArray(jsonMap)
-                && jsonMap instanceof Map
-                && jsonMap.constructor === Map
-            ) {
-                if (tableSubContainer.tagName == "THEAD") {
-                    if (Array.from(jsonMap.keys()).length == 1) {
-                        if (
-                            typeof jsonMap.get(Array.from(jsonMap.keys())[0]) === 'object'
-                            && jsonMap.get(Array.from(jsonMap.keys())[0]) !== null
-                        ) {
-                            jsonItemIndex++;
-                            recurse(
-                                jsonMap.get(Array.from(jsonMap.keys())[0]),
-                                tableSubContainer,
-                                level + 1,
-                                line.concat([Array.from(jsonMap.keys())[0]])
-                            );
-                        } else {
-                            throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
-                        }
-                    } else {
-                        throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
-                    }
-                } else if (
-                    tableSubContainer.tagName == "TBODY"
-                ) {
-                    if (Array.from(jsonMap.keys()).length == 0) {
-                        throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
-                    }
-                    for (const [key, value] of jsonMap) {
-                        if (
-                            typeof value === 'object'
-                            && value !== null
-                        ) {
-                            jsonItemIndex++;
-                            recurse(value, tableSubContainer, level + 1, line.concat([key]));
-                        } else {
-                            throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
-                        }
-                    }
-                }
-            } else if (Array.isArray(jsonMap)) {
-                if (tableSubContainer.tagName == "THEAD") {
-                    if (jsonMap.length == 1) {
-                        jsonItemIndex++;
-                        expectedDepth = level;
-                        let tableRow = document.createElement('tr');
-                        line.push(jsonMap[0]);
-                        for (let i = 0, c = line.length; i < c; i++) {
-                            let headerCell = document.createElement('th');
-                            if (safeHTML) {
-                                headerCell.innerHTML = line[i];
-                            } else {
-                                headerCell.textContent = line[i];
-                            }
-                            tableRow.appendChild(headerCell);
-                        }
-                        tableSubContainer.appendChild(tableRow);
-                    } else {
-                        throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
-                    }
-                } else if (
-                    tableSubContainer.tagName == "TBODY"
-                ) {
-                    if (
-                        level == expectedDepth
-                    ) {
-                        if (jsonMap.length == 0) {
-                            throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
-                        }
-                        for (let i = 0, c = jsonMap.length; i < c; i++) {
-                            jsonItemIndex++;
-                            let tableRow = document.createElement('tr');
-                            for (let z = 0, x = line.length; z < x; z++) {
-                                let dataCell = document.createElement('td');
-                                if (safeHTML) {
-                                    dataCell.innerHTML = line[z];
-                                } else {
-                                    dataCell.textContent = line[z];
-                                }
-                                tableRow.appendChild(dataCell);
-                            }
-                            let dataCell = document.createElement('td');
-                            if (safeHTML) {
-                                dataCell.innerHTML = jsonMap[i];
-                            } else {
-                                dataCell.textContent = jsonMap[i];
-                            }
-                            dataCell.textContent = jsonMap[i];
-                            tableRow.appendChild(dataCell);
-                            tableSubContainer.appendChild(tableRow);
-                        }
-                    } else {
-                        throw new Error("Error List Item number " + jsonItemIndex + ": @param { {} } list");
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * @param {object} list DOM
-     * @return {string}
-     */
-    htmlToJSON(list) {
-        let $ = this;
-        var listItemIndex = 0;
-        if (list.firstElementChild.textContent == '{}') {
-            return $._mapToJSON(recurse(list, new Map()));
-        } else if (list.firstElementChild.textContent == '[]') {
-            return $._mapToJSON(recurse(list, []));
-        }
-        /**
-         * @param {object} list DOM
-         * @param {damonValue} jsonMap
-         * @returns {damonValue}
-         */
-        function recurse(list, jsonMap) {
-            if (
-                typeof list !== 'object'
-                || list == null
-                || Array.isArray(list)
-            ) {
-                throw new Error("Error List Item number " + listItemIndex + ": @param { {} } list");
-            }
-            if (
-                typeof jsonMap === 'object'
-                && jsonMap !== null
-                && !Array.isArray(jsonMap)
-                && jsonMap instanceof Map
-                && jsonMap.constructor === Map
-            ) {
-                // {}
-                for (let i = 0, c = list.children.length; i < c; i++) {
-                    listItemIndex++;
-                    if (list.children[i].tagName == "LI") {
-                        if (list.children[i].firstElementChild.tagName == "CODE") {
-                            if (list.children[i].firstElementChild.innerHTML.length) {
-                                let text = list.children[i].firstElementChild.innerHTML.trim();
-                                if (
-                                    text[text.length - 1] == ":"
-                                    && text.length > 1
-                                ) {
-                                    let secondGrandChild = list.children[i].children[1];
-                                    if (
-                                        secondGrandChild.tagName == "UL"
-                                        && secondGrandChild.firstElementChild.tagName == "LI"
-                                        && secondGrandChild.children.length == 1
-                                        && secondGrandChild.firstElementChild.firstElementChild.tagName == "CODE"
-                                    ) {
-                                        listItemIndex++;
-                                        let childText =
-                                            secondGrandChild.firstElementChild.firstElementChild.textContent.trim();
-                                        if (childText == "true") {
-                                            jsonMap.set(text.slice(0, -1), true);
-                                        } else if (childText == "false") {
-                                            jsonMap.set(text.slice(0, -1), false);
-                                        } else if (childText == "null") {
-                                            jsonMap.set(text.slice(0, -1), null);
-                                        } else if (
-                                            isFinite(childText)
-                                            && !isNaN(parseFloat(childText))
-                                        ) {
-                                            jsonMap.set(text.slice(0, -1), childText * 1);
-                                        } else {
-                                            jsonMap.set(text.slice(0, -1), childText);
-                                        }
-                                    } else {
-                                        throw new Error(
-                                            "Error List Item number "
-                                            + listItemIndex
-                                            + ": not DAMON-compliant."
-                                        );
-                                    }
-                                } else if (
-                                    text[text.length - 4] == ":"
-                                    && text.length > 4
-                                ) {
-                                    if (text.slice(-3) == " []") {
-                                        jsonMap.set(text.slice(0, -4), []);
-                                        if (list.children[i].children[1].tagName == "UL") {
-                                            recurse(list.children[i].children[1], jsonMap.get(text.slice(0, -4)));
-                                        } else {
-                                            throw new Error(
-                                                "Error List Item number "
-                                                + listItemIndex
-                                                + ": not DAMON-compliant."
-                                            );
-                                        }
-                                    } else if (text.slice(-3) == " {}") {
-                                        jsonMap.set(text.slice(0, -4), new Map());
-                                        if (list.children[i].children[1].tagName == "UL") {
-                                            recurse(list.children[i].children[1], jsonMap.get(text.slice(0, -4)));
-                                        } else {
-                                            throw new Error(
-                                                "Error List Item number "
-                                                + listItemIndex
-                                                + ": not DAMON-compliant."
-                                            );
-                                        }
-                                    }
-                                } else {
-                                    throw new Error(
-                                        "Error List Item number "
-                                        + listItemIndex
-                                        + ": map items need a key"
-                                    );
-                                }
-                            } else {
-                                throw new Error("Error List Item number " + listItemIndex + ": empty node.");
-                            }
-                        } else {
-                            throw new Error("Error List Item number " + listItemIndex + ": not DAMON-compliant.");
-                        }
-                    }
-                }
-            } else if (Array.isArray(jsonMap)) {
-                // []
-                for (let i = 0, c = list.children.length; i < c; i++) {
-                    listItemIndex++;
-                    if (list.children[i].tagName == "LI") {
-                        if (list.children[i].firstElementChild.tagName == "CODE") {
-                            if (list.children[i].firstElementChild.innerHTML.length) {
-                                let text = list.children[i].firstElementChild.innerHTML.trim();
-                                if (
-                                    text[text.length - 1] == ":"
-                                    && text.length > 1
-                                ) {
-                                    throw new Error(
-                                        "Error List Item number "
-                                        + listItemIndex
-                                        + ": lists can't have keys."
-                                    );
-                                } else if (
-                                    text[text.length - 4] == ":"
-                                    && text.length > 4
-                                ) {
-                                    throw new Error(
-                                        "Error List Item number "
-                                        + listItemIndex
-                                        + ": not DAMON-compliant."
-                                    );
-                                } else {
-                                    if (text == "[]") {
-                                        jsonMap.push([]);
-                                        if (
-                                            list.children[i].children[1]
-                                            && list.children[i].children[1].tagName == "UL"
-                                        ) {
-                                            recurse(list.children[i].children[1], jsonMap[jsonMap.length - 1]);
-                                        } else {
-                                            throw new Error(
-                                                "Error List Item number "
-                                                + listItemIndex
-                                                + ": not DAMON-compliant."
-                                            );
-                                        }
-                                    } else if (text == "{}") {
-                                        jsonMap.push({});
-                                        if (
-                                            list.children[i].children[1]
-                                            && list.children[i].children[1].tagName == "UL"
-                                        ) {
-                                            recurse(list.children[i].children[1], jsonMap[jsonMap.length - 1]);
-                                        } else {
-                                            throw new Error(
-                                                "Error List Item number "
-                                                + listItemIndex
-                                                + ": not DAMON-compliant."
-                                            );
-                                        }
-                                    } else if (text == "true") {
-                                        jsonMap.push(true);
-                                    } else if (text == "false") {
-                                        jsonMap.push(false);
-                                    } else if (text == "null") {
-                                        jsonMap.push(null);
-                                    } else if (
-                                        isFinite(text)
-                                        && !isNaN(parseFloat(text))
-                                    ) {
-                                        jsonMap.push(text * 1);
-                                    } else {
-                                        jsonMap.push(text);
-                                    }
-                                }
-                            } else {
-                                throw new Error("Error List Item number " + listItemIndex + ": empty node.");
-                            }
-                        } else {
-                            throw new Error("Error List Item number " + listItemIndex + ": not DAMON-compliant.");
-                        }
-                    }
-                }
-            } else {
-                throw new Error("Error List Item number " + listItemIndex + ": @param { {} | [] } jsonMap");
-            }
-            return jsonMap;
-        }
     }
 
     /**
@@ -1057,22 +676,20 @@ class DamonUtils {
      */
     sExpressionToPrefixedKeysMap(sExpression) {
         const $ = this;
-        let damonMap = new Map(),
-            index = 0;
+        let damonMap = new Map();
         damonMap.headless = true;
-        _recurse(JSON.parse(sExpression), damonMap);
+        _recurse(JSON.parse(sExpression), damonMap, 0);
         return damonMap;
-        function _recurse(sExpressionArray, map) {
-            if (Array.isArray(sExpressionArray)) {
-                let childMap = new Map();
-                index++;
-                map.set(index + '-' + sExpressionArray[0], childMap);
-                for (let i = 1, c = sExpressionArray.length; i < c; i++) {
-                    _recurse(sExpressionArray[i], childMap);
+        function _recurse(sExpressionArray, map, i) {
+            let childMap = new Map();
+            map.set(i + '-' + sExpressionArray[0], childMap);
+            for (let i = 1, c = sExpressionArray.length; i < c; i++) {
+                if (Array.isArray(sExpressionArray[i])) {
+                    _recurse(sExpressionArray[i], childMap, i - 1);
+                } else {
+                    let indexPrefixedKey = (i - 1) + '-' + sExpressionArray[i];
+                    childMap.set(indexPrefixedKey, null);
                 }
-            } else {
-                index++;
-                map.set(index + '-' + sExpressionArray[0], null);
             }
         }
     }
@@ -2464,16 +2081,18 @@ class DamonUtils {
     damonTableMapToCSV(map) {
         const $ = this;
         let output = '';
-        let index = 0;
-        for (const [key, value] of map) {
-            if (index === 0 && key === '00') {
+        let index = -1;
+        for (const [k, value] of map) {
+            let key = k.slice(k.match(/^[0-9]+-/)[0].length);
+            if (index === -1 && key === '00') {
                 output += Papa.unparse([[value]], {quotes: true}) + '\n';
                 index++;
                 continue;
             }
             let valueKeys = Array.from(value.keys());
             for (let i = 0, c = valueKeys.length; i < c; i++) {
-                output += Papa.unparse([[valueKeys[i]]], {quotes: true});
+                let childKey = valueKeys[i].slice(valueKeys[i].match(/^[0-9]+-/)[0].length);
+                output += Papa.unparse([[childKey]], {quotes: true});
                 if (i != (c - 1)) {
                     output += ',';
                 }
@@ -2491,8 +2110,9 @@ class DamonUtils {
     damonTableMapToJSON(map) {
         const $ = this;
         let output = '[\n';
-        let index = 0;
-        for (const [key, value] of map) {
+        let index = -1;
+        for (const [k, value] of map) {
+            let key = k.slice(k.match(/^[0-9]+-/)[0].length);
             output += '    [';
             if (index === 0 && key === '00') {
                 output += JSON.stringify(value) + '],\n';
@@ -2501,7 +2121,8 @@ class DamonUtils {
             }
             let valueKeys = Array.from(value.keys());
             for (let i = 0, c = valueKeys.length; i < c; i++) {
-                output += JSON.stringify(valueKeys[i]);
+                let childKey = valueKeys[i].slice(valueKeys[i].match(/^[0-9]+-/)[0].length);
+                output += JSON.stringify(childKey);
                 if (i != (c - 1)) {
                     output += ', ';
                 }
@@ -2522,42 +2143,49 @@ class DamonUtils {
         let parseResult = Papa.parse(string);
         if (parseResult.meta.aborted)
             throw new Error('CSV parsing failed');
-        let lines = parseResult.data,
-            damonMap = new Map();
-        if (headless)
-            damonMap.headless = true;
-        for (let i = 0, c = lines.length; i < c; i++) {
-            let rowMap = new Map();
-            rowMap.implicitNulls = [];
-            damonMap.set(i + "", rowMap);
-            let lineValues = lines[i];
-            for (let z = 0, x = lineValues.length; z < x; z++) {
-                damonMap.get(i + "").set(lineValues[z], null);
-                damonMap.get(i + "").implicitNulls.push(lineValues[z]);
-            }
-        }
-        return $.damon.mapToDamon(damonMap);
+        return $.jsonToDamonTable(JSON.stringify(parseResult.data));
     }
 
     /**
      * @param {String} string
      * @returns {string}
      */
-    jsonToDamonTable(string) {
+    jsonToDamonTable(string, format = 'array-rows') {
         const $ = this;
-        let lines = JSON.parse(string).map(x => JSON.stringify(x)),
-            damonMap = new Map();
-        for (let i = 0, c = lines.length; i < c; i++) {
-            let rowMap = new Map();
-            rowMap.implicitNulls = [];
-            damonMap.set(i + "", rowMap);
-            let lineValues = JSON.parse(lines[i]);
-            for (let z = 0, x = lineValues.length; z < x; z++) {
-                damonMap.get(i + "").set(lineValues[z], null);
-                damonMap.get(i + "").implicitNulls.push(lineValues[z]);
+        let damonMap = new Map();
+        if (format === 'array-rows') {
+            let lines = JSON.parse(string);
+            for (let i = 0, c = lines.length; i < c; i++) {
+                let rowMap = new Map(),
+                    indexedKey = i + "-" + (i + "");
+                rowMap.implicitNulls = [];
+                damonMap.set(indexedKey, rowMap);
+                let lineValues = lines[i];
+                for (let z = 0, x = lineValues.length; z < x; z++) {
+                    damonMap.get(indexedKey).set(z + "-" + lineValues[z], null);
+                    damonMap.get(indexedKey).implicitNulls.push(lineValues[z]);
+                }
+            }
+        } else {
+            let map = $.damon.jsonToMap(string);
+            damonMap.set('0-0', new Map());
+            let i = -1;
+            for (const [key, value] of map[0]) {
+                i++;
+                damonMap.get('0-0').set(i + "-" + key, null);
+            }
+            for (let z = 0, x = map.length; z < x; z++) {
+                let indexPrefixedKey = (z + 1) + '-' + (z + 1);
+                damonMap.set(indexPrefixedKey, new Map());
+                let index = -1;
+                for (const [key, value] of map[z]) {
+                    index++;
+                    damonMap.get(indexPrefixedKey).set(index + "-" + value, null);
+                }
             }
         }
-        return $.damon.mapToDamon(damonMap);
+        damonMap.headless = true;
+        return $.damon.mapToDamon(damonMap, false, true);
     }
 
     /**

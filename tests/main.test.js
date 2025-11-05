@@ -200,26 +200,25 @@ describe('# DAMON UTILS', function () {
                 </table>`.replaceAll('\n' + '    '.repeat(4), '\n');
             assert.equal(
                 beautify(
-                    damonUtils.mapToHtmlTable(damon.damonToMap(tableTest)).outerHTML,
+                    damonUtils.mapToHtmlTable(damon.damonToMap(tableTest, false, true)).outerHTML,
                 ),
                 beautify(htmlTable)
             );
         });
         it('Returns a csv table', function () {
             var tableTestTwo =
-                `- {}
-                    - 0: {}
-                        - heading1
-                        - heading2
-                        - heading3
-                    - 1: {}
-                        - A
-                        - B
-                        - C
-                    - 2: {}
-                        - A
-                        - B
-                        - C`.replaceAll('\n' + '    '.repeat(4), '\n');
+                `- 0: {}
+                    - heading1
+                    - heading2
+                    - heading3
+                - 1: {}
+                    - A
+                    - B
+                    - C
+                - 2: {}
+                    - A
+                    - B
+                    - C`.replaceAll('\n' + '    '.repeat(4), '\n');
             var csv =
                 `"heading1","heading2","heading3"
                 "A","B","C"
@@ -230,9 +229,9 @@ describe('# DAMON UTILS', function () {
                     ["A", "B", "C"],
                     ["A", "B", "C"]
                 ]`.replaceAll('\n' + '    '.repeat(4), '\n');
-            assert.equal(damonUtils.damonTableMapToCSV(damon.damonToMap(tableTestTwo)), csv);
+            assert.equal(damonUtils.damonTableMapToCSV(damon.damonToMap(tableTestTwo, false, true)), csv);
             assert.equal(damonUtils.csvToDamonTable(csv), tableTestTwo);
-            assert.equal(damonUtils.damonTableMapToJSON(damon.damonToMap(tableTestTwo)), jsonTable);
+            assert.equal(damonUtils.damonTableMapToJSON(damon.damonToMap(tableTestTwo, false, true)), jsonTable);
             assert.equal(damonUtils.jsonToDamonTable(jsonTable), tableTestTwo);
         });
     });
