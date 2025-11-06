@@ -3231,19 +3231,7 @@
                 }
                 let adjacents = subValue.split(",");
                 for (let i = 0, c = adjacents.length; i < c; i++) {
-                  if (i == 0) {
-                    if (subKey.length) {
-                      mermaid += key + " -- " + subKey + " --> " + adjacents[i] + "\r\n";
-                    } else {
-                      mermaid += key + " --> " + adjacents[i] + "\r\n";
-                    }
-                  } else {
-                    if (subKey.length) {
-                      mermaid += key + " -- " + subKey + " --> " + adjacents[i] + "\r\n";
-                    } else {
-                      mermaid += key + " --> " + adjacents[i] + "\r\n";
-                    }
-                  }
+                  mermaid += key + " " + subKey + " " + adjacents[i] + "\r\n";
                 }
               }
             } else {

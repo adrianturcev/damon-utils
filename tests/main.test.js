@@ -273,11 +273,11 @@ describe('# DAMON UTILS', function () {
             let damonGraph =
                 `
                 - A
-                    - a: "B"
+                    - -- a -->: "B"
                 - B
-                    - : "C"
+                    - -->: "C"
                 - C
-                    - : "A,B"
+                    - -->: "A,B"
                 `.replaceAll('\n' + '    '.repeat(4), '\n');
             let mermaidGraph =
                 `A -- a --> B
