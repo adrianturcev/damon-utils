@@ -15,6 +15,7 @@ class DamonUtils {
         $.domPurify = DOMPurify;
         $.websiteRegex = /^(https?:\/\/)?[-a-zA-Z0-9]*[a-zA-Z0-9]+(\.[-a-zA-Z0-9]*[a-zA-Z0-9]+)+/;
         $.httpRegex = /^https?:\/\//;
+        $.pathRegex = /^\.*\//;
     }
 
     /**
@@ -115,9 +116,15 @@ class DamonUtils {
                             newListItem.dataset.graphArbo =
                                 path.join('-') + '-' + Array.from(jsonMap.keys()).indexOf(key);
                         keySpan.className = "type-key";
-                        if ($.websiteRegex.test(key)) {
+                        if (
+                            $.websiteRegex.test(key)
+                            || $.pathRegex.test(key)
+                        ) {
                             let fullUrl = key;
-                            if (!$.httpRegex.test(key))
+                            if (
+                                $.websiteRegex.test(key)
+                                && !$.httpRegex.test(key)
+                            )
                                 fullUrl = ('https://' + key);
                             let keyLink = DOMPurify.sanitize(`<a href="${ fullUrl }"><span>${ fullUrl }</span></a>`);
                             keySpan.innerHTML = keyLink;
@@ -164,9 +171,15 @@ class DamonUtils {
                                             childValueSpan.className = "type-number";
                                         } else {
                                             if (safeHTML) {
-                                                if ($.websiteRegex.test(childValue)) {
+                                                if (
+                                                    $.websiteRegex.test(childValue)
+                                                    || $.pathRegex.test(childValue)
+                                                ) {
                                                     let fullUrl = childValue;
-                                                    if (!$.httpRegex.test(childValue))
+                                                    if (
+                                                        $.websiteRegex.test(childValue)
+                                                        && !$.httpRegex.test(childValue)
+                                                    )
                                                         fullUrl = 'https://' + childValue;
                                                     childValueSpan.innerHTML =
                                                         DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -174,9 +187,15 @@ class DamonUtils {
                                                     childValueSpan.innerHTML = `"${childValue}"`;
                                                 }
                                             } else {
-                                                if ($.websiteRegex.test(childValue)) {
+                                                if (
+                                                    $.websiteRegex.test(childValue)
+                                                    || $.pathRegex.test(childValue)
+                                                ) {
                                                     let fullUrl = childValue;
-                                                    if (!$.httpRegex.test(childValue))
+                                                    if (
+                                                        !$.httpRegex.test(childValue)
+                                                        && $.websiteRegex.test(childValue)
+                                                    )
                                                         fullUrl = 'https://' + childValue;
                                                     childValueSpan.innerHTML =
                                                         DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -238,9 +257,15 @@ class DamonUtils {
                                 valueSpan.className = "type-number";
                             } else {
                                 if (safeHTML) {
-                                    if ($.websiteRegex.test(childText)) {
+                                    if (
+                                        $.websiteRegex.test(childText)
+                                        || $.pathRegex.test(childText)
+                                    ) {
                                         let fullUrl = childText;
-                                        if (!$.httpRegex.test(childText))
+                                        if (
+                                            !$.httpRegex.test(childText)
+                                            && $.websiteRegex.test(childText)
+                                        )
                                             fullUrl = 'https://' + childText;
                                         valueSpan.innerHTML =
                                             DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -248,9 +273,15 @@ class DamonUtils {
                                         valueSpan.innerHTML = `"${childText}"`;
                                     }
                                 } else {
-                                    if ($.websiteRegex.test(childText)) {
+                                    if (
+                                        $.websiteRegex.test(childText)
+                                        || $.pathRegex.test(childText)
+                                    ) {
                                         let fullUrl = childText;
-                                        if (!$.httpRegex.test(childText))
+                                        if (
+                                            !$.httpRegex.test(childText)
+                                            && $.websiteRegex.test(childText)
+                                        )
                                             fullUrl = 'https://' + childText;
                                         valueSpan.innerHTML =
                                             DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -311,9 +342,15 @@ class DamonUtils {
                                         valueSpan.className = "type-number";
                                     } else {
                                         if (safeHTML) {
-                                            if ($.websiteRegex.test(value)) {
+                                            if (
+                                                $.websiteRegex.test(value)
+                                                || $.pathRegex.test(value)
+                                            ) {
                                                 let fullUrl = value;
-                                                if (!$.httpRegex.test(value))
+                                                if (
+                                                    !$.httpRegex.test(value)
+                                                    && $.websiteRegex.test(value)
+                                                )
                                                     fullUrl = ('https://' + value);
                                                 valueSpan.innerHTML =
                                                     DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -321,9 +358,15 @@ class DamonUtils {
                                                 valueSpan.innerHTML = `"${value}"`;
                                             }
                                         } else {
-                                            if ($.websiteRegex.test(value)) {
+                                            if (
+                                                $.websiteRegex.test(value)
+                                                || $.pathRegex.test(value)
+                                            ) {
                                                 let fullUrl = value;
-                                                if (!$.httpRegex.test(value))
+                                                if (
+                                                    !$.httpRegex.test(value)
+                                                    && $.websiteRegex.test(value)
+                                                )
                                                     fullUrl = ('https://' + value);
                                                 valueSpan.innerHTML =
                                                     DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -376,9 +419,15 @@ class DamonUtils {
                             newDiv.className = "type-number";
                         } else {
                             if (safeHTML) {
-                                if ($.websiteRegex.test(childText)) {
+                                if (
+                                    $.websiteRegex.test(childText)
+                                    || $.pathRegex.test(childText)
+                                ) {
                                     let fullUrl = childText;
-                                    if (!$.httpRegex.test(childText))
+                                    if (
+                                        !$.httpRegex.test(childText)
+                                        && $.websiteRegex.test(childText)
+                                    )
                                         fullUrl = 'https://' + childText;
                                     newDiv.innerHTML =
                                         DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -386,9 +435,15 @@ class DamonUtils {
                                     newDiv.innerHTML = `"${childText}"`;
                                 }
                             } else {
-                                if ($.websiteRegex.test(childText)) {
+                                if (
+                                    $.websiteRegex.test(childText)
+                                    || $.pathRegex.test(childText)
+                                ) {
                                     let fullUrl = childText;
-                                    if (!$.httpRegex.test(childText))
+                                    if (
+                                        !$.httpRegex.test(childText)
+                                        && $.websiteRegex.test(childText)
+                                    )
                                         fullUrl = 'https://' + childText;
                                     newDiv.innerHTML =
                                         DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -453,14 +508,20 @@ class DamonUtils {
                             let headerCell = document.createElement('th');
                             headerCell.dataset.graphArbo = jsonItemIndex + '-' + row.children.length;
                             if (safeHTML) {
-                                if ($.websiteRegex.test(childKey)) {
+                                if (
+                                    $.websiteRegex.test(childKey)
+                                    || $.pathRegex.test(childKey)
+                                ) {
                                     headerCell.innerHTML =
                                         DOMPurify.sanitize(`<a href="${ childKey }">${ childKey }</a>`);
                                 } else {
                                     headerCell.innerHTML = `${childKey}`;
                                 }
                             } else {
-                                if ($.websiteRegex.test(childKey)) {
+                                if (
+                                    $.websiteRegex.test(childKey)
+                                    || $.pathRegex.test(childKey)
+                                ) {
                                     headerCell.innerHTML =
                                         DOMPurify.sanitize(`<a href="${ childKey }">${ childKey }</a>`);
                                 } else {
@@ -490,14 +551,20 @@ class DamonUtils {
                             let dataCell = document.createElement('td');
                             dataCell.dataset.graphArbo = jsonItemIndex + '-' + row.children.length;
                             if (safeHTML) {
-                                if ($.websiteRegex.test(childKey)) {
+                                if (
+                                    $.websiteRegex.test(childKey)
+                                    || $.pathRegex.test(childKey)
+                                ) {
                                     dataCell.innerHTML =
                                         DOMPurify.sanitize(`<a href="${ childKey }">${ childKey }</a>`);
                                 } else {
                                     dataCell.innerHTML = `${childKey}`;
                                 }
                             } else {
-                                if ($.websiteRegex.test(childKey)) {
+                                if (
+                                    $.websiteRegex.test(childKey)
+                                    || $.pathRegex.test(childKey)
+                                ) {
                                     dataCell.innerHTML =
                                         DOMPurify.sanitize(`<a href="${ childKey }">${ childKey }</a>`);
                                 } else {
@@ -1394,9 +1461,15 @@ class DamonUtils {
                             }
                             if (newListItem.className === 'red-diff')
                                 newListItem.setAttribute('aria-describedby', 'damonDiffRed');
-                            if ($.websiteRegex.test(key)) {
+                            if (
+                                $.websiteRegex.test(key)
+                                || $.pathRegex.test(key)
+                            ) {
                                 let fullUrl = key;
-                                if (!$.httpRegex.test(key))
+                                if (
+                                    !$.httpRegex.test(key)
+                                    && $.websiteRegex.test(key)
+                                )
                                     fullUrl = ('https://' + key);
                                 let keyLink = DOMPurify.sanitize(`<a href="${ fullUrl }"><span>${ fullUrl }</span></a>`);
                                 keySpan.innerHTML = keyLink;
@@ -1433,9 +1506,15 @@ class DamonUtils {
                                                 childValueSpan.className = "type-number";
                                             } else {
                                                 if (safeHTML) {
-                                                    if ($.websiteRegex.test(childValue)) {
+                                                    if (
+                                                        $.websiteRegex.test(childValue)
+                                                        || $.pathRegex.test(childValue)
+                                                    ) {
                                                         let fullUrl = childValue;
-                                                        if (!$.httpRegex.test(childValue))
+                                                        if (
+                                                            !$.httpRegex.test(childValue)
+                                                            && $.websiteRegex.test(childValue)
+                                                        )
                                                             fullUrl = 'https://' + childValue;
                                                         childValueSpan.innerHTML =
                                                             DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1443,9 +1522,15 @@ class DamonUtils {
                                                         childValueSpan.innerHTML = `"${childValue}"`;
                                                     }
                                                 } else {
-                                                    if ($.websiteRegex.test(childValue)) {
+                                                    if (
+                                                        $.websiteRegex.test(childValue)
+                                                        || $.pathRegex.test(childValue)
+                                                    ) {
                                                         let fullUrl = childValue;
-                                                        if (!$.httpRegex.test(childValue))
+                                                        if (
+                                                            !$.httpRegex.test(childValue)
+                                                            && $.websiteRegex.test(childValue)
+                                                        )
                                                             fullUrl = 'https://' + childValue;
                                                         childValueSpan.innerHTML =
                                                             DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1514,9 +1599,15 @@ class DamonUtils {
                                     valueSpan.className = "type-number";
                                 } else {
                                     if (safeHTML) {
-                                        if ($.websiteRegex.test(childText)) {
+                                        if (
+                                            $.websiteRegex.test(childText)
+                                            || $.pathRegex.test(childText)
+                                        ) {
                                             let fullUrl = childText;
-                                            if (!$.httpRegex.test(childText))
+                                            if (
+                                                !$.httpRegex.test(childText)
+                                                && $.websiteRegex.test(childText)
+                                            )
                                                 fullUrl = 'https://' + childText;
                                             valueSpan.innerHTML =
                                                 DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1524,9 +1615,15 @@ class DamonUtils {
                                             valueSpan.innerHTML = `"${childText}"`;
                                         }
                                     } else {
-                                        if ($.websiteRegex.test(childText)) {
+                                        if (
+                                            $.websiteRegex.test(childText)
+                                            || $.pathRegex.test(childText)
+                                        ) {
                                             let fullUrl = childText;
-                                            if (!$.httpRegex.test(childText))
+                                            if (
+                                                !$.httpRegex.test(childText)
+                                                && $.websiteRegex.test(childText)
+                                            )
                                                 fullUrl = 'https://' + childText;
                                             valueSpan.innerHTML =
                                                 DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1657,9 +1754,15 @@ class DamonUtils {
                                             arrayValueSpan.className = "type-number";
                                         } else {
                                             if (safeHTML) {
-                                                if ($.websiteRegex.test(arrayValue)) {
+                                                if (
+                                                    $.websiteRegex.test(arrayValue)
+                                                    || $.pathRegex.test(arrayValue)
+                                                ) {
                                                     let fullUrl = arrayValue;
-                                                    if (!$.httpRegex.test(arrayValue))
+                                                    if (
+                                                        !$.httpRegex.test(arrayValue)
+                                                        && $.websiteRegex.test(arrayValue)
+                                                    )
                                                         fullUrl = ('https://' + arrayValue);
                                                     arrayValueSpan.innerHTML =
                                                         DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1667,9 +1770,15 @@ class DamonUtils {
                                                     arrayValueSpan.innerHTML = `"${arrayValue}"`;
                                                 }
                                             } else {
-                                                if ($.websiteRegex.test(arrayValue)) {
+                                                if (
+                                                    $.websiteRegex.test(arrayValue)
+                                                    || $.pathRegex.test(arrayValue)
+                                                ) {
                                                     let fullUrl = arrayValue;
-                                                    if (!$.httpRegex.test(arrayValue))
+                                                    if (
+                                                        !$.httpRegex.test(arrayValue)
+                                                        && $.websiteRegex.test(arrayValue)
+                                                    )
                                                         fullUrl = ('https://' + arrayValue);
                                                     arrayValueSpan.innerHTML =
                                                         DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1720,9 +1829,15 @@ class DamonUtils {
                                 newDiv.className = "type-number";
                             } else {
                                 if (safeHTML) {
-                                    if ($.websiteRegex.test(childText)) {
+                                    if (
+                                        $.websiteRegex.test(childText)
+                                        || $.pathRegex.test(childText)
+                                    ) {
                                         let fullUrl = childText;
-                                        if (!$.httpRegex.test(childText))
+                                        if (
+                                            !$.httpRegex.test(childText)
+                                            && $.websiteRegex.test(childText)
+                                        )
                                             fullUrl = 'https://' + childText;
                                         newDiv.innerHTML =
                                             DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1730,9 +1845,15 @@ class DamonUtils {
                                         newDiv.innerHTML = `"${childText}"`;
                                     }
                                 } else {
-                                    if ($.websiteRegex.test(childText)) {
+                                    if (
+                                        $.websiteRegex.test(childText)
+                                        || $.pathRegex.test(childText)
+                                    ) {
                                         let fullUrl = childText;
-                                        if (!$.httpRegex.test(childText))
+                                        if (
+                                            !$.httpRegex.test(childText)
+                                            && $.websiteRegex.test(childText)
+                                        )
                                             fullUrl = 'https://' + childText;
                                         newDiv.innerHTML =
                                             DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1793,9 +1914,15 @@ class DamonUtils {
                         // Setting color
                         newListItem.className = 'red-diff';
                         newListItem.setAttribute('aria-describedby', 'damonDiffRed');
-                        if ($.websiteRegex.test(key)) {
+                        if (
+                            $.websiteRegex.test(key)
+                            || $.pathRegex.test(key)
+                        ) {
                             let fullUrl = key;
-                            if (!$.httpRegex.test(key))
+                            if (
+                                !$.httpRegex.test(key)
+                                && $.websiteRegex.test(key)
+                            )
                                 fullUrl = ('https://' + key);
                             let keyLink = DOMPurify.sanitize(`<a href="${ fullUrl }">${ fullUrl }</a>`);
                             keySpan.innerHTML = keyLink;
@@ -1832,9 +1959,15 @@ class DamonUtils {
                                             childValueSpan.className = "type-number";
                                         } else {
                                             if (safeHTML) {
-                                                if ($.websiteRegex.test(childValue)) {
+                                                if (
+                                                    $.websiteRegex.test(childValue)
+                                                    || $.pathRegex.test(childValue)
+                                                ) {
                                                     let fullUrl = childValue;
-                                                    if (!$.httpRegex.test(childValue))
+                                                    if (
+                                                        !$.httpRegex.test(childValue)
+                                                        && $.websiteRegex.test(childValue)
+                                                    )
                                                         fullUrl = 'https://' + childValue;
                                                     childValueSpan.innerHTML =
                                                         DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1842,9 +1975,15 @@ class DamonUtils {
                                                     childValueSpan.innerHTML = `"${childValue}"`;
                                                 }
                                             } else {
-                                                if ($.websiteRegex.test(childValue)) {
+                                                if (
+                                                    $.websiteRegex.test(childValue)
+                                                    || $.pathRegex.test(childValue)
+                                                ) {
                                                     let fullUrl = childValue;
-                                                    if (!$.httpRegex.test(childValue))
+                                                    if (
+                                                        !$.httpRegex.test(childValue)
+                                                        && $.websiteRegex.test(childValue)
+                                                    )
                                                         fullUrl = 'https://' + childValue;
                                                     childValueSpan.innerHTML =
                                                         DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1905,9 +2044,15 @@ class DamonUtils {
                                 valueSpan.className = "type-number";
                             } else {
                                 if (safeHTML) {
-                                    if ($.websiteRegex.test(childText)) {
+                                    if (
+                                        $.websiteRegex.test(childText)
+                                        || $.pathRegex.test(childText)
+                                    ) {
                                         let fullUrl = childText;
-                                        if (!$.httpRegex.test(childText))
+                                        if (
+                                            !$.httpRegex.test(childText)
+                                            && $.websiteRegex.test(childText)
+                                        )
                                             fullUrl = 'https://' + childText;
                                         valueSpan.innerHTML =
                                             DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1915,9 +2060,15 @@ class DamonUtils {
                                         valueSpan.innerHTML = `"${childText}"`;
                                     }
                                 } else {
-                                    if ($.websiteRegex.test(childText)) {
+                                    if (
+                                        $.websiteRegex.test(childText)
+                                        || $.pathRegex.test(childText)
+                                    ) {
                                         let fullUrl = childText;
-                                        if (!$.httpRegex.test(childText))
+                                        if (
+                                            !$.httpRegex.test(childText)
+                                            && $.websiteRegex.test(childText)
+                                        )
                                             fullUrl = 'https://' + childText;
                                         valueSpan.innerHTML =
                                             DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1979,9 +2130,15 @@ class DamonUtils {
                                         valueSpan.className = "type-number";
                                     } else {
                                         if (safeHTML) {
-                                            if ($.websiteRegex.test(value)) {
+                                            if (
+                                                $.websiteRegex.test(value)
+                                                || $.pathRegex.test(value)
+                                            ) {
                                                 let fullUrl = value;
-                                                if (!$.httpRegex.test(value))
+                                                if (
+                                                    !$.httpRegex.test(value)
+                                                    && $.websiteRegex.test(value)
+                                                )
                                                     fullUrl = ('https://' + value);
                                                 valueSpan.innerHTML =
                                                     DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -1989,9 +2146,15 @@ class DamonUtils {
                                                 valueSpan.innerHTML = `"${value}"`;
                                             }
                                         } else {
-                                            if ($.websiteRegex.test(value)) {
+                                            if (
+                                                $.websiteRegex.test(value)
+                                                || $.pathRegex.test(value)
+                                            ) {
                                                 let fullUrl = value;
-                                                if (!$.httpRegex.test(value))
+                                                if (
+                                                    !$.httpRegex.test(value)
+                                                    && $.websiteRegex.test(value)
+                                                )
                                                     fullUrl = ('https://' + value);
                                                 valueSpan.innerHTML =
                                                     DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -2043,9 +2206,15 @@ class DamonUtils {
                             newDiv.className = "type-number";
                         } else {
                             if (safeHTML) {
-                                if ($.websiteRegex.test(childText)) {
+                                if (
+                                    $.websiteRegex.test(childText)
+                                    || $.pathRegex.test(childText)
+                                ) {
                                     let fullUrl = childText;
-                                    if (!$.httpRegex.test(childText))
+                                    if (
+                                        !$.httpRegex.test(childText)
+                                        && $.websiteRegex.test(childText)
+                                    )
                                         fullUrl = 'https://' + childText;
                                     newDiv.innerHTML =
                                         DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
@@ -2053,9 +2222,15 @@ class DamonUtils {
                                     newDiv.innerHTML = `"${childText}"`;
                                 }
                             } else {
-                                if ($.websiteRegex.test(childText)) {
+                                if (
+                                    $.websiteRegex.test(childText)
+                                    || $.pathRegex.test(childText)
+                                ) {
                                     let fullUrl = childText;
-                                    if (!$.httpRegex.test(childText))
+                                    if (
+                                        !$.httpRegex.test(childText)
+                                        && $.websiteRegex.test(childText)
+                                    )
                                         fullUrl = 'https://' + childText;
                                     newDiv.innerHTML =
                                         DOMPurify.sanitize(`<a href="${ fullUrl }">"${ fullUrl }"</a>`);
