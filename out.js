@@ -1447,7 +1447,7 @@
       module.exports = class DamonUtils {
         /**
          * Creates an instance of DamonUtils.
-         * @param {string} damon
+         * @param {object} damon
          */
         constructor(damon) {
           let $ = this;
@@ -3024,14 +3024,7 @@
         damonTableMapToCSV(map) {
           const $ = this;
           let output = "";
-          let index = -1;
-          for (const [k, value] of map) {
-            let key = k.slice(k.match(/^[0-9]+-/)[0].length);
-            if (index === -1 && key === "00") {
-              output += Papa.unparse([[value]], { quotes: true }) + "\n";
-              index++;
-              continue;
-            }
+          for (const [key, value] of map) {
             let valueKeys = Array.from(value.keys());
             for (let i = 0, c = valueKeys.length; i < c; i++) {
               let childKey = valueKeys[i].slice(valueKeys[i].match(/^[0-9]+-/)[0].length);
@@ -3041,7 +3034,6 @@
               }
             }
             output += "\n";
-            index++;
           }
           return output.slice(0, -1);
         }
@@ -3049,31 +3041,46 @@
          * @param {damonValue} map
          * @returns {string}
          */
-        damonTableMapToJSON(map) {
+        damonTableMapToJSON(map, format = "array-rows") {
           const $ = this;
-          let output = "[\n";
-          let index = -1;
-          for (const [k, value] of map) {
-            let key = k.slice(k.match(/^[0-9]+-/)[0].length);
-            output += "    [";
-            if (index === 0 && key === "00") {
-              output += JSON.stringify(value) + "],\n";
-              index++;
-              continue;
+          if (format == "array-rows") {
+            let output = "[\n";
+            for (const [key, value] of map) {
+              output += "    [";
+              let valueKeys = Array.from(value.keys());
+              for (let i = 0, c = valueKeys.length; i < c; i++) {
+                let childKey = valueKeys[i].slice(valueKeys[i].match(/^[0-9]+-/)[0].length);
+                output += JSON.stringify(childKey);
+                if (i != c - 1) {
+                  output += ", ";
+                }
+              }
+              output += "],\n";
             }
-            let valueKeys = Array.from(value.keys());
-            for (let i = 0, c = valueKeys.length; i < c; i++) {
-              let childKey = valueKeys[i].slice(valueKeys[i].match(/^[0-9]+-/)[0].length);
-              output += JSON.stringify(childKey);
-              if (i != c - 1) {
-                output += ", ";
+            output = output.slice(0, -2) + "\n]";
+            return output;
+          } else {
+            let output = "[\n", index = -1, mapKeys = Array.from(map.keys()), headerMap = /* @__PURE__ */ new Map();
+            for (const [key, value] of map) {
+              index++;
+              if (index === 0) {
+                for (const [subKey, subValue] of value) {
+                  headerMap.set(subKey.slice(subKey.match(/^[0-9]+-/)[0].length), null);
+                }
+              } else {
+                let z = -1;
+                let subMapKeys = Array.from(value.keys());
+                for (const [headerKey, headerValue] of headerMap) {
+                  z++;
+                  headerMap.set(headerKey, subMapKeys[z].slice(subMapKeys[z].match(/^[0-9]+-/)[0].length));
+                }
+                output += $.damon.mapToJSON(headerMap).split("\n").map((x) => "   " + x).join("\n");
+                output += ",\n";
               }
             }
-            output += "],\n";
-            index++;
+            output = output.slice(0, -2) + "\n]";
+            return output;
           }
-          output = output.slice(0, -2) + "\n]";
-          return output;
         }
         /**
          * @param {String} string
