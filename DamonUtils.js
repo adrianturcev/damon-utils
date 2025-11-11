@@ -2295,7 +2295,6 @@ class DamonUtils {
         } else {
             let output = '[\n',
                 index = -1,
-                mapKeys = Array.from(map.keys()),
                 headerMap = new Map();
             for (const [key, value] of map) {
                 index++;
@@ -2306,9 +2305,14 @@ class DamonUtils {
                 } else {
                     let z = -1;
                     let subMapKeys = Array.from(value.keys());
+                    // Fails to update headermap
                     for (const [headerKey, headerValue] of headerMap) {
                         z++;
-                        headerMap.set(headerKey, subMapKeys[z].slice(subMapKeys[z].match(/^[0-9]+-/)[0].length));
+                        if (subMapKeys[z]) {
+                            headerMap.set(headerKey, subMapKeys[z].slice(subMapKeys[z].match(/^[0-9]+-/)[0].length));
+                        } else {
+                            headerMap.set(headerKey, null);
+                        }
                     }
                     output += $.damon.mapToJSON(headerMap).split('\n').map(x => '   ' + x).join('\n');
                     output += ',\n';
