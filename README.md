@@ -46,6 +46,11 @@ console.log(damonUtils.damonToSExpression(damonString));
 // ],
 ```
 
+## Attributions
+
+- papaparse [@mholt](https://github.com/mholt)
+- DOMPurify [@cure53](https://github.com/cure53)
+
 ## License
 
 Copyright (c) Adrian Turcev. All rights reserved.
