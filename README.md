@@ -23,7 +23,7 @@ Core methods:
 
 ```js
 const Damon = require('damon2'),
-    DamonUtils = require('damon-utils);
+    DamonUtils = require('damon-utils');
 let damon = new Damon(),
     damonUtils = new DamonUtils(damon);
 
