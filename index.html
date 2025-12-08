@@ -39,6 +39,7 @@
             scrollbar-color: #AAAAAA #2B2B2B;
             scroll-behavior: smooth;
             accent-color: var(--colors-cyan);
+            font-family: Consolas, Menlo, JuliaMono, Liberation Mono, monospace;
         }
 
         /* Fix: https://bugs.chromium.org/p/chromium/issues/detail?id=1150352 */
@@ -85,6 +86,37 @@
         #contents a:active {
             color: var(--colors-orange);
         }
+
+        thead th {
+            writing-mode: sideways-lr;
+            text-align: left;
+        }
+
+        th {
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 5px;
+        }
+
+        tbody th {
+            text-align: right;
+        }
+
+        td {
+            white-space: break-spaces;
+            text-align: center;
+            background-color: #555555;
+        }
+
+        .true {
+            background-color: royalblue;
+        }
+
+        .false {
+            background-color: crimson;
+        }
     </style>
 </head>
 <body>
@@ -92,13 +124,65 @@
         window.addEventListener('load', function (e) {
             (
                 function () {
-                    
+
                 }
             )();
         });
     </script>
     <script src="./app.js"></script>
+    <script src="./out.js"></script>
+    <script src="./node_modules/damon2/dist/damon.min.js"></script>
     <!-- Or inline app.js below here during build -->
-    <script></script>
+    <script>
+        let damon = new Damon();
+        let damonUtils = new DamonUtils(damon);
+        let damonDecision =
+                `
+                - befores: {}
+                    - input
+                - booleans: {}
+                    - Printer prints
+                    - Red light flashing
+                    - Computer recognizes printer
+                - afters: {}
+                    - Check power cable
+                        - a
+                        - x
+                        - a
+                    - Replace ink
+                        - 0
+                        - 1
+                        - 0
+                    - Paper jam
+                        - 0
+                        - 1
+                        - 0
+                - rules: {}
+                    - Paper jam: {}
+                        - abra: {}
+                            - and: {}
+                                - ==: {}
+                                    - var: "Printer prints"
+                                    - 1
+                                - ==: {}
+                                    - var: "Red light flashing"
+                                    - 1`.replaceAll('\n' + '    '.repeat(4), '\n');
+        let damonDecisionMap = damon.damonToMap(damonDecision, 0, true),
+            decisionTableArray
+                = damonUtils.damonDecisionMapToArrayTable(damonDecisionMap),
+            decisionTableRecords
+                = damonUtils.arrayTableToPandasRecords(decisionTableArray);
+        let keysMap =
+            Array.from(damonDecisionMap.keys())
+                .map((x) => [x.slice(x.match(/^[0-9]+-/)[0].length), x]);
+        if (keysMap.find((x) => x[0] == 'booleans') === undefined) {
+            throw new Error('Missing "booleans" key.');
+        }
+        let booleans =
+            Array.from(damonDecisionMap.get(keysMap.find((x) => x[0] == 'booleans')[1]).keys()),
+            htmlTable
+            = damonUtils.arrayDecisionTableToHtml(decisionTableArray, booleans);
+        document.body.appendChild(htmlTable);
+    </script>
 </body>
 </html>

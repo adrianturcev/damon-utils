@@ -1439,11 +1439,389 @@
     }
   });
 
+  // node_modules/json-logic-js/logic.js
+  var require_logic = __commonJS({
+    "node_modules/json-logic-js/logic.js"(exports, module) {
+      (function(root, factory) {
+        if (typeof define === "function" && define.amd) {
+          define(factory);
+        } else if (typeof exports === "object") {
+          module.exports = factory();
+        } else {
+          root.jsonLogic = factory();
+        }
+      })(exports, function() {
+        "use strict";
+        if (!Array.isArray) {
+          Array.isArray = function(arg) {
+            return Object.prototype.toString.call(arg) === "[object Array]";
+          };
+        }
+        function arrayUnique(array) {
+          var a = [];
+          for (var i = 0, l = array.length; i < l; i++) {
+            if (a.indexOf(array[i]) === -1) {
+              a.push(array[i]);
+            }
+          }
+          return a;
+        }
+        var jsonLogic = {};
+        var operations = {
+          "==": function(a, b) {
+            return a == b;
+          },
+          "===": function(a, b) {
+            return a === b;
+          },
+          "!=": function(a, b) {
+            return a != b;
+          },
+          "!==": function(a, b) {
+            return a !== b;
+          },
+          ">": function(a, b) {
+            return a > b;
+          },
+          ">=": function(a, b) {
+            return a >= b;
+          },
+          "<": function(a, b, c) {
+            return c === void 0 ? a < b : a < b && b < c;
+          },
+          "<=": function(a, b, c) {
+            return c === void 0 ? a <= b : a <= b && b <= c;
+          },
+          "!!": function(a) {
+            return jsonLogic.truthy(a);
+          },
+          "!": function(a) {
+            return !jsonLogic.truthy(a);
+          },
+          "%": function(a, b) {
+            return a % b;
+          },
+          "log": function(a) {
+            console.log(a);
+            return a;
+          },
+          "in": function(a, b) {
+            if (!b || typeof b.indexOf === "undefined") return false;
+            return b.indexOf(a) !== -1;
+          },
+          "cat": function() {
+            return Array.prototype.join.call(arguments, "");
+          },
+          "substr": function(source, start, end) {
+            if (end < 0) {
+              var temp = String(source).substr(start);
+              return temp.substr(0, temp.length + end);
+            }
+            return String(source).substr(start, end);
+          },
+          "+": function() {
+            return Array.prototype.reduce.call(arguments, function(a, b) {
+              return parseFloat(a, 10) + parseFloat(b, 10);
+            }, 0);
+          },
+          "*": function() {
+            return Array.prototype.reduce.call(arguments, function(a, b) {
+              return parseFloat(a, 10) * parseFloat(b, 10);
+            });
+          },
+          "-": function(a, b) {
+            if (b === void 0) {
+              return -a;
+            } else {
+              return a - b;
+            }
+          },
+          "/": function(a, b) {
+            return a / b;
+          },
+          "min": function() {
+            return Math.min.apply(this, arguments);
+          },
+          "max": function() {
+            return Math.max.apply(this, arguments);
+          },
+          "merge": function() {
+            return Array.prototype.reduce.call(arguments, function(a, b) {
+              return a.concat(b);
+            }, []);
+          },
+          "var": function(a, b) {
+            var not_found = b === void 0 ? null : b;
+            var data = this;
+            if (typeof a === "undefined" || a === "" || a === null) {
+              return data;
+            }
+            var sub_props = String(a).split(".");
+            for (var i = 0; i < sub_props.length; i++) {
+              if (data === null || data === void 0) {
+                return not_found;
+              }
+              data = data[sub_props[i]];
+              if (data === void 0) {
+                return not_found;
+              }
+            }
+            return data;
+          },
+          "missing": function() {
+            var missing = [];
+            var keys = Array.isArray(arguments[0]) ? arguments[0] : arguments;
+            for (var i = 0; i < keys.length; i++) {
+              var key = keys[i];
+              var value = jsonLogic.apply({ "var": key }, this);
+              if (value === null || value === "") {
+                missing.push(key);
+              }
+            }
+            return missing;
+          },
+          "missing_some": function(need_count, options) {
+            var are_missing = jsonLogic.apply({ "missing": options }, this);
+            if (options.length - are_missing.length >= need_count) {
+              return [];
+            } else {
+              return are_missing;
+            }
+          }
+        };
+        jsonLogic.is_logic = function(logic) {
+          return typeof logic === "object" && // An object
+          logic !== null && // but not null
+          !Array.isArray(logic) && // and not an array
+          Object.keys(logic).length === 1;
+        };
+        jsonLogic.truthy = function(value) {
+          if (Array.isArray(value) && value.length === 0) {
+            return false;
+          }
+          return !!value;
+        };
+        jsonLogic.get_operator = function(logic) {
+          return Object.keys(logic)[0];
+        };
+        jsonLogic.get_values = function(logic) {
+          return logic[jsonLogic.get_operator(logic)];
+        };
+        jsonLogic.apply = function(logic, data) {
+          if (Array.isArray(logic)) {
+            return logic.map(function(l) {
+              return jsonLogic.apply(l, data);
+            });
+          }
+          if (!jsonLogic.is_logic(logic)) {
+            return logic;
+          }
+          var op = jsonLogic.get_operator(logic);
+          var values = logic[op];
+          var i;
+          var current;
+          var scopedLogic;
+          var scopedData;
+          var initial;
+          if (!Array.isArray(values)) {
+            values = [values];
+          }
+          if (op === "if" || op == "?:") {
+            for (i = 0; i < values.length - 1; i += 2) {
+              if (jsonLogic.truthy(jsonLogic.apply(values[i], data))) {
+                return jsonLogic.apply(values[i + 1], data);
+              }
+            }
+            if (values.length === i + 1) {
+              return jsonLogic.apply(values[i], data);
+            }
+            return null;
+          } else if (op === "and") {
+            for (i = 0; i < values.length; i += 1) {
+              current = jsonLogic.apply(values[i], data);
+              if (!jsonLogic.truthy(current)) {
+                return current;
+              }
+            }
+            return current;
+          } else if (op === "or") {
+            for (i = 0; i < values.length; i += 1) {
+              current = jsonLogic.apply(values[i], data);
+              if (jsonLogic.truthy(current)) {
+                return current;
+              }
+            }
+            return current;
+          } else if (op === "filter") {
+            scopedData = jsonLogic.apply(values[0], data);
+            scopedLogic = values[1];
+            if (!Array.isArray(scopedData)) {
+              return [];
+            }
+            return scopedData.filter(function(datum) {
+              return jsonLogic.truthy(jsonLogic.apply(scopedLogic, datum));
+            });
+          } else if (op === "map") {
+            scopedData = jsonLogic.apply(values[0], data);
+            scopedLogic = values[1];
+            if (!Array.isArray(scopedData)) {
+              return [];
+            }
+            return scopedData.map(function(datum) {
+              return jsonLogic.apply(scopedLogic, datum);
+            });
+          } else if (op === "reduce") {
+            scopedData = jsonLogic.apply(values[0], data);
+            scopedLogic = values[1];
+            initial = typeof values[2] !== "undefined" ? jsonLogic.apply(values[2], data) : null;
+            if (!Array.isArray(scopedData)) {
+              return initial;
+            }
+            return scopedData.reduce(
+              function(accumulator, current2) {
+                return jsonLogic.apply(
+                  scopedLogic,
+                  { current: current2, accumulator }
+                );
+              },
+              initial
+            );
+          } else if (op === "all") {
+            scopedData = jsonLogic.apply(values[0], data);
+            scopedLogic = values[1];
+            if (!Array.isArray(scopedData) || !scopedData.length) {
+              return false;
+            }
+            for (i = 0; i < scopedData.length; i += 1) {
+              if (!jsonLogic.truthy(jsonLogic.apply(scopedLogic, scopedData[i]))) {
+                return false;
+              }
+            }
+            return true;
+          } else if (op === "none") {
+            scopedData = jsonLogic.apply(values[0], data);
+            scopedLogic = values[1];
+            if (!Array.isArray(scopedData) || !scopedData.length) {
+              return true;
+            }
+            for (i = 0; i < scopedData.length; i += 1) {
+              if (jsonLogic.truthy(jsonLogic.apply(scopedLogic, scopedData[i]))) {
+                return false;
+              }
+            }
+            return true;
+          } else if (op === "some") {
+            scopedData = jsonLogic.apply(values[0], data);
+            scopedLogic = values[1];
+            if (!Array.isArray(scopedData) || !scopedData.length) {
+              return false;
+            }
+            for (i = 0; i < scopedData.length; i += 1) {
+              if (jsonLogic.truthy(jsonLogic.apply(scopedLogic, scopedData[i]))) {
+                return true;
+              }
+            }
+            return false;
+          }
+          values = values.map(function(val) {
+            return jsonLogic.apply(val, data);
+          });
+          if (operations.hasOwnProperty(op) && typeof operations[op] === "function") {
+            return operations[op].apply(data, values);
+          } else if (op.indexOf(".") > 0) {
+            var sub_ops = String(op).split(".");
+            var operation = operations;
+            for (i = 0; i < sub_ops.length; i++) {
+              if (!operation.hasOwnProperty(sub_ops[i])) {
+                throw new Error("Unrecognized operation " + op + " (failed at " + sub_ops.slice(0, i + 1).join(".") + ")");
+              }
+              operation = operation[sub_ops[i]];
+            }
+            return operation.apply(data, values);
+          }
+          throw new Error("Unrecognized operation " + op);
+        };
+        jsonLogic.uses_data = function(logic) {
+          var collection = [];
+          if (jsonLogic.is_logic(logic)) {
+            var op = jsonLogic.get_operator(logic);
+            var values = logic[op];
+            if (!Array.isArray(values)) {
+              values = [values];
+            }
+            if (op === "var") {
+              collection.push(values[0]);
+            } else {
+              values.forEach(function(val) {
+                collection.push.apply(collection, jsonLogic.uses_data(val));
+              });
+            }
+          }
+          return arrayUnique(collection);
+        };
+        jsonLogic.add_operation = function(name, code) {
+          operations[name] = code;
+        };
+        jsonLogic.rm_operation = function(name) {
+          delete operations[name];
+        };
+        jsonLogic.rule_like = function(rule, pattern) {
+          if (pattern === rule) {
+            return true;
+          }
+          if (pattern === "@") {
+            return true;
+          }
+          if (pattern === "number") {
+            return typeof rule === "number";
+          }
+          if (pattern === "string") {
+            return typeof rule === "string";
+          }
+          if (pattern === "array") {
+            return Array.isArray(rule) && !jsonLogic.is_logic(rule);
+          }
+          if (jsonLogic.is_logic(pattern)) {
+            if (jsonLogic.is_logic(rule)) {
+              var pattern_op = jsonLogic.get_operator(pattern);
+              var rule_op = jsonLogic.get_operator(rule);
+              if (pattern_op === "@" || pattern_op === rule_op) {
+                return jsonLogic.rule_like(
+                  jsonLogic.get_values(rule, false),
+                  jsonLogic.get_values(pattern, false)
+                );
+              }
+            }
+            return false;
+          }
+          if (Array.isArray(pattern)) {
+            if (Array.isArray(rule)) {
+              if (pattern.length !== rule.length) {
+                return false;
+              }
+              for (var i = 0; i < pattern.length; i += 1) {
+                if (!jsonLogic.rule_like(rule[i], pattern[i])) {
+                  return false;
+                }
+              }
+              return true;
+            } else {
+              return false;
+            }
+          }
+          return false;
+        };
+        return jsonLogic;
+      });
+    }
+  });
+
   // DamonUtils.js
   var require_DamonUtils = __commonJS({
     "DamonUtils.js"(exports, module) {
       var DOMPurify = require_purify_cjs();
       var Papa = require_papaparse_min();
+      var jsonLogic = require_logic();
       module.exports = class DamonUtils {
         /**
          * Creates an instance of DamonUtils.
@@ -1502,7 +1880,6 @@
           try {
             $.damon.mapToJSON(jsonMap);
           } catch (error) {
-            console.log(error);
             throw new Error("Provided map value doesn't passes JSON.parse()");
           }
           var jsonItemIndex = 0, list = document.createElement("ul"), schema;
@@ -1931,7 +2308,8 @@
                     list += "    ".repeat(level) + `${JSON.stringify(key)}, ` + JSON.stringify(value);
                   }
                 }
-                if (k != Array.from(jsonMap2.keys())[Array.from(jsonMap2.keys()).length - 1]) {
+                let lastKey = Array.from(jsonMap2.keys())[Array.from(jsonMap2.keys()).length - 1];
+                if (k != lastKey) {
                   list += ",\r\n";
                 } else {
                   list += "\r\n";
@@ -2092,7 +2470,8 @@
                     mathJs += "    ".repeat(level) + `${JSON.stringify(_minusculize(key)).slice(1, -1)}(` + JSON.stringify(value) + ")";
                   }
                 }
-                if (k != Array.from(damonMap2.keys())[Array.from(damonMap2.keys()).length - 1]) {
+                let lastKey = Array.from(damonMap2.keys())[Array.from(damonMap2.keys()).length - 1];
+                if (k != lastKey) {
                   mathJs += ",\n";
                 } else {
                   mathJs += "\n";
@@ -3251,6 +3630,420 @@
             }
           }
           return mermaid.slice(0, -2);
+        }
+        /**
+         * @param {damonValue} damonMap
+         * @param {number | undefined} yStart
+         * @param {number | undefined} yEnd
+         * @param {number | undefined} xStart
+         * @param {number | undefined} xEnd
+         * @returns {HTMLElement}
+         */
+        damonDecisionMapToHtmlTable(damonMap, yStart, yEnd, xStart, xEnd) {
+          let $ = this;
+          return $.arrayDecisionTableToHtml($.damonDecisionMapToArrayTable(damonMap, yStart, yEnd, xStart, xEnd));
+        }
+        /**
+         * @param {damonValue} damonMap
+         * @param {number | undefined} yStart
+         * @param {number | undefined} yEnd
+         * @param {number | undefined} xStart
+         * @param {number | undefined} xEnd
+         * @returns {Array<Array<damonValue>>}
+         */
+        damonDecisionMapToArrayTable(damonMap, yStart, yEnd, xStart, xEnd) {
+          let $ = this;
+          let keysMap = Array.from(damonMap.keys()).map((x) => [x.slice(x.match(/^[0-9]+-/)[0].length), x]), tableData = [], befores = [], booleans = [], afters = [];
+          if (keysMap.find((x) => x[0] == "booleans") !== void 0) {
+            booleans = Array.from(damonMap.get(keysMap.find((x) => x[0] == "booleans")[1]).keys());
+            tableData = $.generateTruthTable(booleans, yStart, yEnd, xStart, xEnd);
+          }
+          if (keysMap.find((x) => x[0] == "befores") !== void 0) {
+            let beforeKey = keysMap.find((x) => x[0] == "befores")[1], beforeValue = damonMap.get(beforeKey);
+            if (typeof beforeValue !== "object" || beforeValue === null || Array.isArray(beforeValue) || !(beforeValue instanceof Map) || beforeValue.constructor !== Map) {
+              throw new Error('"befores" key requires a dictionary.');
+            }
+            befores = Array.from(beforeValue.keys());
+            let beforesKeysArray = [];
+            for (let i = 0, c = befores.length; i < c; i++) {
+              let value = beforeValue.get(befores[i]);
+              if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map) {
+                let beforesKeys = Array.from(value.keys());
+                beforesKeysArray.push(beforesKeys);
+              } else if (value === null) {
+                beforesKeysArray.push([]);
+              } else if (value !== null) {
+                throw new Error('"befores" keys requires a dictionary.');
+              }
+            }
+            let max = Math.max.apply(null, beforesKeysArray.map((x) => x.length).concat([tableData.length]));
+            for (let i = beforesKeysArray.length - 1, c = -1; i > c; i--) {
+              for (let z = 0, x = max; z < x; z++) {
+                let overflow = false;
+                if (!tableData[z]) {
+                  tableData[z] = [];
+                  overflow = true;
+                }
+                if (z < beforesKeysArray[i].length) {
+                  tableData[z].unshift(
+                    beforesKeysArray[i][z].slice(beforesKeysArray[i][z].match(/^[0-9]+-/)[0].length)
+                  );
+                } else {
+                  tableData[z].unshift("");
+                }
+                if (overflow) {
+                  for (let j = 0, k = booleans.length; j < k; j++) {
+                    tableData[z].push("");
+                  }
+                }
+              }
+            }
+          }
+          if (keysMap.find((x) => x[0] == "afters") !== void 0) {
+            let afterKey = keysMap.find((x) => x[0] == "afters")[1], afterValue = damonMap.get(afterKey);
+            if (typeof afterValue !== "object" || afterValue === null || Array.isArray(afterValue) || !(afterValue instanceof Map) || afterValue.constructor !== Map) {
+              throw new Error('"afters" key requires a dictionary.');
+            }
+            afters = Array.from(afterValue.keys());
+            let aftersKeysArray = [];
+            for (let i = 0, c = afters.length; i < c; i++) {
+              let value = afterValue.get(afters[i]);
+              if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map) {
+                let aftersKeys = Array.from(value.keys());
+                aftersKeysArray.push(aftersKeys);
+              } else if (value === null) {
+                aftersKeysArray.push([]);
+              } else if (value !== null) {
+                throw new Error('"afters" keys requires a dictionary.');
+              }
+            }
+            let max = Math.max.apply(null, aftersKeysArray.map((x) => x.length).concat([tableData.length]));
+            for (let i = 0, c = aftersKeysArray.length; i < c; i++) {
+              for (let z = 0, x = max; z < x; z++) {
+                if (!tableData[z]) {
+                  tableData[z] = [];
+                }
+                let rowLength = befores.length + booleans.length;
+                if (tableData[z].length < rowLength) {
+                  for (let j = 0, k = rowLength; j < k; j++) {
+                    tableData[z].push("");
+                  }
+                }
+                if (z < aftersKeysArray[i].length) {
+                  tableData[z].push(
+                    aftersKeysArray[i][z].slice(aftersKeysArray[i][z].match(/^[0-9]+-/)[0].length)
+                  );
+                } else {
+                  tableData[z].push("");
+                }
+              }
+            }
+            if (keysMap.find((x) => x[0] == "rules") !== void 0) {
+              let test2 = function(a, b) {
+                let r = new regex(a);
+                return r.test(b);
+              };
+              var test = test2;
+              let ruleKey = keysMap.find((x) => x[0] == "rules")[1], ruleValue = damonMap.get(ruleKey);
+              if (typeof ruleValue !== "object" || ruleValue === null || Array.isArray(ruleValue) || !(ruleValue instanceof Map) || ruleValue.constructor !== Map) {
+                throw new Error('"rules" key requires a dictionary.');
+              }
+              jsonLogic.add_operation("RegExp.test", test2);
+              jsonLogic.add_operation("Math", Math);
+              let rules = Array.from(ruleValue.keys());
+              for (let i = 0, c = rules.length; i < c; i++) {
+                let aftersIndex = afters.findIndex(function(x) {
+                  return x.slice(rules[i].match(/^[0-9]+-/)[0].length) === rules[i].slice(rules[i].match(/^[0-9]+-/)[0].length);
+                });
+                if (aftersIndex == -1) {
+                  throw new Error(
+                    'Rule "' + rules[i].slice(rules[i].match(/^[0-9]+-/)[0].length) + '" matches no afters.'
+                  );
+                }
+                let ruleValues = Array.from(ruleValue.get(rules[i]).keys());
+                for (let z = 0, x = tableData.length; z < x; z++) {
+                  for (let j = 0, k = ruleValues.length; j < k; j++) {
+                    try {
+                      let jsonLogicRule = JSON.parse(
+                        $.indexPrefixedMapToJsonLogic(ruleValue.get(rules[i]).get(ruleValues[j]))
+                      );
+                      let rowObject = {};
+                      let beforesAndBooleans = befores.concat(booleans);
+                      let header2 = beforesAndBooleans.concat(afters);
+                      for (let a = 0, b = header2.length; a < b; a++) {
+                        rowObject[header2[a].slice(header2[a].match(/^[0-9]+-/)[0].length)] = tableData[z][a];
+                      }
+                      if (jsonLogic.apply(jsonLogicRule, rowObject)) {
+                        tableData[z][beforesAndBooleans.length - 1 + aftersIndex + 1] = ruleValues[j].slice(ruleValues[j].match(/^[0-9]+-/)[0].length);
+                      }
+                    } catch (error) {
+                      throw new Error(
+                        '"' + rules[i].slice(rules[i].match(/^[0-9]+-/)[0].length) + '" rule fails JsonLogic parsing.'
+                      );
+                    }
+                  }
+                }
+              }
+            }
+          }
+          let header = booleans.map((x) => x.slice(x.match(/^[0-9]+-/)[0].length));
+          if (befores.length) {
+            header = befores.map((x) => x.slice(x.match(/^[0-9]+-/)[0].length)).concat(header);
+          }
+          if (afters.length) {
+            header = header.concat(afters.map((x) => x.slice(x.match(/^[0-9]+-/)[0].length)));
+          }
+          tableData.unshift(header);
+          return tableData;
+        }
+        /**
+         * @param {Array<string>} booleans
+         * @param {number | undefined} yStart
+         * @param {number | undefined} yEnd
+         * @param {number | undefined} xStart
+         * @param {number | undefined} xEnd
+         * @returns {Array<Array<damonValue>>}
+         */
+        generateTruthTable(booleans, yStart, yEnd = yStart, xStart, xEnd = xStart) {
+          let possibilities = Math.pow(2, booleans.length), result = [];
+          if (yStart === void 0) {
+            yStart = 0;
+            yEnd = possibilities - 1;
+          }
+          if (xStart === void 0) {
+            xStart = 0;
+            xEnd = booleans.length - 1;
+          }
+          for (let i = yStart, c = yEnd + 1; i < c; i++) {
+            let row = [];
+            result.push(row);
+          }
+          for (let z = xStart, x = xEnd + 1; z < x; z++) {
+            let segments = Math.pow(2, z + 1), segmentSize = possibilities / segments, index = yStart, currentSegment = Math.floor(yStart / segmentSize), remainder = yStart % segmentSize;
+            segmentsLoop:
+              for (let i = currentSegment, c = segments; i < c; i++) {
+                let boolean = i % 2 == 0;
+                for (let j = remainder, k = segmentSize; j < k; j++) {
+                  if (index > yStart - 1) {
+                    if (index < yEnd + 1) {
+                      result[index - yStart].push(boolean);
+                    } else {
+                      break segmentsLoop;
+                    }
+                  }
+                  index++;
+                }
+              }
+          }
+          return result;
+        }
+        indexPrefixedMapToJsonLogic(jsonMap) {
+          let $ = this;
+          var list = ``;
+          if (typeof jsonMap === "object" && jsonMap !== null && jsonMap instanceof Map && jsonMap.constructor === Map) {
+            _recurse(jsonMap);
+            JSON.parse(list);
+            return list;
+          } else {
+            if (typeof jsonMap == "boolean") {
+              return jsonMap;
+            } else {
+              throw new Error("JsonLogic requires either an object or a boolean value.");
+            }
+          }
+          function _recurse(jsonMap2, level = 1) {
+            if (typeof jsonMap2 === "object" && jsonMap2 !== null && !Array.isArray(jsonMap2) && jsonMap2 instanceof Map && jsonMap2.constructor === Map) {
+              for (const [k, value] of jsonMap2) {
+                let key = k.slice(k.match(/^[0-9]+-/)[0].length);
+                if (typeof value === "object" && value !== null) {
+                  if (Array.isArray(value)) {
+                    if (value.length > 0) {
+                      list += "    ".repeat(level) + `{${JSON.stringify(key)}: [\r
+`;
+                      _recurse(value, level + 1);
+                      list += "    ".repeat(level) + `]}`;
+                    } else {
+                      list += "    ".repeat(level) + `{${JSON.stringify(key)}: []}`;
+                    }
+                  } else {
+                    if (Array.from(value.keys()).length > 0) {
+                      list += "    ".repeat(level) + `{${JSON.stringify(key)}: [\r
+`;
+                      for (const [sK, subValue] of value) {
+                        let subKey = sK.slice(sK.match(/^[0-9]+-/)[0].length);
+                        if (typeof subValue === "object" && subValue !== null) {
+                          if (Array.isArray(subValue)) {
+                            if (subValue.length > 0) {
+                              list += "    ".repeat(level + 1) + `[${JSON.stringify(subKey)}: [\r
+`;
+                              _recurse(subValue, level + 2);
+                              list += "    ".repeat(level + 1) + `]]`;
+                            } else {
+                              list += "    ".repeat(level + 1) + `[${JSON.stringify(subKey)}: []]`;
+                            }
+                          } else {
+                            if (Array.from(subValue.keys()).length > 0) {
+                              list += "    ".repeat(level + 1) + `{${JSON.stringify(subKey)}: [\r
+`;
+                              _recurse(subValue, level + 2);
+                              list += "    ".repeat(level + 1) + `]}`;
+                            } else {
+                              list += "    ".repeat(level + 1) + `{${JSON.stringify(subKey)}: {}}`;
+                            }
+                          }
+                        } else if (subValue === null) {
+                          list += "    ".repeat(level + 1) + `${JSON.stringify(subKey)}`;
+                        } else {
+                          list += "    ".repeat(level + 1) + `{${JSON.stringify(subKey)}: ${JSON.stringify(subValue)}}`;
+                        }
+                        let lastKey2 = Array.from(value.keys())[Array.from(value.keys()).length - 1];
+                        if (sK != lastKey2) {
+                          list += ",\r\n";
+                        } else {
+                          list += "\r\n";
+                        }
+                      }
+                      list += "    ".repeat(level) + `]}`;
+                    } else {
+                      list += "    ".repeat(level) + `${JSON.stringify(key)}: []}`;
+                    }
+                  }
+                } else {
+                  if (value === true) {
+                    list += "    ".repeat(level) + `{${JSON.stringify(key)}: true}`;
+                  } else if (value === false) {
+                    list += "    ".repeat(level) + `{${JSON.stringify(key)}: false}`;
+                  } else if (value === null) {
+                    list += "    ".repeat(level) + `${JSON.stringify(key)}`;
+                  } else if (Number.isFinite(value) && !Number.isNaN(value)) {
+                    list += "    ".repeat(level) + `{${JSON.stringify(key)}: ` + value + "}";
+                  } else {
+                    list += "    ".repeat(level) + `{${JSON.stringify(key)}: ` + JSON.stringify(value) + "}";
+                  }
+                }
+                let lastKey = Array.from(jsonMap2.keys())[Array.from(jsonMap2.keys()).length - 1];
+                if (k != lastKey) {
+                  list += ",\r\n";
+                } else {
+                  list += "\r\n";
+                }
+              }
+            } else if (Array.isArray(jsonMap2)) {
+              for (var i = 0, c = jsonMap2.length; i < c; i++) {
+                if (typeof jsonMap2[i] === "object" && jsonMap2[i] !== null) {
+                  if (Array.isArray(jsonMap2[i])) {
+                    if (jsonMap2[i].length > 0) {
+                      list += "    ".repeat(level) + `[\r
+`;
+                      _recurse(jsonMap2[i], level + 1);
+                      list += "    ".repeat(level) + `]`;
+                    } else {
+                      list += "    ".repeat(level) + `[]`;
+                    }
+                  } else {
+                    if (Array.from(jsonMap2[i].keys()).length > 0) {
+                      list += "    ".repeat(level) + `{\r
+`;
+                      _recurse(jsonMap2[i], level + 1);
+                      list += "    ".repeat(level) + `}`;
+                    } else {
+                      list += "    ".repeat(level) + `{}`;
+                    }
+                  }
+                } else {
+                  if (jsonMap2[i] === true) {
+                    list += "    ".repeat(level) + "true";
+                  } else if (jsonMap2[i] === false) {
+                    list += "    ".repeat(level) + "false";
+                  } else if (jsonMap2[i] === null) {
+                    list += "    ".repeat(level) + "null";
+                  } else if (Number.isFinite(jsonMap2[i]) && !Number.isNaN(jsonMap2[i])) {
+                    list += "    ".repeat(level) + jsonMap2[i];
+                  } else {
+                    list += "    ".repeat(level) + JSON.stringify(jsonMap2[i]);
+                  }
+                }
+                if (i != c - 1) {
+                  list += ",\r\n";
+                } else {
+                  list += "\r\n";
+                }
+              }
+            }
+          }
+        }
+        /**
+         * @param {Array<Array<boolean|string>>} array
+         */
+        arrayTableToPandasRecords(array) {
+          let $ = this;
+          let records = [], rowLength = array[0].length;
+          for (let i = 1, c = array.length; i < c; i++) {
+            let record = {};
+            for (let z = 0, x = rowLength; z < x; z++) {
+              record[array[0][z]] = array[i][z];
+            }
+            records.push(record);
+          }
+          return records;
+        }
+        /**
+         * @param {Array<Array<damonValue>>} tableData
+         * @param {Array<string>} booleans
+         * @returns
+         */
+        arrayDecisionTableToHtml(tableData) {
+          let $ = this;
+          let table = document.createElement("table"), tHead = document.createElement("thead"), tBody = document.createElement("tbody");
+          table.className = "DAMON-Decision";
+          let headRow = document.createElement("tr");
+          for (let z = 0, x = tableData.length; z < x; z++) {
+            let cell = document.createElement("th");
+            if (z !== 0) {
+              cell.textContent = z;
+              cell.dataset.graphArbo = z - 1;
+            }
+            headRow.appendChild(cell);
+          }
+          tHead.appendChild(headRow);
+          for (let i = 0, c = tableData[0].length; i < c; i++) {
+            let row = document.createElement("tr");
+            tBody.appendChild(row);
+          }
+          for (let i = 0, c = tableData.length; i < c; i++) {
+            for (let z = 0, x = tableData[i].length; z < x; z++) {
+              let cell = {};
+              if (i == 0) {
+                cell = document.createElement("th");
+                if ($.websiteRegex.test(tableData[i][z]) || $.pathRegex.test(tableData[i][z])) {
+                  cell.innerHTML = DOMPurify.sanitize(`<a href="${tableData[i][z]}">${tableData[i][z]}</a>`);
+                } else {
+                  cell.textContent = `${tableData[i][z]}`;
+                }
+                tBody.children[z].appendChild(cell);
+              } else {
+                cell = document.createElement("td");
+                if (typeof tableData[i][z] == "boolean") {
+                  if (tableData[i][z]) {
+                    cell.className = "true";
+                  } else {
+                    cell.className = "false";
+                  }
+                  cell.innerHTML = tableData[i][z] ? "T" : "F";
+                } else {
+                  if ($.websiteRegex.test(tableData[i][z]) || $.pathRegex.test(tableData[i][z])) {
+                    cell.innerHTML = DOMPurify.sanitize(`<a href="${tableData[i][z]}">${tableData[i][z]}</a>`);
+                  } else {
+                    cell.textContent = `${tableData[i][z]}`;
+                  }
+                }
+                tBody.children[z].appendChild(cell);
+              }
+            }
+          }
+          table.appendChild(tHead);
+          table.appendChild(tBody);
+          return table;
         }
       };
     }

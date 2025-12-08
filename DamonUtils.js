@@ -1,5 +1,6 @@
 const DOMPurify = require('dompurify');
 const Papa = require('papaparse');
+const jsonLogic = require('json-logic-js');
 
 //#### Utils
 module.exports =
@@ -73,7 +74,6 @@ class DamonUtils {
         try {
             $.damon.mapToJSON(jsonMap);
         } catch (error) {
-            console.log(error)
             throw new Error("Provided map value doesn't passes JSON.parse()");
         }
         var jsonItemIndex = 0,
@@ -462,6 +462,15 @@ class DamonUtils {
         }
     }
 
+    sliceIjsonKey(key) {
+        let indexPrefixMatch = key.match(/^[0-9]+-/);
+        if (indexPrefixMatch[0] !== null) {
+            return key.slice(indexPrefixMatch[0].length);
+        } else {
+            throw new Error(`Key "${ key }" fails IJSON validation.`);
+        }
+    }
+
     /**
      * @param {damonValue} jsonMap
      * @param {boolean} [safeHTML=false]
@@ -499,11 +508,16 @@ class DamonUtils {
                 && value instanceof Map
                 && value.constructor === Map
             ) {
+                let slicedSubMapKeys = Array.from(value.keys()).map($.sliceIjsonKey),
+                    slicedSubMapKeysSet = new Set(slicedSubMapKeys);
+                if (slicedSubMapKeys.length !== slicedSubMapKeysSet.size) {
+                    throw new Error('Duplicate in headings.');
+                }
                 if (jsonItemIndex == 0) {
                     let row = document.createElement('tr');
                     columnsLength = value.length;
                     for (const [cK, childValue] of value) {
-                        let childKey = cK.slice(cK.match(/^[0-9]+-/)[0].length);
+                        let childKey = $.sliceIjsonKey(cK);
                         if (childValue === null) {
                             let headerCell = document.createElement('th');
                             headerCell.dataset.graphArbo = jsonItemIndex + '-' + row.children.length;
@@ -546,7 +560,7 @@ class DamonUtils {
                     }
                     let row = document.createElement('tr');
                     for (const [cK, childValue] of value) {
-                        let childKey = cK.slice(cK.match(/^[0-9]+-/)[0].length);
+                        let childKey = $.sliceIjsonKey(cK);
                         if (childValue === null) {
                             let dataCell = document.createElement('td');
                             dataCell.dataset.graphArbo = jsonItemIndex + '-' + row.children.length;
@@ -633,7 +647,7 @@ class DamonUtils {
                 let i = -1;
                 for (const [k, value] of jsonMap) {
                     i++;
-                    let key = k.slice(k.match(/^[0-9]+-/)[0].length);
+                    let key = $.sliceIjsonKey(k);
                     if (
                         typeof value === 'object'
                         && value !== null
@@ -680,7 +694,8 @@ class DamonUtils {
                             list += '    '.repeat(level) + `${JSON.stringify(key)}` + ', ' + JSON.stringify(value);
                         }
                     }
-                    if (k != Array.from(jsonMap.keys())[Array.from(jsonMap.keys()).length - 1]) {
+                    let lastKey = Array.from(jsonMap.keys())[Array.from(jsonMap.keys()).length - 1];
+                    if (k != lastKey) {
                         list += ",\r\n";
                     } else {
                         list += "\r\n";
@@ -805,7 +820,7 @@ class DamonUtils {
                 && damonMap.constructor === Map
             ) {
                 for (const [k, value] of damonMap) {
-                    let key = k.slice(k.match(/^[0-9]+-/)[0].length);
+                    let key = $.sliceIjsonKey(k);
                     // Normalizing to katex
                     if (key == 'Power')
                         key = 'Pow';
@@ -871,7 +886,8 @@ class DamonUtils {
                                 + '(' + JSON.stringify(value) + ')';
                         }
                     }
-                    if (k != Array.from(damonMap.keys())[Array.from(damonMap.keys()).length - 1]) {
+                    let lastKey = Array.from(damonMap.keys())[Array.from(damonMap.keys()).length - 1];
+                    if (k != lastKey) {
                         mathJs += ",\n";
                     } else {
                         mathJs += "\n";
@@ -2258,8 +2274,13 @@ class DamonUtils {
         let output = '';
         for (const [key, value] of map) {
             let valueKeys = Array.from(value.keys());
+            let slicedSubMapKeys = Array.from(valueKeys).map($.sliceIjsonKey),
+                slicedSubMapKeysSet = new Set(slicedSubMapKeys);
+            if (slicedSubMapKeys.length !== slicedSubMapKeysSet.size) {
+                throw new Error('Duplicate in headings.');
+            }
             for (let i = 0, c = valueKeys.length; i < c; i++) {
-                let childKey = valueKeys[i].slice(valueKeys[i].match(/^[0-9]+-/)[0].length);
+                let childKey = $.sliceIjsonKey(valueKeys[i]);
                 output += Papa.unparse([[childKey]], {quotes: true});
                 if (i != (c - 1)) {
                     output += ',';
@@ -2281,8 +2302,13 @@ class DamonUtils {
             for (const [key, value] of map) {
                 output += '    [';
                 let valueKeys = Array.from(value.keys());
+                let slicedSubMapKeys = Array.from(valueKeys).map($.sliceIjsonKey),
+                    slicedSubMapKeysSet = new Set(slicedSubMapKeys);
+                if (slicedSubMapKeys.length !== slicedSubMapKeysSet.size) {
+                    throw new Error('Duplicate in headings.');
+                }
                 for (let i = 0, c = valueKeys.length; i < c; i++) {
-                    let childKey = valueKeys[i].slice(valueKeys[i].match(/^[0-9]+-/)[0].length);
+                    let childKey = $.sliceIjsonKey(valueKeys[i]);
                     output += JSON.stringify(childKey);
                     if (i != (c - 1)) {
                         output += ', ';
@@ -2298,9 +2324,14 @@ class DamonUtils {
                 headerMap = new Map();
             for (const [key, value] of map) {
                 index++;
+                let slicedSubMapKeys = Array.from(value.keys()).map($.sliceIjsonKey),
+                    slicedSubMapKeysSet = new Set(slicedSubMapKeys);
+                if (slicedSubMapKeys.length !== slicedSubMapKeysSet.size) {
+                    throw new Error('Duplicate in headings.');
+                }
                 if (index === 0) {
                     for (const [subKey, subValue] of value) {
-                        headerMap.set(subKey.slice(subKey.match(/^[0-9]+-/)[0].length), null);
+                        headerMap.set($.sliceIjsonKey(subKey), null);
                     }
                 } else {
                     let z = -1;
@@ -2309,7 +2340,7 @@ class DamonUtils {
                     for (const [headerKey, headerValue] of headerMap) {
                         z++;
                         if (subMapKeys[z]) {
-                            headerMap.set(headerKey, subMapKeys[z].slice(subMapKeys[z].match(/^[0-9]+-/)[0].length));
+                            headerMap.set(headerKey, $.sliceIjsonKey(subMapKeys[z]));
                         } else {
                             headerMap.set(headerKey, null);
                         }
@@ -2327,7 +2358,7 @@ class DamonUtils {
      * @param {String} string
      * @returns {string}
      */
-    csvToDamonTable(string, headless = false) {
+    csvToDamonTable(string) {
         const $ = this;
         let parseResult = Papa.parse(string);
         if (parseResult.meta.aborted)
@@ -2537,5 +2568,545 @@ class DamonUtils {
             }
         }
         return mermaid.slice(0, -2);
+    }
+
+    /**
+     * @param {damonValue} damonMap
+     * @param {number | undefined} yStart
+     * @param {number | undefined} yEnd
+     * @param {number | undefined} xStart
+     * @param {number | undefined} xEnd
+     * @returns {HTMLElement}
+     */
+    damonDecisionMapToHtmlTable(damonMap, yStart, yEnd, xStart, xEnd) {
+        let $ = this;
+        return $.arrayDecisionTableToHtml($.damonDecisionMapToArrayTable(damonMap, yStart, yEnd, xStart, xEnd));
+    }
+
+    /**
+     * @param {damonValue} damonMap
+     * @param {number | undefined} yStart
+     * @param {number | undefined} yEnd
+     * @param {number | undefined} xStart
+     * @param {number | undefined} xEnd
+     * @returns {Array<Array<damonValue>>}
+     */
+    damonDecisionMapToArrayTable(damonMap, yStart, yEnd, xStart, xEnd) {
+        let $ = this;
+        let keysMap =
+            Array.from(damonMap.keys())
+                .map((x) => [$.sliceIjsonKey(x), x]),
+            tableData = [],
+            befores = [],
+            booleans = [],
+            afters = [];
+        if (keysMap.find((x) => x[0] == 'booleans') !== undefined) {
+            booleans =
+                Array.from(damonMap.get(keysMap.find((x) => x[0] == 'booleans')[1]).keys());
+            let slicedBooleans = booleans.map($.sliceIjsonKey),
+                slicedBooleansSet = new Set(slicedBooleans);
+            if (slicedBooleans.length !== slicedBooleansSet.size) {
+                throw new Error('Duplicate in booleans.');
+            }
+            tableData = $.generateTruthTable(booleans, yStart, yEnd, xStart, xEnd);
+        }
+        if (keysMap.find((x) => x[0] == 'befores') !== undefined) {
+            let beforeKey = keysMap.find((x) => x[0] == 'befores')[1],
+                beforeValue = damonMap.get(beforeKey);
+            if (
+                typeof beforeValue !== 'object'
+                || beforeValue === null
+                || Array.isArray(beforeValue)
+                || !(beforeValue instanceof Map)
+                || beforeValue.constructor !== Map
+            ) {
+                throw new Error('"befores" key requires a dictionary.');
+            }
+            befores = Array.from(beforeValue.keys());
+            let slicedBefores = befores.map($.sliceIjsonKey),
+                slicedBeforesSet = new Set(slicedBefores);
+            if (slicedBefores.length !== slicedBeforesSet.size) {
+                throw new Error('Duplicate in befores.');
+            }
+            let beforesKeysArray = [];
+            for (let i = 0, c = befores.length; i < c; i++) {
+                let value = beforeValue.get(befores[i]);
+                if (
+                    typeof value === 'object'
+                    && value !== null
+                    && !Array.isArray(value)
+                    && value instanceof Map
+                    && value.constructor === Map
+                ) {
+                    let beforesKeys = Array.from(value.keys());
+                    beforesKeysArray.push(beforesKeys);
+                } else if (value === null) {
+                    beforesKeysArray.push([]);
+                } else if (value !== null) {
+                    throw new Error('"befores" keys requires a dictionary.');
+                }
+            }
+            let max = Math.max.apply(null, beforesKeysArray.map(x => x.length).concat([tableData.length]));
+            for (let i = beforesKeysArray.length - 1, c = -1; i > c; i--) {
+                for (let z = 0, x = max; z < x; z++) {
+                    let overflow = false;
+                    if (!tableData[z]) {
+                        tableData[z] = [];
+                        overflow = true;
+                    }
+                    if (z < beforesKeysArray[i].length) {
+                        tableData[z].unshift(
+                            $.sliceIjsonKey(beforesKeysArray[i][z])
+                        );
+                    } else {
+                        tableData[z].unshift('');
+                    }
+                    if (overflow) {
+                        for (let j = 0, k = booleans.length; j < k; j++) {
+                            tableData[z].push('');
+                        }
+                    }
+                }
+            }
+        }
+
+        if (keysMap.find((x) => x[0] == 'afters') !== undefined) {
+            let afterKey = keysMap.find((x) => x[0] == 'afters')[1],
+                afterValue = damonMap.get(afterKey);
+            if (
+                typeof afterValue !== 'object'
+                || afterValue === null
+                || Array.isArray(afterValue)
+                || !(afterValue instanceof Map)
+                || afterValue.constructor !== Map
+            ) {
+                throw new Error('"afters" key requires a dictionary.');
+            }
+            afters = Array.from(afterValue.keys());
+            let slicedAfters = afters.map($.sliceIjsonKey),
+                slicedAftersSet = new Set(slicedAfters);
+            if (slicedAfters.length !== slicedAftersSet.size) {
+                throw new Error('Duplicate in afters.');
+            }
+            let aftersKeysArray = [];
+            for (let i = 0, c = afters.length; i < c; i++) {
+                let value = afterValue.get(afters[i]);
+                if (
+                    typeof value === 'object'
+                    && value !== null
+                    && !Array.isArray(value)
+                    && value instanceof Map
+                    && value.constructor === Map
+                ) {
+                    let aftersKeys = Array.from(value.keys());
+                    aftersKeysArray.push(aftersKeys);
+                } else if (value === null) {
+                    aftersKeysArray.push([]);
+                } else if (value !== null) {
+                    throw new Error('"afters" keys requires a dictionary.');
+                }
+            }
+            let max = Math.max.apply(null, aftersKeysArray.map(x => x.length).concat([tableData.length]));
+            for (let i = 0, c = aftersKeysArray.length; i < c; i++) {
+                for (let z = 0, x = max; z < x; z++) {
+                    if (!tableData[z]) {
+                        tableData[z] = [];
+                    }
+                    let rowLength = befores.length + booleans.length;
+                    if (tableData[z].length < rowLength) {
+                        for (let j = 0, k = rowLength; j < k; j++) {
+                            tableData[z].push('');
+                        }
+                    }
+                    if (z < aftersKeysArray[i].length) {
+                        tableData[z].push(
+                            $.sliceIjsonKey(aftersKeysArray[i][z])
+                        );
+                    } else {
+                        tableData[z].push('');
+                    }
+                }
+            }
+            if (keysMap.find((x) => x[0] == 'rules') !== undefined) {
+                let ruleKey = keysMap.find((x) => x[0] == 'rules')[1],
+                    ruleValue = damonMap.get(ruleKey);
+                if (
+                    typeof ruleValue !== 'object'
+                    || ruleValue === null
+                    || Array.isArray(ruleValue)
+                    || !(ruleValue instanceof Map)
+                    || ruleValue.constructor !== Map
+                ) {
+                    throw new Error('"rules" key requires a dictionary.');
+                }
+                function test(a, b) {
+                    let r = new regex(a);
+                    return r.test(b);
+                }
+                jsonLogic.add_operation('RegExp.test', test);
+                jsonLogic.add_operation('Math', Math);
+                let rules = Array.from(ruleValue.keys());
+                let slicedRules = rules.map($.sliceIjsonKey),
+                    slicedRulesSet = new Set(slicedRules);
+                if (slicedRules.length !== slicedRulesSet.size) {
+                    throw new Error('Duplicate in rules.');
+                }
+                for (let i = 0, c = rules.length; i < c; i++) {
+                    let aftersIndex =
+                        afters.findIndex(function (x) {
+                            return (
+                                $.sliceIjsonKey(x)
+                                === $.sliceIjsonKey(rules[i])
+                            )
+                        });
+                    if (aftersIndex == -1) {
+                        throw new Error(
+                            'Rule "'
+                            + $.sliceIjsonKey(rules[i])
+                            + '" matches no afters.'
+                        );
+                    }
+                    let ruleValues = Array.from(ruleValue.get(rules[i]).keys());
+                    for (let z = 0, x = tableData.length; z < x; z++) {
+                        for (let j = 0, k = ruleValues.length; j < k; j++) {
+                            try {
+                                let jsonLogicRule =
+                                    JSON.parse(
+                                        $.indexPrefixedMapToJsonLogic(ruleValue.get(rules[i]).get(ruleValues[j]))
+                                    );
+                                let rowObject = {};
+                                let beforesAndBooleans = befores.concat(booleans);
+                                let header = beforesAndBooleans.concat(afters);
+                                for (let a = 0, b = header.length; a < b; a++) {
+                                    rowObject[$.sliceIjsonKey(header[a])] = tableData[z][a];
+                                }
+                                if (jsonLogic.apply(jsonLogicRule, rowObject)) {
+                                    tableData[z][beforesAndBooleans.length - 1 + aftersIndex + 1]
+                                        = $.sliceIjsonKey(ruleValues[j]);
+                                }
+                            } catch (error) {
+                                throw new Error(
+                                    '"'
+                                    + $.sliceIjsonKey(rules[i])
+                                    + '" rule fails JsonLogic parsing.'
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        let header = booleans.map($.sliceIjsonKey);
+        if (befores.length) {
+            header = befores.map($.sliceIjsonKey).concat(header);
+        }
+        if (afters.length) {
+            header = header.concat(afters.map($.sliceIjsonKey));
+        }
+        let headerSet = new Set(header);
+        if (header.length !== headerSet.size) {
+            throw new Error('Duplicate in headings.');
+        }
+        tableData.unshift(header);
+        return tableData;
+    }
+
+    /**
+     * @param {Array<string>} booleans
+     * @param {number | undefined} yStart
+     * @param {number | undefined} yEnd
+     * @param {number | undefined} xStart
+     * @param {number | undefined} xEnd
+     * @returns {Array<Array<damonValue>>}
+     */
+    generateTruthTable(booleans, yStart, yEnd = yStart, xStart, xEnd = xStart) {
+        let possibilities = Math.pow(2, booleans.length),
+            result = [];
+        if (yStart === undefined) {
+            yStart = 0;
+            yEnd = possibilities - 1;
+        }
+        if (xStart === undefined) {
+            xStart = 0;
+            xEnd = booleans.length - 1;
+        }
+        for (let i = yStart, c = yEnd + 1; i < c; i++) {
+            let row = [];
+            result.push(row);
+        }
+        for (let z = xStart, x = xEnd + 1; z < x; z++) {
+            let segments = Math.pow(2, z + 1),
+                segmentSize = possibilities / segments,
+                index = yStart,
+                currentSegment = Math.floor(yStart / segmentSize),
+                remainder = yStart % segmentSize;
+            segmentsLoop:
+            for (let i = currentSegment, c = segments; i < c; i++) {
+                let boolean = i % 2 == 0;
+                for (let j = remainder, k = segmentSize; j < k; j++) {
+                    if (index > yStart - 1) {
+                        if (index < yEnd + 1) {
+                            result[index - yStart].push(boolean);
+                        } else {
+                            break segmentsLoop;
+                        }
+                    }
+                    index++;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    indexPrefixedMapToJsonLogic(jsonMap) {
+        let $ = this;
+        var list = ``;
+         if (
+            typeof jsonMap === 'object'
+            && jsonMap !== null
+            && jsonMap instanceof Map
+            && jsonMap.constructor === Map
+        ) {
+            _recurse(jsonMap);
+            // Removes duplicate keys and validates.
+            return JSON.parse(JSON.parse(list));
+        } else {
+            if (typeof jsonMap == 'boolean') {
+                return jsonMap;
+            } else {
+                throw new Error('JsonLogic requires either an object or a boolean value.')
+            }
+        }
+        /**
+         * @param {Map<string, any>|Array<any>} jsonMap
+         * @param {number} [level=1]
+         * @returns {string}
+         */
+        function _recurse(jsonMap, level = 1) {
+            if (
+                typeof jsonMap === 'object'
+                && jsonMap !== null
+                && !Array.isArray(jsonMap)
+                && jsonMap instanceof Map
+                && jsonMap.constructor === Map
+            ) {
+                for (const [k, value] of jsonMap) {
+                    let key = $.sliceIjsonKey(k);
+                    if (
+                        typeof value === 'object'
+                        && value !== null
+                    ) {
+                        if (Array.isArray(value)) {
+                            if (value.length > 0) {
+                                list += '    '.repeat(level) + `{${JSON.stringify(key)}: [\r\n`;
+                                _recurse(value, level + 1);
+                                list += '    '.repeat(level) + `]}`;
+                            } else {
+                                list += '    '.repeat(level) + `{${JSON.stringify(key)}: []}`;
+                            }
+                        } else {
+                            if (Array.from(value.keys()).length > 0) {
+                                list += '    '.repeat(level) + `{${JSON.stringify(key)}: [\r\n`;
+                                for (const [sK, subValue] of value) {
+                                    let subKey = $.sliceIjsonKey(sK);
+                                    if (
+                                        typeof subValue === 'object'
+                                        && subValue !== null
+                                    ) {
+                                        if (Array.isArray(subValue)) {
+                                            if (subValue.length > 0) {
+                                                list += '    '.repeat(level + 1) + `[${JSON.stringify(subKey)}: [\r\n`;
+                                                _recurse(subValue, level + 2);
+                                                list += '    '.repeat(level + 1) + `]]`;
+                                            } else {
+                                                list += '    '.repeat(level + 1) + `[${JSON.stringify(subKey)}: []]`;
+                                            }
+                                        } else {
+                                            if (Array.from(subValue.keys()).length > 0) {
+                                                list += '    '.repeat(level + 1) + `{${JSON.stringify(subKey)}: [\r\n`;
+                                                _recurse(subValue, level + 2);
+                                                list += '    '.repeat(level + 1) + `]}`;
+                                            } else {
+                                                list += '    '.repeat(level + 1) + `{${JSON.stringify(subKey)}: {}}`;
+                                            }
+                                        }
+                                    } else if (subValue === null) {
+                                        list += '    '.repeat(level + 1) + `${JSON.stringify(subKey)}`;
+                                    } else {
+                                        list +=
+                                            '    '.repeat(level + 1)
+                                            + `{${JSON.stringify(subKey)}: ${JSON.stringify(subValue)}}`;
+                                    }
+                                    let lastKey = Array.from(value.keys())[Array.from(value.keys()).length - 1];
+                                    if (sK != lastKey) {
+                                        list += ",\r\n";
+                                    } else {
+                                        list += "\r\n";
+                                    }
+                                }
+                                list += '    '.repeat(level) + `]}`;
+                            } else {
+                                list += '    '.repeat(level) + `${JSON.stringify(key)}: []}`;
+                            }
+                        }
+                    } else {
+                        if (value === true) {
+                            list += '    '.repeat(level) + `{${JSON.stringify(key)}` + ': ' + "true}";
+                        } else if (value === false) {
+                            list += '    '.repeat(level) + `{${JSON.stringify(key)}` + ': ' + "false}";
+                        } else if (value === null) {
+                            list += '    '.repeat(level) + `${JSON.stringify(key)}`
+                        } else if (
+                            Number.isFinite(value)
+                            && !Number.isNaN(value)
+                        ) {
+                            list += '    '.repeat(level) + `{${JSON.stringify(key)}` + ': ' + value + '}';
+                        } else {
+                            list +=
+                                '    '.repeat(level) + `{${JSON.stringify(key)}` + ': ' + JSON.stringify(value) + '}';
+                        }
+                    }
+                    let lastKey = Array.from(jsonMap.keys())[Array.from(jsonMap.keys()).length - 1];
+                    if (k != lastKey) {
+                        list += ",\r\n";
+                    } else {
+                        list += "\r\n";
+                    }
+                }
+            } else if (Array.isArray(jsonMap)) {
+                for (var i = 0, c = jsonMap.length; i < c; i++) {
+                    if (
+                        typeof jsonMap[i] === 'object'
+                        && jsonMap[i] !== null
+                    ) {
+                        if (Array.isArray(jsonMap[i])) {
+                            if (jsonMap[i].length > 0) {
+                                list += '    '.repeat(level) + `[\r\n`;
+                                _recurse(jsonMap[i], level + 1);
+                                list += '    '.repeat(level) + `]`;
+                            } else {
+                                list += '    '.repeat(level) + `[]`;
+                            }
+                        } else {
+                            if (Array.from(jsonMap[i].keys()).length > 0) {
+                                list += '    '.repeat(level) + `{\r\n`;
+                                _recurse(jsonMap[i], level + 1);
+                                list += '    '.repeat(level) + `}`;
+                            } else {
+                                list += '    '.repeat(level) + `{}`;
+                            }
+                        }
+                    } else {
+                        if (jsonMap[i] === true) {
+                            list += '    '.repeat(level) + "true";
+                        } else if (jsonMap[i] === false) {
+                            list += '    '.repeat(level) + "false";
+                        } else if (jsonMap[i] === null) {
+                            list += '    '.repeat(level) + "null";
+                        } else if (
+                            Number.isFinite(jsonMap[i])
+                            && !Number.isNaN(jsonMap[i])
+                        ) {
+                            list += '    '.repeat(level) + jsonMap[i];
+                        } else {
+                            list += '    '.repeat(level) + JSON.stringify(jsonMap[i]);
+                        }
+                    }
+                    if (i != c - 1) {
+                        list += ",\r\n";
+                    } else {
+                        list += "\r\n";
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param {Array<Array<boolean|string>>} array
+     */
+    arrayTableToPandasRecords(array) {
+        let $ = this;
+        let records = [],
+            rowLength = array[0].length;
+        for (let i = 1, c = array.length; i < c; i++) {
+            let record = {};
+            for (let z = 0, x = rowLength; z < x; z++) {
+                record[array[0][z]] = array[i][z];
+            }
+            records.push(record);
+        }
+        return records;
+    }
+
+    /**
+     * @param {Array<Array<damonValue>>} tableData
+     * @param {Array<string>} booleans
+     * @returns
+     */
+    arrayDecisionTableToHtml(tableData) {
+        let $ = this;
+        let table = document.createElement('table'),
+            tHead = document.createElement('thead'),
+            tBody = document.createElement('tbody');
+        table.className = 'DAMON-Decision';
+        let headRow = document.createElement('tr');
+        for (let z = 0, x = tableData.length; z < x; z++) {
+            let cell = document.createElement('th');
+            if (z !== 0) {
+                cell.textContent = z;
+                cell.dataset.graphArbo = z - 1;
+            }
+            headRow.appendChild(cell);
+        }
+        tHead.appendChild(headRow);
+        for (let i = 0, c = tableData[0].length; i < c; i++) {
+            let row = document.createElement('tr');
+            tBody.appendChild(row);
+        }
+        for (let i = 0, c = tableData.length; i < c; i++) {
+            for (let z = 0, x = tableData[i].length; z < x; z++) {
+                let cell = {};
+                if (i == 0) {
+                    cell = document.createElement('th');
+                    if (
+                        $.websiteRegex.test(tableData[i][z])
+                        || $.pathRegex.test(tableData[i][z])
+                    ) {
+                        cell.innerHTML =
+                            DOMPurify.sanitize(`<a href="${ tableData[i][z] }">${ tableData[i][z] }</a>`);
+                    } else {
+                        cell.textContent = `${tableData[i][z]}`;
+                    }
+                    tBody.children[z].appendChild(cell);
+                } else {
+                    cell = document.createElement('td');
+                    if (typeof tableData[i][z] == 'boolean') {
+                        if (tableData[i][z]) {
+                            cell.className = 'true';
+                        } else {
+                            cell.className = 'false';
+                        }
+                        cell.innerHTML = tableData[i][z] ? 'T': 'F';
+                    } else {
+                        if (
+                            $.websiteRegex.test(tableData[i][z])
+                            || $.pathRegex.test(tableData[i][z])
+                        ) {
+                            cell.innerHTML =
+                                DOMPurify.sanitize(`<a href="${ tableData[i][z] }">${ tableData[i][z] }</a>`);
+                        } else {
+                            cell.textContent = `${tableData[i][z]}`;
+                        }
+                    }
+                    tBody.children[z].appendChild(cell);
+                }
+            }
+        }
+        table.appendChild(tHead);
+        table.appendChild(tBody);
+        return table;
     }
 };

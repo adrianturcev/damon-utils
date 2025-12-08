@@ -3,6 +3,7 @@ const assert = require('assert');
 const Damon = require('damon2');
 const DamonUtils = require('../DamonUtils.js');
 const jsdom = require('jsdom');
+const fs = require('fs');
 const { JSDOM } = jsdom;
 const document = (new JSDOM(`...`)).window.document;
 const h = require('../helpers.js')(document);
@@ -285,6 +286,39 @@ describe('# DAMON UTILS', function () {
                 C --> A
                 C --> B`.replaceAll('\n' + '    '.repeat(4), '\r\n');
             assert.equal(damonUtils.damonGraphMapToMermaid(damon.damonToMap(damonGraph)), mermaidGraph);
+        });
+    });
+
+    describe('## DAMON DECISION TO TABLE', function () {
+        it('Returns a decision table document', function () {
+            let damonDecision =
+                `
+                - booleans: {}
+                    - A
+                    - B
+                    - C
+                - afters: {}
+                    - D
+                        - a
+                        - x
+                        - a
+                    - E
+                        - 0
+                        - 1
+                        - 0
+                    - F
+                        - 0
+                        - 1
+                        - 0
+                `.replaceAll('\n' + '    '.repeat(4), '\n');
+            assert.equal(
+                beautify(
+                    damonUtils.damonDecisionMapToHtmlTable(
+                        damon.damonToMap(damonDecision, 0, true)
+                    ).outerHTML
+                ),
+                fs.readFileSync('./tests/decisionTable.test.html', 'utf8', (err) => {console.log(err)})
+            );
         });
     });
 });
