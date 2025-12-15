@@ -299,16 +299,20 @@ describe('# DAMON UTILS', function () {
                     - C
                 - afters: {}
                     - D
-                        - a
-                        - x
-                        - a
                     - E
-                        - 0
-                        - 1
-                        - 0
                     - F
+                - rows: {}
+                    - 0
+                        - a
                         - 0
+                        - 0
+                    - 1
+                        - x
                         - 1
+                        - 1
+                    - 2
+                        - a
+                        - 0
                         - 0
                 `.replaceAll('\n' + '    '.repeat(4), '\n');
             assert.equal(

@@ -2146,6 +2146,14 @@
             }
           }
         }
+        sliceIjsonKey(key) {
+          let indexPrefixMatch = key.match(/^[0-9]+-/);
+          if (indexPrefixMatch[0] !== null) {
+            return key.slice(indexPrefixMatch[0].length);
+          } else {
+            throw new Error(`Key "${key}" fails IJSON validation.`);
+          }
+        }
         /**
          * @param {damonValue} jsonMap
          * @param {boolean} [safeHTML=false]
@@ -2166,10 +2174,14 @@
           for (const [key, value] of jsonMap) {
             if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map) {
               if (jsonItemIndex == 0) {
+                let slicedSubMapKeys = Array.from(value.keys()).map($.sliceIjsonKey), slicedSubMapKeysSet = new Set(slicedSubMapKeys);
+                if (slicedSubMapKeys.length !== slicedSubMapKeysSet.size) {
+                  throw new Error("Duplicate in headings.");
+                }
                 let row = document.createElement("tr");
                 columnsLength = value.length;
                 for (const [cK, childValue] of value) {
-                  let childKey = cK.slice(cK.match(/^[0-9]+-/)[0].length);
+                  let childKey = $.sliceIjsonKey(cK);
                   if (childValue === null) {
                     let headerCell = document.createElement("th");
                     headerCell.dataset.graphArbo = jsonItemIndex + "-" + row.children.length;
@@ -2203,7 +2215,7 @@
                 }
                 let row = document.createElement("tr");
                 for (const [cK, childValue] of value) {
-                  let childKey = cK.slice(cK.match(/^[0-9]+-/)[0].length);
+                  let childKey = $.sliceIjsonKey(cK);
                   if (childValue === null) {
                     let dataCell = document.createElement("td");
                     dataCell.dataset.graphArbo = jsonItemIndex + "-" + row.children.length;
@@ -2265,7 +2277,7 @@
               let i2 = -1;
               for (const [k, value] of jsonMap2) {
                 i2++;
-                let key = k.slice(k.match(/^[0-9]+-/)[0].length);
+                let key = $.sliceIjsonKey(k);
                 if (typeof value === "object" && value !== null) {
                   if (Array.isArray(value)) {
                     if (value.length > 0) {
@@ -2412,7 +2424,7 @@
           function _recurse(damonMap2, level = 0) {
             if (typeof damonMap2 === "object" && damonMap2 !== null && !Array.isArray(damonMap2) && damonMap2 instanceof Map && damonMap2.constructor === Map) {
               for (const [k, value] of damonMap2) {
-                let key = k.slice(k.match(/^[0-9]+-/)[0].length);
+                let key = $.sliceIjsonKey(k);
                 if (key == "Power")
                   key = "Pow";
                 if (key == "e")
@@ -2733,9 +2745,9 @@
           }
         }
         /**
-         * @param {*} firstMap
-         * @param {*} secondMap
-         * @returns {Map} outputMap
+         * @param {Map<string, damonValue>} firstMap
+         * @param {Map<string, damonValue>} secondMap
+         * @returns {Map<string, damonValue>} outputMap
          */
         sortMap(firstMap, secondMap) {
           let $ = this, firstMapKeys = Array.from(firstMap.keys()), secondMapKeys = Array.from(secondMap.keys()), outputMap = /* @__PURE__ */ new Map();
@@ -2753,8 +2765,8 @@
         }
         /**
          * Produces a blocks diff
-         * @param {*} firstMap
-         * @param {*} secondMap
+         * @param {damonValue} firstMap
+         * @param {damonValue} secondMap
          * @returns {string} list
          */
         renderDiff(firstMap, secondMap, safeHTML = false) {
@@ -3402,11 +3414,18 @@
          */
         damonTableMapToCSV(map) {
           const $ = this;
-          let output = "";
+          let output = "", index = -1;
           for (const [key, value] of map) {
+            index++;
             let valueKeys = Array.from(value.keys());
+            if (index == 0) {
+              let slicedSubMapKeys = Array.from(valueKeys).map($.sliceIjsonKey), slicedSubMapKeysSet = new Set(slicedSubMapKeys);
+              if (slicedSubMapKeys.length !== slicedSubMapKeysSet.size) {
+                throw new Error("Duplicate in headings.");
+              }
+            }
             for (let i = 0, c = valueKeys.length; i < c; i++) {
-              let childKey = valueKeys[i].slice(valueKeys[i].match(/^[0-9]+-/)[0].length);
+              let childKey = $.sliceIjsonKey(valueKeys[i]);
               output += Papa.unparse([[childKey]], { quotes: true });
               if (i != c - 1) {
                 output += ",";
@@ -3423,12 +3442,13 @@
         damonTableMapToJSON(map, format = "array-rows") {
           const $ = this;
           if (format == "array-rows") {
-            let output = "[\n";
+            let output = "[\n", index = -1;
             for (const [key, value] of map) {
+              index++;
               output += "    [";
               let valueKeys = Array.from(value.keys());
               for (let i = 0, c = valueKeys.length; i < c; i++) {
-                let childKey = valueKeys[i].slice(valueKeys[i].match(/^[0-9]+-/)[0].length);
+                let childKey = $.sliceIjsonKey(valueKeys[i]);
                 output += JSON.stringify(childKey);
                 if (i != c - 1) {
                   output += ", ";
@@ -3443,8 +3463,12 @@
             for (const [key, value] of map) {
               index++;
               if (index === 0) {
+                let slicedSubMapKeys = Array.from(value.keys()).map($.sliceIjsonKey), slicedSubMapKeysSet = new Set(slicedSubMapKeys);
+                if (slicedSubMapKeys.length !== slicedSubMapKeysSet.size) {
+                  throw new Error("Duplicate in headings.");
+                }
                 for (const [subKey, subValue] of value) {
-                  headerMap.set(subKey.slice(subKey.match(/^[0-9]+-/)[0].length), null);
+                  headerMap.set($.sliceIjsonKey(subKey), null);
                 }
               } else {
                 let z = -1;
@@ -3452,7 +3476,7 @@
                 for (const [headerKey, headerValue] of headerMap) {
                   z++;
                   if (subMapKeys[z]) {
-                    headerMap.set(headerKey, subMapKeys[z].slice(subMapKeys[z].match(/^[0-9]+-/)[0].length));
+                    headerMap.set(headerKey, $.sliceIjsonKey(subMapKeys[z]));
                   } else {
                     headerMap.set(headerKey, null);
                   }
@@ -3469,7 +3493,7 @@
          * @param {String} string
          * @returns {string}
          */
-        csvToDamonTable(string, headless = false) {
+        csvToDamonTable(string) {
           const $ = this;
           let parseResult = Papa.parse(string);
           if (parseResult.meta.aborted)
@@ -3541,8 +3565,8 @@
         }
         /**
          * Must occur after rendering
-         * @param {NodeList } listItems
-         * @param {String} damon
+         * @param {NodeList} listItems
+         * @param {string} damon
          */
         addLineNumbers(damon, container, startLine = 0) {
           let $ = this, listItems = container.querySelectorAll("li[data-graph-arbo]");
@@ -3571,8 +3595,8 @@
         }
         /**
          * Must occur after rendering
-         * @param {NodeList } listItems
-         * @param {String} damon
+         * @param {NodeList} listItems
+         * @param {string} damon
          */
         addTableLineNumbers(damon, container, startLine = 0) {
           let $ = this, nodeList = container.querySelectorAll("th[data-graph-arbo]:first-child, td[data-graph-arbo]:first-child");
@@ -3653,9 +3677,18 @@
          */
         damonDecisionMapToArrayTable(damonMap, yStart, yEnd, xStart, xEnd) {
           let $ = this;
-          let keysMap = Array.from(damonMap.keys()).map((x) => [x.slice(x.match(/^[0-9]+-/)[0].length), x]), tableData = [], befores = [], booleans = [], afters = [];
+          let keysMap = Array.from(damonMap.keys()).map((x) => [$.sliceIjsonKey(x), x]), tableData = [], befores = [], booleans = [], afters = [], rows = [];
+          if (keysMap.find((x) => x[0] == "rows") !== void 0) {
+            rows = JSON.parse(
+              $.damonTableMapToJSON(damonMap.get(keysMap.find((x) => x[0] == "rows")[1]))
+            );
+          }
           if (keysMap.find((x) => x[0] == "booleans") !== void 0) {
             booleans = Array.from(damonMap.get(keysMap.find((x) => x[0] == "booleans")[1]).keys());
+            let slicedBooleans = booleans.map($.sliceIjsonKey), slicedBooleansSet = new Set(slicedBooleans);
+            if (slicedBooleans.length !== slicedBooleansSet.size) {
+              throw new Error("Duplicate in booleans.");
+            }
             tableData = $.generateTruthTable(booleans, yStart, yEnd, xStart, xEnd);
           }
           if (keysMap.find((x) => x[0] == "befores") !== void 0) {
@@ -3664,17 +3697,13 @@
               throw new Error('"befores" key requires a dictionary.');
             }
             befores = Array.from(beforeValue.keys());
+            let slicedBefores = befores.map($.sliceIjsonKey), slicedBeforesSet = new Set(slicedBefores);
+            if (slicedBefores.length !== slicedBeforesSet.size) {
+              throw new Error("Duplicate in befores.");
+            }
             let beforesKeysArray = [];
             for (let i = 0, c = befores.length; i < c; i++) {
-              let value = beforeValue.get(befores[i]);
-              if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map) {
-                let beforesKeys = Array.from(value.keys());
-                beforesKeysArray.push(beforesKeys);
-              } else if (value === null) {
-                beforesKeysArray.push([]);
-              } else if (value !== null) {
-                throw new Error('"befores" keys requires a dictionary.');
-              }
+              beforesKeysArray.push(rows.map((x) => x[i]));
             }
             let max = Math.max.apply(null, beforesKeysArray.map((x) => x.length).concat([tableData.length]));
             for (let i = beforesKeysArray.length - 1, c = -1; i > c; i--) {
@@ -3686,7 +3715,7 @@
                 }
                 if (z < beforesKeysArray[i].length) {
                   tableData[z].unshift(
-                    beforesKeysArray[i][z].slice(beforesKeysArray[i][z].match(/^[0-9]+-/)[0].length)
+                    beforesKeysArray[i][z]
                   );
                 } else {
                   tableData[z].unshift("");
@@ -3705,17 +3734,13 @@
               throw new Error('"afters" key requires a dictionary.');
             }
             afters = Array.from(afterValue.keys());
+            let slicedAfters = afters.map($.sliceIjsonKey), slicedAftersSet = new Set(slicedAfters);
+            if (slicedAfters.length !== slicedAftersSet.size) {
+              throw new Error("Duplicate in afters.");
+            }
             let aftersKeysArray = [];
             for (let i = 0, c = afters.length; i < c; i++) {
-              let value = afterValue.get(afters[i]);
-              if (typeof value === "object" && value !== null && !Array.isArray(value) && value instanceof Map && value.constructor === Map) {
-                let aftersKeys = Array.from(value.keys());
-                aftersKeysArray.push(aftersKeys);
-              } else if (value === null) {
-                aftersKeysArray.push([]);
-              } else if (value !== null) {
-                throw new Error('"afters" keys requires a dictionary.');
-              }
+              aftersKeysArray.push(rows.map((x) => x[i + befores.length]));
             }
             let max = Math.max.apply(null, aftersKeysArray.map((x) => x.length).concat([tableData.length]));
             for (let i = 0, c = aftersKeysArray.length; i < c; i++) {
@@ -3731,7 +3756,7 @@
                 }
                 if (z < aftersKeysArray[i].length) {
                   tableData[z].push(
-                    aftersKeysArray[i][z].slice(aftersKeysArray[i][z].match(/^[0-9]+-/)[0].length)
+                    aftersKeysArray[i][z]
                   );
                 } else {
                   tableData[z].push("");
@@ -3751,13 +3776,17 @@
               jsonLogic.add_operation("RegExp.test", test2);
               jsonLogic.add_operation("Math", Math);
               let rules = Array.from(ruleValue.keys());
+              let slicedRules = rules.map($.sliceIjsonKey), slicedRulesSet = new Set(slicedRules);
+              if (slicedRules.length !== slicedRulesSet.size) {
+                throw new Error("Duplicate in rules.");
+              }
               for (let i = 0, c = rules.length; i < c; i++) {
                 let aftersIndex = afters.findIndex(function(x) {
-                  return x.slice(rules[i].match(/^[0-9]+-/)[0].length) === rules[i].slice(rules[i].match(/^[0-9]+-/)[0].length);
+                  return $.sliceIjsonKey(x) === $.sliceIjsonKey(rules[i]);
                 });
                 if (aftersIndex == -1) {
                   throw new Error(
-                    'Rule "' + rules[i].slice(rules[i].match(/^[0-9]+-/)[0].length) + '" matches no afters.'
+                    'Rule "' + $.sliceIjsonKey(rules[i]) + '" matches no afters.'
                   );
                 }
                 let ruleValues = Array.from(ruleValue.get(rules[i]).keys());
@@ -3771,14 +3800,15 @@
                       let beforesAndBooleans = befores.concat(booleans);
                       let header2 = beforesAndBooleans.concat(afters);
                       for (let a = 0, b = header2.length; a < b; a++) {
-                        rowObject[header2[a].slice(header2[a].match(/^[0-9]+-/)[0].length)] = tableData[z][a];
+                        rowObject[$.sliceIjsonKey(header2[a])] = tableData[z][a];
                       }
                       if (jsonLogic.apply(jsonLogicRule, rowObject)) {
-                        tableData[z][beforesAndBooleans.length - 1 + aftersIndex + 1] = ruleValues[j].slice(ruleValues[j].match(/^[0-9]+-/)[0].length);
+                        tableData[z][beforesAndBooleans.length - 1 + aftersIndex + 1] = $.sliceIjsonKey(ruleValues[j]);
                       }
                     } catch (error) {
+                      console.log("DamonUtils.js:2768:", error);
                       throw new Error(
-                        '"' + rules[i].slice(rules[i].match(/^[0-9]+-/)[0].length) + '" rule fails JsonLogic parsing.'
+                        '"' + $.sliceIjsonKey(rules[i]) + '" rule fails JsonLogic parsing.'
                       );
                     }
                   }
@@ -3786,12 +3816,16 @@
               }
             }
           }
-          let header = booleans.map((x) => x.slice(x.match(/^[0-9]+-/)[0].length));
+          let header = booleans.map($.sliceIjsonKey);
           if (befores.length) {
-            header = befores.map((x) => x.slice(x.match(/^[0-9]+-/)[0].length)).concat(header);
+            header = befores.map($.sliceIjsonKey).concat(header);
           }
           if (afters.length) {
-            header = header.concat(afters.map((x) => x.slice(x.match(/^[0-9]+-/)[0].length)));
+            header = header.concat(afters.map($.sliceIjsonKey));
+          }
+          let headerSet = new Set(header);
+          if (header.length !== headerSet.size) {
+            throw new Error("Duplicate in headings.");
           }
           tableData.unshift(header);
           return tableData;
@@ -3837,13 +3871,16 @@
           }
           return result;
         }
+        /**
+         * @param {damonMap} jsonMap
+         * @returns {string}
+         */
         indexPrefixedMapToJsonLogic(jsonMap) {
           let $ = this;
           var list = ``;
           if (typeof jsonMap === "object" && jsonMap !== null && jsonMap instanceof Map && jsonMap.constructor === Map) {
             _recurse(jsonMap);
-            JSON.parse(list);
-            return list;
+            return JSON.stringify(JSON.parse(list));
           } else {
             if (typeof jsonMap == "boolean") {
               return jsonMap;
@@ -3854,7 +3891,7 @@
           function _recurse(jsonMap2, level = 1) {
             if (typeof jsonMap2 === "object" && jsonMap2 !== null && !Array.isArray(jsonMap2) && jsonMap2 instanceof Map && jsonMap2.constructor === Map) {
               for (const [k, value] of jsonMap2) {
-                let key = k.slice(k.match(/^[0-9]+-/)[0].length);
+                let key = $.sliceIjsonKey(k);
                 if (typeof value === "object" && value !== null) {
                   if (Array.isArray(value)) {
                     if (value.length > 0) {
@@ -3870,7 +3907,7 @@
                       list += "    ".repeat(level) + `{${JSON.stringify(key)}: [\r
 `;
                       for (const [sK, subValue] of value) {
-                        let subKey = sK.slice(sK.match(/^[0-9]+-/)[0].length);
+                        let subKey = $.sliceIjsonKey(sK);
                         if (typeof subValue === "object" && subValue !== null) {
                           if (Array.isArray(subValue)) {
                             if (subValue.length > 0) {
@@ -3974,6 +4011,7 @@
         }
         /**
          * @param {Array<Array<boolean|string>>} array
+         * @returns {Array<object>}
          */
         arrayTableToPandasRecords(array) {
           let $ = this;
@@ -3990,7 +4028,7 @@
         /**
          * @param {Array<Array<damonValue>>} tableData
          * @param {Array<string>} booleans
-         * @returns
+         * @returns {HTMLElement}
          */
         arrayDecisionTableToHtml(tableData) {
           let $ = this;

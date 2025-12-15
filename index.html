@@ -42,6 +42,10 @@
             font-family: Consolas, Menlo, JuliaMono, Liberation Mono, monospace;
         }
 
+        body {
+            margin: 10px;
+        }
+
         /* Fix: https://bugs.chromium.org/p/chromium/issues/detail?id=1150352 */
         object {
             color-scheme: normal;
@@ -87,27 +91,63 @@
             color: var(--colors-orange);
         }
 
-        thead th {
-            writing-mode: sideways-lr;
-            text-align: left;
+        table {
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            padding-bottom: 5px;
         }
 
         th {
             white-space: nowrap;
+            border-right: 1px solid #555555;
+            text-align: left;
+            background:
+                linear-gradient(
+                    to right,
+                    #2B2B2B 5px,
+                    transparent 5px,
+                    transparent calc(100% - 5px),
+                    #2B2B2B calc(100% - 5px)
+                ),
+                linear-gradient(
+                    to bottom,
+                    #2B2B2B 5px,
+                    transparent 5px
+                ),
+                #555555;
         }
 
-        th, td {
-            padding: 5px;
-        }
-
-        tbody th {
-            text-align: right;
+        thead th {
+            text-align: center;
         }
 
         td {
+            /* Keeps width superior to height. */
+            min-width: calc(14px + 10px);
             white-space: break-spaces;
             text-align: center;
-            background-color: #555555;
+            border-right: 1px solid #555555;
+            background:
+                linear-gradient(
+                    to right,
+                    #2B2B2B 5px,
+                    transparent 5px,
+                    transparent calc(100% - 5px),
+                    #2B2B2B calc(100% - 5px)
+                ),
+                linear-gradient(
+                    to bottom,
+                    #2B2B2B 5px,
+                    transparent 5px
+                ),
+                #555555;
+        }
+
+        th:last-child, td:last-child {
+            border-right: none;
         }
 
         .true {
@@ -139,34 +179,36 @@
         let damonDecision =
                 `
                 - befores: {}
-                    - input
+                    - Input
                 - booleans: {}
                     - Printer prints
                     - Red light flashing
                     - Computer recognizes printer
                 - afters: {}
                     - Check power cable
-                        - a
-                        - x
-                        - a
                     - Replace ink
-                        - 0
-                        - 1
-                        - 0
                     - Paper jam
+                - rows: {}
+                    - 0
                         - 0
                         - 1
+                        - 1
+                        - 1
+                    - 1
                         - 0
+                        - 1
+                        - 1
+                        - 1
                 - rules: {}
                     - Paper jam: {}
-                        - abra: {}
+                        - 1: {}
                             - and: {}
                                 - ==: {}
                                     - var: "Printer prints"
                                     - 1
                                 - ==: {}
                                     - var: "Red light flashing"
-                                    - 1`.replaceAll('\n' + '    '.repeat(4), '\n');
+                                    - 0`.replaceAll('\n' + '    '.repeat(4), '\n');
         let damonDecisionMap = damon.damonToMap(damonDecision, 0, true),
             decisionTableArray
                 = damonUtils.damonDecisionMapToArrayTable(damonDecisionMap),
