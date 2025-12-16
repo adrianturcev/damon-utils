@@ -27,6 +27,9 @@ module.exports = function(grunt) {
             mocha: {
                 command: 'npx mocha tests/main.test.js --parallel --slow 0',
             },
+            jsdoc: {
+                command: 'npx jsdoc2md DamonUtils.js > API.md'
+            },
         },
         esbuild: {
             options: {

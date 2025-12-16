@@ -4083,6 +4083,61 @@
           table.appendChild(tBody);
           return table;
         }
+        /**
+         * @param {damonValue} jsonMap
+         * @returns {string}
+         */
+        indexPrefixedMapToPaths(jsonMap) {
+          const $ = this;
+          var list = ``;
+          if (Array.isArray(jsonMap)) {
+            throw new Error("Expected a map of maps. Saw an array.");
+          } else if (typeof jsonMap === "object" && jsonMap !== null && jsonMap instanceof Map && jsonMap.constructor === Map) {
+            list += "[\r\n";
+            _recurse(jsonMap);
+            list = list.slice(0, -3);
+            list += "\r\n]";
+            return list;
+          } else {
+            throw new Error("Expected a map of maps. Saw a non-null leaf-value instead.");
+          }
+          function _recurse(jsonMap2, level = 1, path = []) {
+            if (typeof jsonMap2 === "object" && jsonMap2 !== null && !Array.isArray(jsonMap2) && jsonMap2 instanceof Map && jsonMap2.constructor === Map) {
+              for (const [k, value] of jsonMap2) {
+                let key = $.sliceIjsonKey(k);
+                if (typeof value === "object" && value !== null) {
+                  if (Array.isArray(value)) {
+                    throw new Error("Expected a map of maps. Saw an array.");
+                  } else {
+                    if (Array.from(value.keys()).length > 0) {
+                      list += `    ${JSON.stringify(path.concat([key]).join("/"))},\r
+`;
+                      _recurse(value, level + 1, path.concat([key]));
+                    } else {
+                      list += `    ${JSON.stringify(path.concat([key]).join("/"))},\r
+`;
+                    }
+                  }
+                } else {
+                  if (value === true) {
+                    throw new Error("Expected a map of maps. Saw a boolean.");
+                  } else if (value === false) {
+                    throw new Error("Expected a map of maps. Saw a boolean.");
+                  } else if (value === null) {
+                    list += `    ${JSON.stringify(path.concat([key]).join("/"))},\r
+`;
+                  } else if (Number.isFinite(value) && !Number.isNaN(value)) {
+                    throw new Error("Expected a map of maps. Saw a number.");
+                  } else {
+                    throw new Error("Expected a map of maps. Saw a string.");
+                  }
+                }
+              }
+            } else {
+              throw new Error("Expected a map of maps. Saw an array.");
+            }
+          }
+        }
       };
     }
   });
