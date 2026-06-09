@@ -320,9 +320,48 @@ describe('# DAMON UTILS', function () {
                     damonUtils.damonDecisionMapToHtmlTable(
                         damon.damonToMap(damonDecision, 0, true)
                     ).outerHTML
-                ),
+                ) + '\n',
                 fs.readFileSync('./tests/decisionTable.test.html', 'utf8', (err) => {console.log(err)})
+                    .replaceAll('\r\n', '\n')
             );
+        });
+    });
+    describe('## DAMON LEAVES TO DAMON', function () {
+        it('Returns a DAMON document', function () {
+            let damonLeavesInput = `
+                - rootProperty: {}
+                    - \`\`\`DAMON-table: {}
+                        - 0: {}
+                            - heading1
+                            - heading2
+                            - heading3
+                        - 1: {}
+                            - A
+                            - B
+                            - C
+                        - 2: {}
+                            - A
+                            - B
+                            - C
+            `,
+                expectedOutput = `
+                - rootProperty: {}
+                    - 0: {}
+                        - heading1
+                        - heading2
+                        - heading3
+                    - 1: {}
+                        - A
+                        - B
+                        - C
+                    - 2: {}
+                        - A
+                        - B
+                        - C
+            `;
+            // - make a copy via json
+            // - walk both and replace properties
+            // - walk original and produce list
         });
     });
 });

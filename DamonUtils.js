@@ -2536,7 +2536,7 @@ class DamonUtils {
         for (const [key, value] of map) {
             mapIndex++;
             if (value === null) {
-                mermaid += key + '\r\n';
+                mermaid += JSON.parse('"' + key + '"') + '\r\n';
                 continue;
             }
             if (
@@ -2561,11 +2561,13 @@ class DamonUtils {
                     }
                     let adjacents = subValue.split(",");
                     for (let i = 0, c = adjacents.length; i < c; i++) {
-                        mermaid += key + ' ' + subKey + ' ' + adjacents[i] + '\r\n';
+                        mermaid +=
+                            JSON.parse('"' + key + '"') + ' '
+                            + JSON.parse('"' + subKey + '"') + ' ' + adjacents[i] + '\r\n';
                     }
                 }
             } else {
-                mermaid += key + '\r\n';
+                mermaid += JSON.parse('"' + key + '"') + '\r\n';
             }
         }
         return mermaid.slice(0, -2);
