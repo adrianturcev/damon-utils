@@ -3644,7 +3644,7 @@
                     "Error line " + $.damon.mapIndexToLine(map, mapIndex) + startLine + ": value does not conform to String type"
                   );
                 }
-                let adjacents = subValue.split(",");
+                let adjacents = JSON.parse('"' + subValue + '"').split(",");
                 for (let i = 0, c = adjacents.length; i < c; i++) {
                   mermaid += JSON.parse('"' + key + '"') + " " + JSON.parse('"' + subKey + '"') + " " + adjacents[i] + "\r\n";
                 }
