@@ -3475,7 +3475,7 @@
                 let subMapKeys = Array.from(value.keys());
                 for (const [headerKey, headerValue] of headerMap) {
                   z++;
-                  if (subMapKeys[z]) {
+                  if (subMapKeys[z] !== void 0) {
                     headerMap.set(headerKey, $.sliceIjsonKey(subMapKeys[z]));
                   } else {
                     headerMap.set(headerKey, null);

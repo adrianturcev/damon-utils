@@ -2337,10 +2337,9 @@ class DamonUtils {
                 } else {
                     let z = -1;
                     let subMapKeys = Array.from(value.keys());
-                    // Fails to update headermap
                     for (const [headerKey, headerValue] of headerMap) {
                         z++;
-                        if (subMapKeys[z]) {
+                        if (subMapKeys[z] !== undefined) {
                             headerMap.set(headerKey, $.sliceIjsonKey(subMapKeys[z]));
                         } else {
                             headerMap.set(headerKey, null);
