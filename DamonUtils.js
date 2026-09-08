@@ -508,7 +508,10 @@ class DamonUtils {
                 && value instanceof Map
                 && value.constructor === Map
             ) {
-                if (jsonItemIndex == 0) {
+                if (
+                    jsonItemIndex == 0
+                    && key == '0-header'
+                ) {
                     let slicedSubMapKeys = Array.from(value.keys()).map($.sliceIjsonKey),
                         slicedSubMapKeysSet = new Set(slicedSubMapKeys);
                     if (slicedSubMapKeys.length !== slicedSubMapKeysSet.size) {
@@ -552,6 +555,8 @@ class DamonUtils {
                     tHead.appendChild(row);
                     headingsEncountered = true;
                 } else {
+                    if (jsonItemIndex == 0)
+                        columnsLength = value.length;
                     if (value.length != columnsLength) {
                         // unmatching columns length
                         throw new Error(

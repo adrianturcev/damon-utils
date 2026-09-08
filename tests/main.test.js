@@ -165,15 +165,15 @@ describe('# DAMON UTILS', function () {
         it('Returns an html table', function () {
             var tableTest =
                 `- {}
-                    - 0: {}
+                    - header: {}
                         - heading1
                         - heading2
                         - heading3
-                    - 1: {}
+                    - 0: {}
                         - A
                         - B
                         - C
-                    - 2: {}
+                    - 1: {}
                         - A
                         - B
                         - C`;
